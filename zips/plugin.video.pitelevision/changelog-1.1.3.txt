@@ -1,0 +1,10 @@
+[B]Version 1.0[/B]
+- First version 1
+[B]Version 1.1.0[/B]
+- Working shows and Live tv
+[B]Version 1.1.1[/B]
+- Released..fixed some images issues
+[B]Version 1.1.2[/B]
+- Library issue on android
+[B]Version 1.1.3[/B]
+- Fixed Favourite bug, now you can add links to favourites and run it

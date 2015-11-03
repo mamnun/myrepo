@@ -1,0 +1,9 @@
+[B]Version 1.0[/B]
+- First version 1.0
+- Consolidated for opening any channel/show on serial zone.
+
+[B]Version 1.1[/B]
+icon change
+
+[B]Version 1.2[/B]
+Update to default.py script to fix logic. 

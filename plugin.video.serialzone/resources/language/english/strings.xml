@@ -1,0 +1,10 @@
+<strings>
+  
+    <!-- Meta Data -->
+    
+    <string id="32001">Proxy Settings</string>
+    <string id="32017">Only If you are outside India or dont have VPN</string>
+    <string id="32018">Proxy Video Quality</string>
+        <string id="32024">Indian Proxy Address</string>
+            <string id="32025">Indian Proxy Port</string>
+</strings>

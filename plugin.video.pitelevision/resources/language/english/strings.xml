@@ -1,0 +1,12 @@
+<strings>
+  
+    <!-- Meta Data -->
+    <string id="32010">Proxy Settings</string>
+    <string id="32011">Enable Proxy?</string>
+    <string id="32012">Select Proxy Server</string>
+    <string id="32013">Enable Custom Server</string>
+    <string id="32014">Enter Proxy Server</string>
+    <string id="32015">port</string>
+    <string id="32016">User Name</string>
+    <string id="32017">Password</string>
+</strings>

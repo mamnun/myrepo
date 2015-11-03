@@ -1,0 +1,14 @@
+[B]Version 1.0[/B]
+- First version 1
+
+[B]Version 2.1.0[/B]
+- Support for Gotham
+
+[B]Version 2.2.1[/B]
+- Fixed dependencies
+
+[B]Version 2.2.3[/B]
+- house cleaning
+
+[B]Version 2.2.4[/B]
+- house cleaning

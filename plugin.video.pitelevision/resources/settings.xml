@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="32010">
+    
+    <setting label="32011" type="bool"   id="isProxyEnabled" default="false"/>
+    <setting label="32012" type="labelenum" id="selectedProxy" values="118.103.236.152:8080|203.101.161.3:8080|103.24.98.78:8080|203.170.66.122:8080|202.166.173.219:80" enable="!eq(-1,false))" />
+    <setting type="sep"/>
+    <setting label="32013" type="bool"   id="isCustomProxy" default="false" enable="!eq(-3,false)"/>
+    <setting label="32014" type="text"   id="proxyName" default=""  enable="!eq(-1,false)"  />
+    <setting label="32015" type="text"   id="proxyPort" default=""  enable="!eq(-2,false)"  />  
+    <setting type="sep"/>
+        <setting label="32016" type="text"   id="piTvLogin" default=""   />
+            <setting label="32017" type="text"   id="piTvPwd" default=""   />
+     </category>
+
+</settings>

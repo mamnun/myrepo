@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="32001">
+    <setting label="32017" type="lsep"/>
+         <setting label="32018" type="enum" id="youtubevideo"  default="medium" values="hd720|medium|small"/>
+        <setting label="32024" type="text" id="ProxyServer" values="" default="14.139.213.181"/>  
+        <setting label="32025" type="text" id="ProxyPort" values="" default="3128"/>                                              
+     </category>
+</settings>

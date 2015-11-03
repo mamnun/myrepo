@@ -1,0 +1,22 @@
+[B]Version 1.0[/B]
+- First version 1
+[B]Version 1.0.1[/B]
+- revised
+[B]Version 1.0.2[/B]
+- revised with one bug fixed
+
+B]Version 1.0.3[/B]
+- revised with one bug fixed
+B]Version 1.0.4[/B]
+- revised with one bug fixed
+B]Version 1.0.5[/B]
+- more logging
+B]Version 1.0.6[/B]
+- Getting there, ,last logging
+B]Version 1.0.7[/B]
+- Getting there,almost
+B]Version 1.0.8[/B]
+- This is the end
+B]Version 1.0.9[/B]
+- No token to send
+

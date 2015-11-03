@@ -1,0 +1,12 @@
+[B]Version 0.0.1[/B]
+- Initial Release.
+[B]Version 1.0.3[/B]
+- Support for headers.
+[B]Version 1.0.4[/B]
+- Some more fixes
+[B]Version 1.0.6[/B]
+- now its working with querystring
+[B]Version 1.0.7[/B]
+- headbug
+[B]Version 1.0.8[/B]
+- proxysetup

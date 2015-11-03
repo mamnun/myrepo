@@ -1,0 +1,17 @@
+read more http://stackoverflow.com/questions/12193729/how-do-i-replace-xml-file-in-apk
+
+
+
+
+C:\Users\shani\Downloads\apktool-install-windows-r05-ibot>
+
+-verbose -sigalg MD5withRSA -digestalg SHA1 -keystore my.keystore .\kodi-14.1-Helix-armeabi-v7a.apk -signedjar kodi-14.1-Helix-armeabi-v7a.shani.apk myandroidalias
+
+
+C:\Users\shani\Downloads\apktool-install-windows-r05-ibot>apktool.bat b .\kodi-helix-14.1 -o .\kodi-14.1.1-Helix-armeabi-v7a.apk
+
+
+C:\Users\shani\Downloads\apktool-install-windows-r05-ibot>"\Program Files\Java\jdk1.7.0_51\bin\jarsigner.exe" -verbose -sigalg MD5withRSA -digestalg SHA1 -keystore my.keystore .\kodi-14.1.1-Helix-armeabi-v7a.apk -signedjar kodi-14.1.1-Helix-armeabi-v7a.shani.apk myandroidalias
+
+
+then run zip-aling.exe and create batch file and run it

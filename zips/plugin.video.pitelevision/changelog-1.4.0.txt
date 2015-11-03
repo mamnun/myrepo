@@ -1,0 +1,22 @@
+[B]Version 1.0[/B]
+- First version 1
+[B]Version 1.1.0[/B]
+- Working shows and Live tv
+[B]Version 1.1.1[/B]
+- Released..fixed some images issues
+[B]Version 1.1.2[/B]
+- Library issue on android
+[B]Version 1.1.3[/B]
+- Fixed Favourite bug, now you can add links to favourites and run it
+[B]Version 1.1.4[/B]
+- Gotham dependencies
+[B]Version 1.2.0[/B]
+- First implementation of f4m version 2 format
+[B]Version 1.2.1[/B]
+- Small bug
+[B]Version 1.2.2[/B]
+- repeat bug
+[B]Version 1.3.0[/B]
+- Proxy support because the channels are not available outside Pakistan
+[B]Version 1.4.0[/B]
+- Proxy server implemenation to feed the stream into XBMC player

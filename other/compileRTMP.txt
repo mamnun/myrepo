@@ -1,0 +1,59 @@
+http://forum.videohelp.com/threads/358351-How-to-compile-RTMPdump-with-mingw-on-windows
+
+I just spent a day figuring out how to compile and thought I'd share as i haven't found a complete guide on the internet on how to do this, the build instructions from rtmpdump are horrible, and it's really quite easy once you know what to do.
+
+Step 1. Install and configure Mingw
+1. Goto http://sourceforge.net/projects/mingw/files/Installer/mingw-get-inst/mingw-get-inst-20120426/ and download and install mingw-get-inst-20120426.exe to c:\mingw
+2. Goto c:\mingw and create a new folder c:\mingw\local
+3. Goto start > computer > properties > advanced system settings > environment variables > path(in the bottom container) > edit ... add ;C:\MinGW\bin;C:\MinGW\local\bin to the end
+4. Goto C:\MinGW\msys\1.0 and double click on msys.bat and type in 
+Code:
+gcc -dumpspecs > specs
+5. You will find the specs file located in C:\MinGW\msys\1.0\home\(your username)\specs
+6. Open the specs file with a text editor. And follow the directions on http://www.mingw.org/wiki/SpecsFileHOWTO adding -I c:/mingw/local/include and -L c:/mingw/local/lib and moving the specs file to c:/mingw/lib/gcc/mingw32/<version>/specs
+
+Step2. Install dependent libraries
+1. Goto http://www.zlatkovic.com/libxml.en.html > download area and download libxml2-2.7.8.win32.zip libxmlsec-1.2.18.win32.zip libxslt-1.1.26.win32.zip xsldbg-3.1.7.win32.zip zlib-1.2.5.win32.zip
+2. Open the zip archives and go down in folders until you see lib/bin/include Extract them to c:\mingw\local so that it's c:\mingw\local\bin c:\mingw\local\lib c:\mingw\local\include
+3. Goto https://www.openssl.org/source/ and download openssl-1.0.1e.tar.gz to C:\mingw\local
+note: Other distributions of openssl didn't have libssl and libcrypto libraries and would cause errors.
+4. Open msys.bat again and type in
+Code:
+$ cd c:\mingw\msys\local
+$ tar xvzf openssl-1.0.1e.tar.gz
+$ cd openssl-1.0.1e
+for MinGW (32 bit) do:
+Code:
+$ ./Configure --prefix=$PWD/dist no-idea no-mdc2 no-rc5 shared mingw
+for MinGW-w64 do:
+Code:
+$ ./Configure --prefix=$PWD/dist no-idea no-mdc2 no-rc5 shared mingw64
+You may want to change
+Code:
+./Configure --prefix=$PWD/dist no-idea no-mdc2 no-rc5 shared mingw
+to
+Code:
+./Configure --prefix=c:/mingw/local/openssl no-idea no-mdc2 no-rc5 shared mingw
+or 
+Code:
+./Configure --prefix=c:/mingw/local no-idea no-mdc2 no-rc5 shared mingw
+note: the directory you choose to install openssl to is set so it will have to remain if you want to use openssl in future.
+
+Compile & install:
+Code:
+$ make depend && make && make install
+5. Copy over the files from c:/mingw/local/openssl or the dist directory so that they are combined with c:\mingw\local\bin c:\mingw\local\lib c:\mingw\local\include
+reference: https://qt-project.org/wiki/Compiling-OpenSSL-with-MinGW
+
+Step 3. Installing and building rtmpdump
+1. Download and install http://code.google.com/p/msysgit/downloads/detail?name=Git-1.8.3-preview20130601.exe&c...r+official+git
+2. Go to start menu > All Programs > Git > Git GUI > Clone Exisiting Repository
+3. Source location: git://git.ffmpeg.org/rtmpdump (make sure there's no space at the end or it will fail)
+Target directory: C:\MinGW\msys\1.0\home\(yourusername)\rtmpdump replace (yourusername) with whatever directory you have.
+4. Open msys.bat again and type in cd rtmpdump
+5. Type in make SYS=mingw
+6. Copy librtmp-0.dll from the librtmp folder in the rtmpdump directory to the rtmpdump directory with the .exe files.(I'm not sure why it compiles with a librtmp-0.dll dependency. If anyone knows how to compile without it, i would love to hear how.)
+It should now be compiled with the resulting working .exe files located in the rtmpdump folder. 
+
+Enjoy
+

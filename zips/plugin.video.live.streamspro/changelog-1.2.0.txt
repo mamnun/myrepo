@@ -1,0 +1,6 @@
+Version 1.2.0
+Cloned from divingmules and added all my changes
+
+
+Version 1.1.3
+update for XBMC Gotham compatibility

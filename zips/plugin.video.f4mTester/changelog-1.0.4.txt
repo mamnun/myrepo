@@ -1,0 +1,8 @@
+[B]Version 1.0[/B]
+- First version 1
+[B]Version 1.0.3[/B]
+- bbc link for outsiders
+[B]Version 1.0.3[/B]
+- external call support
+[B]Version 1.0.5[/B]
+- added j0anita's link

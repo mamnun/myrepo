@@ -1,0 +1,39 @@
+To Create new copy, only once
+git clone --mirror git@example.com/upstream-repository.git
+
+
+git clone --mirror https://github.com/Shani-08/ShaniXBMCWork.git ShaniBitBucket
+
+git clone --mirror https://github.com/Shani-08/ShaniXBMCWork.git ShaniBitBucket
+
+
+-- after changes
+git fetch origin
+git push --mirror https://shani-08@bitbucket.org/shani-08/shanixbmcwork.git
+aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+https://confluence.atlassian.com/display/BITBUCKET/Set+up+SSH+for+Git#SetupSSHforGit-Step4.Createaconfigfile
+http://www.bram.us/2012/05/06/automatic-website-publishing-with-git-github-style/
+
+these two ... add key and setup post-receive
+
+post-receive file changed11
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+
+cd ../../ShaniBitBucket
+git fetch origin
+git push --mirror https://shani-08@bitbucket.org/shani-08/shanixbmcwork.git
+cd ../ShaniXBMCWork/ShaniXBMCWork
+
+#!/bin/sh
+#
+# An example hook script to prepare a packed repository for use over
+# dumb transports.
+#
+# To enable this hook, rename this file to "post-update".
+./updateBitBucker.sh
+

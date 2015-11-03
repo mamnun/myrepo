@@ -1,0 +1,21 @@
+Version 1.2.5
+Support for playmedia
+
+Version 1.2.4
+Added get_saw_rtmp and get_leton_rtmp support
+
+Version 1.2.3
+Support for decrypting wise function, also DAG url player
+
+Version 1.2.2
+Support for retry for ustream links, now new function is available
+
+Version 1.2.1
+Corrected the copy paste problem lol
+
+Version 1.2.0
+Cloned from divingmules and added all my changes
+
+
+Version 1.1.3
+update for XBMC Gotham compatibility
