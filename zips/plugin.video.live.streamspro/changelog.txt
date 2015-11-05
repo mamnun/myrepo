@@ -1,3 +1,6 @@
+Version 1.9.9
+Ignore error in list creation
+
 Version 1.9.8
 Parental block
 

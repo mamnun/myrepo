@@ -504,7 +504,7 @@ def getItems(items,fanart):
                 applyblock = item('parentalblock')[0].string
             except:
                 addon_log('parentalblock Error')
-                name = ''
+                applyblock = ''
             if applyblock=='true' and parentalblock: continue
                 
             try:
@@ -2146,7 +2146,7 @@ def addDir(name,url,mode,iconimage,fanart,description,genre,date,credits,showcon
             parentalblock =addon.getSetting('parentalblocked')
             parentalblock= parentalblock=="true"
             parentalblockedpin =addon.getSetting('parentalblockedpin')
-            print 'parentalblockedpin',parentalblockedpin
+#            print 'parentalblockedpin',parentalblockedpin
             if len(parentalblockedpin)>0:
                 if parentalblock:
                     contextMenu.append(('Disable Parental Block','XBMC.RunPlugin(%s?mode=55&name=%s)' %(sys.argv[0], urllib.quote_plus(name))))
@@ -2265,7 +2265,7 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
         parentalblock =addon.getSetting('parentalblocked')
         parentalblock= parentalblock=="true"
         parentalblockedpin =addon.getSetting('parentalblockedpin')
-        print 'parentalblockedpin',parentalblockedpin
+#        print 'parentalblockedpin',parentalblockedpin
         if len(parentalblockedpin)>0:
             if parentalblock:
                 contextMenu.append(('Disable Parental Block','XBMC.RunPlugin(%s?mode=55&name=%s)' %(sys.argv[0], urllib.quote_plus(name))))
@@ -2636,37 +2636,39 @@ elif mode==17:
         import copy
         ln=''
         for obj in ret:
-            newcopy=copy.deepcopy(regexs)
-#            print 'newcopy',newcopy, len(newcopy)
-            listrepeatT=listrepeat
-            i=0
-            for i in range(len(obj)):
-#                print 'i is ',i, len(obj), len(newcopy)
+            try:
+                newcopy=copy.deepcopy(regexs)
+    #            print 'newcopy',newcopy, len(newcopy)
+                listrepeatT=listrepeat
+                i=0
+                for i in range(len(obj)):
+    #                print 'i is ',i, len(obj), len(newcopy)
+                    if len(newcopy)>0:
+                        for the_keyO, the_valueO in newcopy.iteritems():
+                            if the_valueO is not None:
+                                for the_key, the_value in the_valueO.iteritems():
+                                    if the_value is not None:                                
+        #                                print  'key and val',the_key, the_value
+        #                                print 'aa'
+        #                                print '[' + regexname+'.param'+str(i+1) + ']'
+        #                                print repr(obj[i])
+                                        if type(the_value) is dict:
+                                            for the_keyl, the_valuel in the_value.iteritems():
+                                                if the_valuel is not None:
+                                                    the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )                                            
+                                        else:
+                                            the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                    listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
+                #newcopy = urllib.quote(repr(newcopy))
+    #            print 'new regex list', repr(newcopy), repr(listrepeatT)
+    #            addLink(listlinkT,listtitleT.encode('utf-8', 'ignore'),listthumbnailT,'','','','',True,None,newcopy, len(ret))
+                regex_xml=''
                 if len(newcopy)>0:
-                    for the_keyO, the_valueO in newcopy.iteritems():
-                        if the_valueO is not None:
-                            for the_key, the_value in the_valueO.iteritems():
-                                if the_value is not None:                                
-    #                                print  'key and val',the_key, the_value
-    #                                print 'aa'
-    #                                print '[' + regexname+'.param'+str(i+1) + ']'
-    #                                print repr(obj[i])
-                                    if type(the_value) is dict:
-                                        for the_keyl, the_valuel in the_value.iteritems():
-                                            if the_valuel is not None:
-                                                the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )                                            
-                                    else:
-                                        the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
-                listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
-            #newcopy = urllib.quote(repr(newcopy))
-#            print 'new regex list', repr(newcopy), repr(listrepeatT)
-#            addLink(listlinkT,listtitleT.encode('utf-8', 'ignore'),listthumbnailT,'','','','',True,None,newcopy, len(ret))
-            regex_xml=''
-            if len(newcopy)>0:
-                regex_xml=d2x(newcopy,'lsproroot')
-                regex_xml=regex_xml.split('<lsproroot>')[1].split('</lsproroot')[0]
-          
-            ln+='\n<item>%s\n%s</item>'%(listrepeatT,regex_xml)   
+                    regex_xml=d2x(newcopy,'lsproroot')
+                    regex_xml=regex_xml.split('<lsproroot>')[1].split('</lsproroot')[0]
+              
+                ln+='\n<item>%s\n%s</item>'%(listrepeatT,regex_xml)   
+            except: traceback.print_exc(file=sys.stdout)
 #            print repr(ln)
 #            print newcopy
                 
