@@ -25,3 +25,6 @@
 
 [B]Version 2.7[/B]
 - removed shahidbc/glarab
+
+[B]Version 2.8[/B]
+- moved to offshore
