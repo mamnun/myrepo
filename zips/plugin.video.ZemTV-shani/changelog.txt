@@ -1,4 +1,10 @@
 [B]Version 3.9.4[/B]
+    -fixed yellow channels
+    -fixed ebound video source
+    - added support for VidRail
+
+
+[B]Version 3.9.4[/B]
 few v4 channels, not all working
 
 [B]Version 3.9.3[/B]

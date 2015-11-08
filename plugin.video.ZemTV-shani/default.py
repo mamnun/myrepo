@@ -83,8 +83,10 @@ def addDir(name,url,mode,iconimage,showContext=False,showLiveContext=False,isItF
 		cmd4 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
 		cmd5 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "EBOUND")
 		cmd6 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
+		cmd7 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "VIDRAIL")
+
 		
-		liz.addContextMenuItems([('Show All Sources',cmd6),('Play Ebound video',cmd5),('Play Playwire video',cmd4),('Play Youtube video',cmd3),('Play DailyMotion video',cmd1),('Play Tune.pk video',cmd2)])
+		liz.addContextMenuItems([('Show All Sources',cmd6),('Play Vidrail video',cmd7),('Play Ebound video',cmd5),('Play Playwire video',cmd4),('Play Youtube video',cmd3),('Play DailyMotion video',cmd1),('Play Tune.pk video',cmd2)])
 	if linkType:
 		u="XBMC.RunPlugin(%s&linkType=%s)" % (u, linkType)
 		
@@ -1156,10 +1158,10 @@ def AddWillowCric(url):
         response.close()
         patt='json_matchbox = (.*?);'
         match_url =re.findall(patt,link)[0]
-        print match_url
+        #print match_url
         matches=json.loads(match_url)
         
-        print matches
+        #print matches
         matchid=matches["result"]["past"][0]["MatchId"]
         if 1==2:
             addDir(Colored('Live Channel (Experimental)','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
@@ -1539,7 +1541,7 @@ def AddChannelsFromOthers(cctype):
         except: pass
 
   
-    if 1==1 and usev4:#new v4 links
+    if 1==2 and usev4:#new v4 links
         try:
                       
             url=base64.b64decode(v4link)
@@ -1548,9 +1550,9 @@ def AddChannelsFromOthers(cctype):
             response = urllib2.urlopen(req)
             link=response.read()
             response.close()
-            print link
+            #print link
             match_temp=re.findall(v4patt,link)
-            print 'match_temp',match_temp
+            #print 'match_temp',match_temp
             for cname,ctype,curl in match_temp:
                 match.append((cname + ' v4',ctype,ctype,''))
 
@@ -1639,7 +1641,7 @@ def AddChannelsFromOthers(cctype):
             sources=etree.fromstring(xmldata)
             ret=[]
             for source in sources.findall('items'):
-                print pg,source.findtext('programCategory').lower()
+                #print pg,source.findtext('programCategory').lower()
                 if pg == source.findtext('programCategory').lower():
                     cname=source.findtext('programTitle')
                     cid=source.findtext('programURL')
@@ -2102,11 +2104,11 @@ def AddShows(Fromurl):
     headers=[('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')]
     #	link=getUrl(Fromurl,cookieJar=CookieJar, headers=headers)
     try:
-        link=getUrl(Fromurl,cookieJar=CookieJar, headers=headers)
+        linkfull=getUrl(Fromurl,cookieJar=CookieJar, headers=headers)
     except:
         import cloudflare
         cloudflare.createCookie(Fromurl,CookieJar,'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-        link=getUrl(Fromurl,cookieJar=CookieJar, headers=headers)
+        linkfull=getUrl(Fromurl,cookieJar=CookieJar, headers=headers)
 
 
     #	print link
@@ -2121,19 +2123,32 @@ def AddShows(Fromurl):
     #	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
     CookieJar.save (ZEMCOOKIEFILE,ignore_discard=True)
 
-    if '<div id="top-articles">' in link:
-        link=link.split('<div id="top-articles">')[0]
+    link=linkfull
+    if '<div id="top-articles">' in linkfull:
+        link=linkfull.split('<div id="top-articles">')[0]
+        
     match =re.findall('<div class="thumbnail">\\s*<a href="(.*?)".*\s*<img class="thumb".*?src="(.*?)" alt="(.*?)"', link, re.UNICODE)
     if len(match)==0:
         match =re.findall('<div class="thumbnail">\s*<a href="(.*?)".*\s*<img.*?.*?src="(.*?)".* alt="(.*?)"', link, re.UNICODE)
 
+    if not '/page/' in Fromurl:
+        try:
+            pat='\\<a href="(.*?)".*>\\s*<img.*?src="(.*?)".*\\s?.*?\\s*?<h1.*?>(.*?)<'
+    #        print linkfull
+            matchbanner=re.findall(pat, linkfull, re.UNICODE)
+    #        print 'matchbanner',matchbanner,match
+            if len(matchbanner)>0:
+                match=matchbanner+match
+        except: pass
 
+        
     #	print link
     #	print match
 
     #	print match
     h = HTMLParser.HTMLParser()
 
+    
     for cname in match:
         tname=cname[2]
         tname=re.sub(r'[\x80-\xFF]+', convert,tname )
@@ -2195,7 +2210,7 @@ def PlayShowLink ( url ):
     defaultLinkType=0 #0 youtube,1 DM,2 tunepk
     defaultLinkType=selfAddon.getSetting( "DefaultVideoType" ) 
     #	print defaultLinkType
-    #	print "LT link is" + linkType
+    print "LT link is" + linkType
     # if linktype is not provided then use the defaultLinkType
 
     if linkType.upper()=="SHOWALL" or (linkType.upper()=="" and defaultLinkType=="4"):
@@ -2232,39 +2247,75 @@ def PlayShowLink ( url ):
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
     #		print "Eboundlink"
         playURL= match =re.findall(' src=".*?ebound\\.tv.*?site=(.*?)&.*?date=(.*?)\\&', link)
-        if len(playURL)==0:
-            line1 = "EBound link not found"
-            xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
-            return 
-
-        playURL=match[0]
-        dt=playURL[1]
-        clip=playURL[0]
-        urli=base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vaWZyYW1lL25ldy92b2RfdWdjLnBocD9zdHJlYW09bXA0OnZvZC8lcy8lcyZ3aWR0aD02MjAmaGVpZ2h0PTM1MCZjbGlwPSVzJmRheT0lcyZtb250aD11bmRlZmluZWQ=')%(dt,clip,clip,dt)
-        #req = urllib2.Request(urli)
-        #req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-        #response = urllib2.urlopen(req)
-        #link=response.read()
-        #response.close()
-        post = {'username':'hash'}
-        post = urllib.urlencode(post)
-        req = urllib2.Request(base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9mbGFzaHBsYXllcmhhc2gvaW5kZXgucGhw'))
-        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36')
-        response = urllib2.urlopen(req,post)
-        link=response.read()
-        response.close()
-        strval =link;# match[0]
-
-        stream_url=base64.b64decode('cnRtcDovL2Nkbi5lYm91bmQudHYvdm9kIHBsYXlwYXRoPW1wNDp2b2QvJXMvJXMgYXBwPXZvZD93bXNBdXRoU2lnbj0lcyBzd2Z1cmw9aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vbGl2ZS92Ni9wbGF5ZXIuc3dmP2RvbWFpbj13d3cuemVtdHYuY29tJmNoYW5uZWw9JXMmY291bnRyeT1FVSBwYWdlVXJsPSVzIHRjVXJsPXJ0bXA6Ly9jZG4uZWJvdW5kLnR2L3ZvZD93bXNBdXRoU2lnbj0lcyBsaXZlPXRydWUgdGltZW91dD0xNQ==')%(dt,clip,strval,clip,urli,strval)
-
-    #		print stream_url
+        if len(playURL)>0:
+            playURL=match[0]
+            dt=playURL[1]
+            clip=playURL[0]
+            urli=base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vaWZyYW1lL25ldy92b2RfdWdjLnBocD9zdHJlYW09bXA0OnZvZC8lcy8lcyZ3aWR0aD02MjAmaGVpZ2h0PTM1MCZjbGlwPSVzJmRheT0lcyZtb250aD11bmRlZmluZWQ=')%(dt,clip,clip,dt)
+            #req = urllib2.Request(urli)
+            #req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+            #response = urllib2.urlopen(req)
+            #link=response.read()
+            #response.close()
+            post = {'username':'hash'}
+            post = urllib.urlencode(post)
+            req = urllib2.Request(base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9mbGFzaHBsYXllcmhhc2gvaW5kZXgucGhw'))
+            req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36')
+            response = urllib2.urlopen(req,post)
+            link=response.read()
+            response.close()
+            strval =link;# match[0]
+            stream_url=base64.b64decode('cnRtcDovL2Nkbi5lYm91bmQudHYvdm9kIHBsYXlwYXRoPW1wNDp2b2QvJXMvJXMgYXBwPXZvZD93bXNBdXRoU2lnbj0lcyBzd2Z1cmw9aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vbGl2ZS92Ni9wbGF5ZXIuc3dmP2RvbWFpbj13d3cuemVtdHYuY29tJmNoYW5uZWw9JXMmY291bnRyeT1FVSBwYWdlVXJsPSVzIHRjVXJsPXJ0bXA6Ly9jZG4uZWJvdW5kLnR2L3ZvZD93bXNBdXRoU2lnbj0lcyBsaXZlPXRydWUgdGltZW91dD0xNQ==')%(dt,clip,strval,clip,urli,strval)
+        else:
+            playURL=match=re.findall('src="(.*?(poovee\.net).*?)"', link)
+            
+            if len(playURL)==0:
+                line1 = "EBound/Povee link not found"
+                xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+                ShowAllSources(url,link)
+                return 
+            playURL=match[0][0]
+            pat='<source src="(.*?)"'
+            link=getUrl(playURL,cookieJar=CookieJar, headers=headers)
+            playURL=re.findall(pat, link)
+            stream_url=playURL[0]
         playlist = xbmc.PlayList(1)
         playlist.clear()
         listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
         listitem.setInfo("Video", {"Title":name})
         listitem.setProperty('mimetype', 'video/x-msvideo')
         listitem.setProperty('IsPlayable', 'true')
+        playlist.add(stream_url,listitem)
+        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer.play(playlist)
+    elif  linkType.upper()=="VIDRAIL"  or (linkType=="" and defaultLinkType=="5"):
+        line1 = "Playing Vidrail Link"
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+        playURL= match =re.findall('src="(.*?(vidrail\.com).*?)"', link)
+        if len(playURL)==0:
+            line1 = "Vidrail link not found"
+            xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+            ShowAllSources(url,link)
+            return 
+
+        playURL=match[0][0]
+        pat='<source src="(.*?)"'
+        link=getUrl(playURL,cookieJar=CookieJar, headers=headers)
+        playURL=re.findall(pat, link)
+        if len(playURL)==0:
+            line1 = "Vidrail link not found"
+            xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+            ShowAllSources(url,link)
+            return 
+        stream_url=playURL[0]
+        playlist = xbmc.PlayList(1)
+        playlist.clear()
+        listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
+        listitem.setInfo("Video", {"Title":name})
+        listitem.setProperty('mimetype', 'video/x-msvideo')
+        listitem.setProperty('IsPlayable', 'true')
+#        stream_url = urlresolver.HostedMediaFile(playURL).resolve()' find here
+    #		print stream_url
         playlist.add(stream_url,listitem)
         xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
         xbmcPlayer.play(playlist)
@@ -2391,11 +2442,19 @@ def ShowAllSources(url, loadedLink=None):
 #	print 'playURL',playURL
 	if not len(playURL)==0:
 		available_source.append('Ebound Source')		
-		 
+	else:
+		playURL =re.findall('src="(.*?poovee\.net.*?)"', link)
+		if not len(playURL)==0:
+			available_source.append('Ebound Source')		
+        
 	playURL= match =re.findall('src="(.*?(dailymotion).*?)"',link)
 	if not len(playURL)==0:
 		available_source.append('Daily Motion Source')
 
+	playURL= match =re.findall('src="(.*?(vidrail\.com).*?)"',link)
+	if not len(playURL)==0:
+		available_source.append('Vidrail Source')
+        
 	playURL= match =re.findall('src="(.*?(tune\.pk).*?)"', link)
 	if not len(playURL)==0:
 		available_source.append('Link Source')
@@ -2413,110 +2472,41 @@ def ShowAllSources(url, loadedLink=None):
 			PlayShowLink(url);
 
 def PlayLiveLink ( url ):
-	progress = xbmcgui.DialogProgress()
-	progress.create('Progress', 'Fetching Streaming Info')
-	progress.update( 10, "", "Finding links..", "" )
-	if mode==4:
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-		response = urllib2.urlopen(req)
-		link=response.read()
-		response.close()
-		#print link
-		#print url
-		match =re.findall('"http.*(ebound).*?\?site=(.*?)"',link,  re.IGNORECASE)[0]
-		cName=match[1]
-		progress.update( 20, "", "Finding links..", "" )
-	else:
-		cName=url
-	import math, random, time
-	rv=str(int(5000+ math.floor(random.random()*10000)))
-	currentTime=str(int(time.time()*1000))
-	newURL=base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vaWZyYW1lL25ldy9tYWluUGFnZS5waHA/c3RyZWFtPQ==')+cName+  '&width=undefined&height=undefined&clip=' + cName+'&rv='+rv+'&_='+currentTime
-	
-	req = urllib2.Request(newURL)
-	req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-	progress.update( 50, "", "Finding links..", "" )
-	
-#	match =re.findall('<iframe.+src=\'(.*)\' frame',link,  re.IGNORECASE)
-#	print match
-#	req = urllib2.Request(match[0])
-#	req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-#	response = urllib2.urlopen(req)
-#	link=response.read()
-#	response.close()
-	time = 2000  #in miliseconds
-	defaultStreamType=0 #0 RTMP,1 HTTP
-	defaultStreamType=selfAddon.getSetting( "DefaultStreamType" ) 
-#	print 'defaultStreamType',defaultStreamType
-	if 1==2 and (linkType=="HTTP" or (linkType=="" and defaultStreamType=="1")): #disable http streaming for time being
-#	print link
-		line1 = "Playing Http Stream"
-		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-		
-		match =re.findall('MM_openBrWindow\(\'(.*)\',\'ebound\'', link,  re.IGNORECASE)
-			
-	#	print url
-	#	print match
-		
-		strval = match[0]
-		
-		#listitem = xbmcgui.ListItem(name)
-		#listitem.setInfo('video', {'Title': name, 'Genre': 'Live TV'})
-		#playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-		#playlist.clear()
-		#playlist.add (strval)
-		
-		#xbmc.Player().play(playlist)
-		listitem = xbmcgui.ListItem( label = str(cName), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ), path=strval )
-#		print "playing stream name: " + str(cName) 
-		listitem.setInfo( type="video", infoLabels={ "Title": cName, "Path" : strval } )
-		listitem.setInfo( type="video", infoLabels={ "Title": cName, "Plot" : cName, "TVShowTitle": cName } )
-		xbmc.Player(PLAYER_CORE_AUTO).play( str(strval), listitem)
-	else:
-		line1 = "Playing RTMP Stream"
-		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-		progress.update( 60, "", "Finding links..", "" )
-		post = {'username':'hash'}
-        	post = urllib.urlencode(post)
-		req = urllib2.Request(base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9mbGFzaHBsYXllcmhhc2gvaW5kZXgucGhw'))
-		req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.117 Safari/537.36')
-		response = urllib2.urlopen(req,post)
-		link=response.read()
-		response.close()
-		
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Streaming Info')
+    progress.update( 10, "", "Finding links..", "" )
+    if mode==4:
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+        #print link
+        #print url
+        match =re.findall('"http.*(ebound).*?\?site=(.*?)"',link,  re.IGNORECASE)[0]
+        cName=match[1]
+        progress.update( 20, "", "Finding links..", "" )
+    else:
+        cName=url
+    import math, random, time
+    rv=str(int(5000+ math.floor(random.random()*10000)))
+    currentTime=str(int(time.time()*1000))
+    newURL=base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vaWZyYW1lL25ldy9tYWluUGFnZS5waHA/c3RyZWFtPQ==')+cName+  '&width=undefined&height=undefined&clip=' + cName+'&rv='+rv+'&_='+currentTime
+    req = urllib2.Request(newURL)
+    req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    progress.update( 50, "", "Finding links..", "" )
 
-        
-#		print link
-		#match =re.findall("=(.*)", link)
+    playfile =re.findall('videoLink =\'(.*?)\'',link)[0]
 
-		#print url
-		#print match
-
-		strval =link;# match[0]
-
-		#listitem = xbmcgui.ListItem(name)
-		#listitem.setInfo('video', {'Title': name, 'Genre': 'Live TV'})
-		#playlist = xbmc.PlayList( xbmc.PLAYLIST_VIDEO )
-		#playlist.clear()
-		#playlist.add (strval)
-
-		playfile=base64.b64decode('cnRtcDovL2Nkbi5lYm91bmQudHYvdHY/d21zQXV0aFNpZ249LyVzIGFwcD10dj93bXNBdXRoU2lnbj0lcyBzd2Z1cmw9aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vbGl2ZS92Ni9qd3BsYXllci5mbGFzaC5zd2Y/ZG9tYWluPXd3dy5lYm91bmRzZXJ2aWNlcy5jb20mY2hhbm5lbD0lcyZjb3VudHJ5PUVVIHBhZ2VVcmw9aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb20vY2hhbm5lbC5waHA/YXBwPXR2JnN0cmVhbT0lcyB0Y1VybD1ydG1wOi8vY2RuLmVib3VuZC50di90dj93bXNBdXRoU2lnbj0lcyBsaXZlPXRydWUgdGltZW91dD0xNQ==')%(cName,strval,cName,cName,strval)
-		progress.update( 100, "", "Almost done..", "" )
-#		print playfile
-		#xbmc.Player().play(playlist)
-		listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-#		print "playing stream name: " + str(name) 
-		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Path" : playfile } )
-		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Plot" : name, "TVShowTitle": name } )
-		xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
-		#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
-	
-	
-	return
+    playfile
+    
+    progress.update( 100, "", "Almost done..", "" )
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    return
 
 
 #print "i am here"
