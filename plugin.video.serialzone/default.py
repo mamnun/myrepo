@@ -188,22 +188,37 @@ def AddSeries(Fromurl):
             #ntries=templ
         subreg_str='<img src="(.*?)".*?<div class="title"><a href="(.*?)">(.*?)<\/a>'
         match2=re.findall(subreg_str, entries)
+        patversion=1
         print match2
+        if len(match2)==0:
+            pat='<a href="(.*?)">.*?>(.*)'
+            patversion=2
+            match2=re.findall(pat, entries)
+            print 'match2',match2
+        
 
         for cname in match2:
         #print "LEV 2 match: ",cname
         # ignore online games from showing on XBMC/KODI - take all other series info
-            URLI=cname[0]
-            if 'http:' not in URLI:
-               URLI=Fromurl+cname[0]
-            else:
-               URLI=cname[0]
+            
+            if patversion==1:
+                showname=cname[2]
+                URLI=cname[0]
+                if 'http:' not in URLI:
+                   URLI=Fromurl+cname[0]
+                else:
+                   URLI=cname[0]
 
-            SHOWURL=cname[1]
-            SHOWURL+="?view=all"
-            if cname[2] not in ('The Kings League: Odyssey','TT Racer'):
+                SHOWURL=cname[1]
+                SHOWURL+="?view=all"
+            else:
+                showname=cname[1]
+                URLI=''
+                SHOWURL=cname[0]
+                SHOWURL+="?view=all"                
+            if showname not in ('The Kings League: Odyssey','TT Racer'):
                #print "Name:%s\nURLI:%s\nICON:%s\n" %(cname[2], SHOWURL, URLI)
-               addDir(cname[2] , SHOWURL, 4, URLI)#url,name,jpg_name,url,mode,icon
+               addDir(showname , SHOWURL, 4, URLI)#url,name,jpg_name,url,mode,icon
             # end inner-loop
     # end outer-loop
     return

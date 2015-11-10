@@ -12,3 +12,5 @@ Update to default.py script to fix logic.
 Enable proxy play
 [B]Version 1.4[/B]
 External non youtube links
+[B]Version 1.5[/B]
+updated regex for blank enteries in hindi section
