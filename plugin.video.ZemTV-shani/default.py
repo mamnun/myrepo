@@ -1244,6 +1244,13 @@ def AddWatchCric(url):
 def AddSmartCric(url):
     req = urllib2.Request(base64.b64decode('aHR0cDovL3d3dy5zbWFydGNyaWMuY29tLw=='))
     req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
+    req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
+    import random,math
+    rnd1=str(int(math.floor(random.random()*5) ))
+    rnd2=str(int(math.floor(random.random()*1000000) ))
+    rnd3=str(int(math.floor(random.random()*1000000) ))
+    req.add_header('Cookie', '_ga=GA1.%s.%s.%s'%(rnd1,rnd2,rnd3))
+
 
     response = urllib2.urlopen(req)
     link=response.read()
@@ -1260,6 +1267,8 @@ def AddSmartCric(url):
         final_url=  match_url+   match_sn
         req = urllib2.Request(final_url)
         req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
+        req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8')
+
         req.add_header('Origin', base64.b64decode('aHR0cDovL3d3dy5zbWFydGNyaWMuY29t'))
         req.add_header('Referer', base64.b64decode('aHR0cDovL3d3dy5zbWFydGNyaWMuY29tLw=='))
 
@@ -1286,7 +1295,7 @@ def AddSmartCric(url):
                         cname=s["caption"]
                         curl=s["streamName"]
                         streamid=str(s["streamId"])
-                        curl1="http://"+fms+":8088/mobile/"+curl+"/playlist.m3u8?id="+streamid+match_pk;
+                        curl1="http://"+fms+":8088/mobile/"+curl+"/playlist.m3u8?id="+streamid+match_pk+'|User-Agent=Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3';
                         addDir('    -'+cname +" (http)" ,curl1 ,15,'', False, True,isItFolder=False)		#name,url,mode,icon
                         #curl1="rtsp://"+"206.190.140.164"+":1935/mobile/"+curl+"?key="+match_sn+match_pk;
                         #curl1="rtsp://"+fms+":1935/mobile/"+curl+"?id="+streamid+"&key="+match_sn+match_pk;
@@ -1478,21 +1487,24 @@ def AddEnteries(name, type=None):
         
         isYellowOff=selfAddon.getSetting( "isYellowOff" ) 
 #        print 'isPakistani',isPakistani,isYellowOff
+        ret_match=[]
         if isPakistani and not isYellowOff=="true":        
-            addDir(Colored('EboundServices Channels','EB',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon
+            #addDir(Colored('EboundServices Channels','EB',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon
             try:
-                AddChannelsFromEbound();#AddChannels()
-            except: pass
-        addDir(Colored('Other sources','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)
+                ret_match=AddChannelsFromEbound();#AddChannels()
+                print 'ret_match',ret_match
+            except:
+                traceback.print_exc(file=sys.stdout)
+#        addDir(Colored('Other sources','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)
         try:
             ctype=1 if name=='Pakistani Live Channels' else ( 2 if name=='Indian Live Channels' else 3)
-            AddChannelsFromOthers(ctype)
+            AddChannelsFromOthers(ctype,ret_match)
         except:
             print 'somethingwrong'
             traceback.print_exc(file=sys.stdout)
     return
 
-def AddChannelsFromOthers(cctype):
+def AddChannelsFromOthers(cctype,eboundMatches=[]):
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
     v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvMy8='
     v4patt='<item>.*?<name>(.*?)<.*?<link>(.*?)<.*?channel_logo>(.*?)<'  
@@ -1654,13 +1666,18 @@ def AddChannelsFromOthers(cctype):
 
 
 #    match=sorted(match,key=itemgetter(0)   )
+    if len(eboundMatches)>0:
+        match+=eboundMatches
     match=sorted(match,key=lambda s: s[0].lower()   )
     for cname,ctype,curl,imgurl in match:
         if 1==1:#ctype=='liveWMV' or ctype=='manual':
 #            print curl
             #if ctype<>'': cname+= '[' + ctype+']'
-            
-            addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,11 if not ctype=='manual2' else 37 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+            if ctype.startswith('ebmode:'):
+                ctype=ctype.split(':')[1]
+                addDir(Colored(cname.capitalize(),'EB') ,curl ,ctype,imgurl, False, True,isItFolder=False)
+            else:            
+                addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,11 if not ctype=='manual2' else 37 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
 def re_me(data, re_patten):
     match = ''
@@ -1963,101 +1980,141 @@ def PlayOtherUrl ( url ):
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( final_url, listitem)    
 
 def AddChannelsFromEbound():
-	liveURL=base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9pc3RyZWFtX2RlbW8ucGhw')
-	req = urllib2.Request(liveURL)
-	req.add_header('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-#	print link
-#	match=re.compile('<param name="URL" value="(.+?)">').findall(link)
-#	match=re.compile('<a href="(.+?)"').findall(link)
-#	match=re.compile('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>').findall(link)
-#	match =re.findall('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
-#	match =re.findall('onclick="playChannel\(\'(.*?)\'\);".?>(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
-#	match =re.findall('<div class=\"post-title\"><a href=\"(.*?)\".*<b>(.*)<\/b><\/a>', link, re.IGNORECASE)
-#	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
+    liveURL=base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9pc3RyZWFtX2RlbW8ucGhw')
+    req = urllib2.Request(liveURL)
+    req.add_header('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    #	print link
+    #	match=re.compile('<param name="URL" value="(.+?)">').findall(link)
+    #	match=re.compile('<a href="(.+?)"').findall(link)
+    #	match=re.compile('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>').findall(link)
+    #	match =re.findall('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
+    #	match =re.findall('onclick="playChannel\(\'(.*?)\'\);".?>(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
+    #	match =re.findall('<div class=\"post-title\"><a href=\"(.*?)\".*<b>(.*)<\/b><\/a>', link, re.IGNORECASE)
+    #	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
 
-	match =re.findall('<a href=".*?stream=(.*?)".*?src="(.*?)" (.)', link,re.M)
+    match =re.findall('<a href=".*?stream=(.*?)".*?src="(.*?)" (.)', link,re.M)
 
-#	print match
-	expressExists=False
-	expressCName='express'
-	arynewsAdded=False
-	
-	if not any('Express Tv' == x[0] for x in match):
-		match.append(('Express Tv','express','manual'))
-	if not any('Ary News' == x[0] for x in match):
-		match.append(('Ary News','arynews','manual'))
-	if not any('Ary Digital' == x[0] for x in match):
-		match.append(('Ary Digital','aryentertainment','manual'))
+    #	print match
+    expressExists=False
+    expressCName='express'
+    arynewsAdded=False
 
-	match.append(('Baby Tv','babytv','manual'))
-	match.append(('Star Gold','stargold','manual'))
-	match.append(('Ten Sports','tensports','manual'))
-	match.append(('Discovery','discovery','manual'))
-	match.append(('National Geographic','nationalgeographic','manual'))
-	match.append(('mecca','mecca','manual'))
-	match.append(('madina','madina','manual'))
-	match.append(('Peace Tv','peacetv','manual'))
-	match.append(('Geo Entertainment','geoentertainment','manual'))
-	match.append(('Geo News','geonews','manual'))
-	match.append(('Channel 92','channel92','manual'))
-	match.append(('Geo Super','geosuper','manual'))
-	match.append(('Bol News','bol','manual'))
-	match.append(('Capital News','capitaltv','manual'))
-	match.append(('Dawn News','dawn','manual'))    
-	match.append(('Quran TV Urdu','aHR0cDovL2lzbDEuaXNsYW00cGVhY2UuY29tL1F1cmFuVXJkdVRW','gen'))
+    if not any('Express Tv' == x[0] for x in match):
+        match.append(('Express Tv','express','manual'))
+    if not any('Ary News' == x[0] for x in match):
+        match.append(('Ary News','arynews','manual'))
+    if not any('Ary Digital' == x[0] for x in match):
+        match.append(('Ary Digital','aryentertainment','manual'))
 
-	match.append(('Channel 24','cnRtcDovL2RzdHJlYW1vbmUuY29tOjE5MzUvbGl2ZS8gcGxheXBhdGg9Y2l0eTQyIHN3ZlVybD1odHRwOi8vZHN0cmVhbW9uZS5jb20vanAvandwbGF5ZXIuZmxhc2guc3dmIHBhZ2VVcmw9aHR0cDovL2RzdHJlYW1vbmUuY29tL2NpdHk0Mi9pZnJhbWUuaHRtbCB0aW1lb3V0PTIw','gen'))
-	match.append(('QTV','cnRtcDovLzkzLjExNS44NS4xNzoxOTM1L0FSWVFUVi9teVN0cmVhbSB0aW1lb3V0PTEw','gen'))
+    match.append(('Channel 92','channel92','manual'))##
+    match.append(('mecca','mecca','manual'))##
+    match.append(('madina','madina','manual'))##
+    match.append(('Peace Tv','peacetv','manual'))##
 
-    
-    
-    
+    match.append(('Tehzeeb','tehzeeb','manual'))
 
-    
-	match=sorted(match,key=lambda s: s[0].lower()   )
+    #added fro #oooee
+    match.append(('Style 260','style360','manual'))
+    match.append(('Dtv','dtv','manual'))
+    match.append(('New Tv','alite','manual'))
+    match.append(('Awaz Tv','awaztv','manual'))
+    match.append(('Capital Tv','capitaltv','manual'))
+    match.append(('Aaj News','aajnews','manual'))
+    match.append(('Abb Takk','abbtakk','manual'))
+    match.append(('Channel 24','channel24pk','manual'))
+    match.append(('Vsh Channels','vsh','manual'))
+    match.append(('TV One','tvoneglobal','manual'))
+    match.append(('Paigham','paigham','manual'))
+    match.append(('Vibe Tv','nvibe','manual'))
+    match.append(('Times Tv','times','manual'))
+    match.append(('Minhaj Tv','minhaj','manual'))
+    match.append(('Jalwa','jalwa','manual'))
+    match.append(('Starmax','starmax','manual'))
+    match.append(('Hamdard','hamdard','manual'))
+    match.append(('Desi Channel','desichannel','manual'))
+    match.append(('PBN Music','pbnmusic','manual'))
 
-	#h = HTMLParser.HTMLParser()
-	for cname in match:
-		if cname[2]=='manual':
-			addDir(Colored(cname[0].capitalize(),'EB') ,cname[1] ,9,cname[2], False, True,isItFolder=False)		#name,url,mode,icon
-		elif cname[2]=='gen':
-			addDir(Colored(cname[0].capitalize(),'EB') ,cname[1] ,33,cname[2], False, True,isItFolder=False)		#name,url,mode,icon
-		else:
-			addDir(Colored(cname[0].capitalize(),'EB') ,cname[0] ,9,cname[1], False, True,isItFolder=False)		#name,url,mode,icon
+    if 1==2:
+        match.append(('Baby Tv','babytv','manual'))
+        match.append(('Star Gold','stargold','manual'))
+        match.append(('Ten Sports','tensports','manual'))
+        match.append(('Discovery','discovery','manual'))
+        match.append(('National Geographic','nationalgeographic','manual'))
+        match.append(('Geo Entertainment','geoentertainment','manual'))
+        match.append(('Geo News','geonews','manual'))
+        match.append(('Geo Super','geosuper','manual'))
+        match.append(('Bol News','bol','manual'))
+        match.append(('Capital News','capitaltv','manual'))
+        match.append(('Dawn News','dawn','manual'))##    
 
-		if 1==2:
-			if cname[0]==expressCName:
-				expressExists=True
-			if cname[0]=='arynews':
-				arynewsAdded=True
+    match.append(('Quran TV Urdu','aHR0cDovL2lzbDEuaXNsYW00cGVhY2UuY29tL1F1cmFuVXJkdVRW','gen'))
+    match.append(('Channel 24','cnRtcDovL2RzdHJlYW1vbmUuY29tOjE5MzUvbGl2ZS8gcGxheXBhdGg9Y2l0eTQyIHN3ZlVybD1odHRwOi8vZHN0cmVhbW9uZS5jb20vanAvandwbGF5ZXIuZmxhc2guc3dmIHBhZ2VVcmw9aHR0cDovL2RzdHJlYW1vbmUuY29tL2NpdHk0Mi9pZnJhbWUuaHRtbCB0aW1lb3V0PTIw','gen'))
+    match.append(('QTV','cnRtcDovLzkzLjExNS44NS4xNzoxOTM1L0FSWVFUVi9teVN0cmVhbSB0aW1lb3V0PTEw','gen'))
+    match.append(('SEE TV','cnRtcDovLzM2Nzc4OTg4Ni5yLm15Y2RuOTIubmV0LzM2Nzc4OTg4Ni9fZGVmaW5zdF8vIHBsYXlwYXRoPXNlZXR2IHN3ZlVybD1odHRwOi8vZHN0cmVhbW9uZS5jb20vanAvandwbGF5ZXIuZmxhc2guc3dmIHBhZ2VVcmw9aHR0cDovL2RzdHJlYW1vbmUuY29tL3NlZXR2L2lmcmFtZS5odG1sIHRpbWVvdXQ9MTA=','gen'))
 
-	if 1==2:			
-		if not expressExists:
-			addDir(Colored('Express Tv','EB') ,'express' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-		if not arynewsAdded:
-			addDir(Colored('Ary News','EB') ,'arynews' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-			addDir(Colored('Ary Digital','EB') ,'aryentertainment' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-		addDir(Colored('Baby Tv','EB') ,'babytv' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-		addDir(Colored('Star Gold','EB') ,'stargold' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-		addDir(Colored('Ten Sports','EB') ,'tensports' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
-	return		
+
+
+
+
+
+    match=sorted(match,key=lambda s: s[0].lower()   )
+
+    #name,type,url,img
+    ret_match=[]
+    #h = HTMLParser.HTMLParser()
+    for cname in match:
+        if cname[2]=='manual':
+            ret_match.append((cname[0].capitalize(),'ebmode:9' ,cname[1] , cname[2]))		#name,url,mode,icon
+        elif cname[2]=='gen':
+             ret_match.append((cname[0].capitalize(),'ebmode:33' ,cname[1] , cname[2]))		#name,url,mode,icon
+        else:
+             ret_match.append((cname[0].capitalize(),'ebmode:9' ,cname[0] , cname[1]))		#name,url,mode,icon
+    return ret_match
+            
+            
+            
+    #h = HTMLParser.HTMLParser()
+    for cname in match:
+        if cname[2]=='manual':
+            addDir(Colored(cname[0].capitalize(),'EB') ,cname[1] ,9,cname[2], False, True,isItFolder=False)		#name,url,mode,icon
+        elif cname[2]=='gen':
+            addDir(Colored(cname[0].capitalize(),'EB') ,cname[1] ,33,cname[2], False, True,isItFolder=False)		#name,url,mode,icon
+        else:
+            addDir(Colored(cname[0].capitalize(),'EB') ,cname[0] ,9,cname[1], False, True,isItFolder=False)		#name,url,mode,icon
+
+        if 1==2:
+            if cname[0]==expressCName:
+                expressExists=True
+            if cname[0]=='arynews':
+                arynewsAdded=True
+
+    if 1==2:			
+        if not expressExists:
+            addDir(Colored('Express Tv','EB') ,'express' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+        if not arynewsAdded:
+            addDir(Colored('Ary News','EB') ,'arynews' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+            addDir(Colored('Ary Digital','EB') ,'aryentertainment' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored('Baby Tv','EB') ,'babytv' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored('Star Gold','EB') ,'stargold' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored('Ten Sports','EB') ,'tensports' ,9,'', False, True,isItFolder=False)		#name,url,mode,icon
+    return		
 
 def Colored(text = '', colorid = '', isBold = False):
-	if colorid == 'ZM':
-		color = 'FF11b500'
-	elif colorid == 'EB':
-		color = 'FFe37101'
-	elif colorid == 'bold':
-		return '[B]' + text + '[/B]'
-	else:
-		color = colorid
-		
-	if isBold == True:
-		text = '[B]' + text + '[/B]'
-	return '[COLOR ' + color + ']' + text + '[/COLOR]'	
+    if colorid == 'ZM':
+        color = 'FF11b500'
+    elif colorid == 'EB':
+        color = 'FFe37101'
+    elif colorid == 'bold':
+        return '[B]' + text + '[/B]'
+    else:
+        color = colorid
+        
+    if isBold == True:
+        text = '[B]' + text + '[/B]'
+    return '[COLOR ' + color + ']' + text + '[/COLOR]'	
 
 def convert(s):
     try:

@@ -1,3 +1,9 @@
+[B]Version 3.9.6[/B]
+    -merged yellow and green channels together
+    -smartcric fixed
+    -added See TV
+
+    
 [B]Version 3.9.4[/B]
     -fixed yellow channels
     -fixed ebound video source
