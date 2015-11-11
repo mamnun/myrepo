@@ -1,3 +1,6 @@
+[B]Version 3.9.7[/B]
+    -updated sports channels
+    
 [B]Version 3.9.6[/B]
     -merged yellow and green channels together
     -smartcric fixed

@@ -243,14 +243,14 @@ def PlayCricFree(url):
         patt="id='(.*?)'.*?width='(.*)'.*?height='(.*?)'"
         gid,wd,ht=re.findall(patt,res)[0]
         referer=[('Referer',url2)]
-        url3='http://theactionlive.com/livegamecr.php?id=%s&width=%s&height=%s&stretching='%(gid,wd,ht)
+        url3='http://theactionlive.com/livegamecr2.php?id=%s&width=%s&height=%s&stretching='%(gid,wd,ht)
         res=getUrl(url3,headers=referer)    
         if 'biggestplayer.me' in res:
             progress.update( 50, "", "Finding links..stage3", "" )
             patt="id='(.*?)'.*?width='(.*)'.*?height='(.*?)'"
             gid,wd,ht=re.findall(patt,res)[0]
             referer=[('Referer',url3)]
-            url4='http://biggestplayer.me/streamcr.php?id=%s&width=%s&height=%s'%(gid,wd,ht)
+            url4='http://biggestplayer.me/streamcrnono.php?id=%s&width=%s&height=%s'%(gid,wd,ht)
             progress.update( 80, "", "Finding links..last stage", "" )
             res=getUrl(url4,headers=referer)    
             patt='file: "(.*?)"'
@@ -1348,11 +1348,13 @@ def PlayWatchCric(url):
     pat_e=' e=\'(.*?)\';'
     app='live'
     pat_js='channel=\'(.*?)\''
+    loadbalanacername=sitename
     
     if 'liveflashplayer.net/resources' in link:
         c='kaskatijaEkonomista'
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5saXZlZmxhc2hwbGF5ZXIubmV0L3Jlc291cmNlcy9zY3JpcHRzL2ZwbGF5ZXIuc3dm')
         sitename='www.liveflashplayer.net'
+        loadbalanacername=sitename
         pat_e=' g=\'(.*?)\';'
         app='stream'
         pat_js='channel=\'(.*?)\''
@@ -1364,14 +1366,17 @@ def PlayWatchCric(url):
         
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5taXBzcGxheWVyLmNvbS9jb250ZW50L3NjcmlwdHMvZnBsYXllci5zd2Y=')
         sitename='www.mipsplayer.com'
+        loadbalanacername='cdn.mipspublisher.com'
         pat_e=' e=\'(.*?)\';'
         app='live'
         pat_js='channel=\'(.*?)\''
     elif 'www.streamifyplayer.com' in link:
         c='keGoVidishStambolSoseBardovci'
         ccommand='%s;TRUE;TRUE;'
+        ccommand='%s;FALSE;FALSE;' #stop sending and waiting
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5zdHJlYW1pZnlwbGF5ZXIuY29tL3Jlc291cmNlcy9zY3JpcHRzL2VwbGF5ZXIuc3dm')
         sitename='www.streamifyplayer.com'
+        loadbalanacername=sitename
         pat_e='channel.*?g=\'(.*?)\''
         app='live'
         pat_js='channel=\'(.*?)\''
@@ -1381,13 +1386,15 @@ def PlayWatchCric(url):
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvcmVzb3VyY2VzL3NjcmlwdHMvZXBsYXllci5zd2Y=')
         sitename='www.p3g.tv'
         pat_e='channel.*?g=\'(.*?)\''
-        app='stream'
+        loadbalanacername=sitename
+        app='live'
         pat_js='channel=\'(.*?)\''
     elif 'zenexplayer.com' in link:
         c='zenataStoGoPuknalaGavolot'
         ccommand=''
         swfUrl=base64.b64decode('aHR0cDovL3d3dy56ZW5leHBsYXllci5jb20vZGF0YS9zY3JpcHRzL2ZwbGF5ZXIuc3dm')
         sitename='www.zenexplayer.com'
+        loadbalanacername=sitename
         pat_e='channel.*?g=\'(.*?)\''
         app='zenex'
         pat_js='channel=\'(.*?)\''
@@ -1425,7 +1432,7 @@ def PlayWatchCric(url):
     if 'pk=' in match_flash:
         matchid+="&pk="+match_flash.split('pk=')[1].split('\'')[0].split('\"')[0]
     
-    lb_url='http://%s:1935/loadbalancer?%s'%(sitename,matchid)
+    lb_url='http://%s:1935/loadbalancer?%s'%(loadbalanacername,matchid)
         
     req = urllib2.Request(lb_url)
     req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
@@ -1845,9 +1852,10 @@ def PlayStreamSports(url):
 
     urlToPlay=base64.b64decode(url)
     import math,random
-    servers=["OTMuMTg5LjU4LjQy","MTg1LjI4LjE5MC4xNTg=","MTc4LjE3NS4xMzIuMjEw","MTc4LjE3LjE2OC45MA=="];
+#    servers=["OTMuMTg5LjU4LjQy","MTg1LjI4LjE5MC4xNTg=","MTc4LjE3NS4xMzIuMjEw","MTc4LjE3LjE2OC45MA=="];
+    servers=["MTc4LjE3LjE2OC45MA=="]#works for sl2
     sid=int(math.floor(random.random()*len(servers)) )
-    urlToPlay=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wxXyVzIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgdGltZW91dD0xMA==')%(base64.b64decode(servers[sid]),urlToPlay)
+    urlToPlay=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wyXyVzIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     print "playing stream name: " + str(name) 
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
