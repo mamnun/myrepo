@@ -1538,7 +1538,10 @@ def unpack(sJavascript,iteration=1, totaliterations=2  ):
         #aa=1/0
     else:
 
-        aSplit = sJavascript.split("rn p}('")
+        if "rn p}('" in sJavascript:
+            aSplit = sJavascript.split("rn p}('")
+        else:
+            aSplit = sJavascript.split("rn A}('")
         print aSplit
 
         p1,a1,c1,k1=('','0','0','')
