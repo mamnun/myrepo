@@ -1460,8 +1460,11 @@ def PlayWatchCric(url):
 
 def PlayGen(url):
     url = base64.b64decode(url)
-#    print 'gen is '+url
+    print 'gen is '+url
 
+    if url.startswith('plugin://'):
+        xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
+        return
     playlist = xbmc.PlayList(1)
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -1513,26 +1516,26 @@ def AddEnteries(name, type=None):
 
 def AddChannelsFromOthers(cctype,eboundMatches=[]):
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
-    v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvMy8='
-    v4patt='<item>.*?<name>(.*?)<.*?<link>(.*?)<.*?channel_logo>(.*?)<'  
-    v4patt='<channel>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)' 
+    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
+    v4patt='<item>.*?<channel_id>(.*?)</channel_id>.*?<name>(.*?)<.*?<link>(.*?)<.*?channel_logo>(.*?)<'  
+    v4patt='<channel><channel_number>(.*?)</channel_number>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)' 
     usev4=True
     if cctype==2:
         main_ch='(<section_name>Hindi<\/section_name>.*?<\/section>)'
-        v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvNC8='
-        v4patt='<channel>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)'  
+#        v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvNC8='
+        v4patt='<channel><channel_number>(.*?)</channel_number>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)'  
         usev4=False
     if cctype==3:
         main_ch='(<section_name>Punjabi<\/section_name>.*?<\/section>)'
-        v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvNjU5Lw=='
-        v4patt='<channel>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)'
+#        v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvNjU5Lw=='
+        v4patt='<channel><channel_number>(.*?)</channel_number>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)'
         usev4=False
         
 
     patt='<item><name>(.*?)<.*?<link>(.*?)<.*?albumart>(.*?)<'
     match=[]    
     if 1==2:#enable it
-        if ctype==1:
+        if cctype==1:
             url=base64.b64decode("aHR0cDovL2pweG1sLmphZG9vdHYuY29tL3Z1eG1sLnBocC9qYWRvb3htbC9pdGVtcy8xMzE0LyVkLw==")
         else:
             url=base64.b64decode("aHR0cDovL2pweG1sLmphZG9vdHYuY29tL3Z1eG1sLnBocC9qYWRvb3htbC9pdGVtcy8xMzE1LyVkLw==")
@@ -1560,19 +1563,26 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
         except: pass
 
   
-    if 1==2 and usev4:#new v4 links
+    if 1==1 and usev4:#new v4 links
         try:
                       
             url=base64.b64decode(v4link)
             req = urllib2.Request(url)
-            req.add_header('User-Agent', base64.b64decode('VmVyaXNtby1CbGFja1VJ'))
+            req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36')
+            req.add_header('Pragma', 'no-cache')
             response = urllib2.urlopen(req)
             link=response.read()
             response.close()
             #print link
+
+            if '<section_name>' in link:
+                link =re.findall(main_ch,link)[0]
+                
             match_temp=re.findall(v4patt,link)
             #print 'match_temp',match_temp
-            for cname,ctype,curl in match_temp:
+
+            for cid,cname,ctype,curl in match_temp:
+                ctype=base64.b64decode('aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzQvZ3htbC9wbGF5LyVz')%ctype.split('/play/')[1]
                 match.append((cname + ' v4',ctype,ctype,''))
 
             #match +=re.findall(patt,match_temp)
@@ -1632,6 +1642,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             match.append((base64.b64decode('R2VvIFRleiB2Mg=='),'manual',base64.b64decode('cHYyOkdlbyB0ZXp6'),''))
             match.append((base64.b64decode('S1ROIHYy'),'manual',base64.b64decode('cHYyOktUTg=='),''))
             match.append((base64.b64decode('S1ROIE5FV1MgdjI='),'manual',base64.b64decode('cHYyOktUTiBORVdT'),''))
+            match.append(('Makkah (youtube)','manual','','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'ArVmnth5jB4'))
+            match.append(('Madina (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'4OoKpZWJASY',''))
+            
+  
 
 
         elif cctype==2:
@@ -1980,7 +1994,9 @@ def PlayOtherUrl ( url ):
         print 'In Ferari url'
         final_url=get_ferrari_url(final_url,progress)        
     progress.update( 100, "", "Almost done..", "" )
-
+    
+    if final_url.startswith('http') and 'User-Agent' not in final_url:
+        final_url+='|User-Agent=Verismo-BlackUI_(2.4.7.5.8.0.34)'
         
 #    print final_url
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )

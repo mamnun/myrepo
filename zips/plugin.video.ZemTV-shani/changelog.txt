@@ -1,3 +1,6 @@
+[B]Version 3.9.8[/B]
+    -added back green v4, Makkah and Madinah youtube live
+    
 [B]Version 3.9.7[/B]
     -updated sports channels
     
