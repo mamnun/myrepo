@@ -386,6 +386,7 @@ def AddSports(url):
         m=11 if ty=='manual' else 33
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
+    addDir('IPTV Sports' ,'sss',46,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
@@ -396,6 +397,7 @@ def AddSports(url):
     addDir('PV2 Sports' ,'sss',36,'')
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
+    
 
     
 def PlayCricHD(url):
@@ -1505,6 +1507,8 @@ def AddEnteries(name, type=None):
                 print 'ret_match',ret_match
             except:
                 traceback.print_exc(file=sys.stdout)
+                
+                
 #        addDir(Colored('Other sources','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)
         try:
             ctype=1 if name=='Pakistani Live Channels' else ( 2 if name=='Indian Live Channels' else 3)
@@ -1514,6 +1518,25 @@ def AddEnteries(name, type=None):
             traceback.print_exc(file=sys.stdout)
     return
 
+def getiptvchannels(gen):
+    
+    ret=[]
+    try:
+        import iptv
+        macid,ipurl=getiptvmac()
+        xmldata=iptv.getAllChannels(macid,ipurl,None,profile_path)
+        for source in xmldata["channels"]:
+            ss=xmldata["channels"][source]
+            #print pg,source.findtext('programCategory').lower()
+            if ss["genre_title"].lower()==gen:
+                cname=ss["name"]
+                curl=json.dumps(ss)
+                cimage=base64.b64decode('aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50di9zdGFsa2VyX3BvcnRhbC9taXNjL2xvZ29zLzMyMC8=')+ss["logo"]
+                ret.append((cname +' v5' ,'manual3', curl ,cimage))        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+            
 def AddChannelsFromOthers(cctype,eboundMatches=[]):
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
     v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
@@ -1661,10 +1684,13 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
 
 
     pg=None
+    iptvgen=None
     if cctype==1:
         pg='pakistan'
+        iptvgen="pakistani"
     elif cctype==2:
         pg='indian'
+        iptvgen="indian"
     else:
         pg='punjabi'
     if pg:
@@ -1684,7 +1710,14 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             
         except:
             traceback.print_exc(file=sys.stdout)
-
+            
+    if iptvgen:
+        try:
+            rematch=getiptvchannels(iptvgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)
 
 #    match=sorted(match,key=itemgetter(0)   )
     if len(eboundMatches)>0:
@@ -1694,12 +1727,30 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
         if 1==1:#ctype=='liveWMV' or ctype=='manual':
 #            print curl
             #if ctype<>'': cname+= '[' + ctype+']'
+            cname=cname.encode('ascii', 'ignore').decode('ascii')
             if ctype.startswith('ebmode:'):
                 ctype=ctype.split(':')[1]
                 addDir(Colored(cname.capitalize(),'EB') ,curl ,ctype,imgurl, False, True,isItFolder=False)
             else:            
-                addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,11 if not ctype=='manual2' else 37 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+                print ctype
+                if ctype=='manual2':
+                    mm=37
+                elif ctype=='manual3':
+                    mm=45
+                else:
+                    mm=11
+                addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
+    
+def addiptvSports(url):
+
+    match=getiptvchannels('sports')
+    match=sorted(match,key=lambda s: s[0].lower()   )
+    for cname,ctype,curl,imgurl in match:
+        mm=45
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        addDir(cname,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+
 def re_me(data, re_patten):
     match = ''
     m = re.search(re_patten, data)
@@ -1873,6 +1924,23 @@ def PlayStreamSports(url):
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     print "playing stream name: " + str(name) 
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
+
+def getiptvmac():
+    return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
+    
+def PlayiptvLink(url):
+
+    print 'urlToPlay',url
+    url=base64.b64decode(url)
+    cj=json.loads(url)
+    import iptv
+    macid,ipurl=getiptvmac()
+    urlToPlay=iptv.retriveUrl(macid,ipurl,None,cj["cmd"] , cj["tmp"])
+
+#    print 'urlToPlay',urlToPlay
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+#    print "playing stream name: " + str(name) 
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
     
 def PlayPV2Link(url):
 
@@ -2717,12 +2785,18 @@ try:
 	elif mode==42 :
 		print "Play url is "+url
 		PlayCricFree(url) 
+	elif mode==45 :
+		print "Play url is "+url
+		PlayiptvLink(url) 
+	elif mode==46 :
+		print "Play url is "+url
+		addiptvSports(url) 
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
 	
 
-if not ( (mode==3 or mode==4 or mode==9 or mode==11 or mode==15 or mode==21 or mode==22 or mode==27 or mode==33 or mode==35 or mode==37 or mode==40 or mode==42)  )  :
+if not ( (mode==3 or mode==4 or mode==9 or mode==11 or mode==15 or mode==21 or mode==22 or mode==27 or mode==33 or mode==35 or mode==37 or mode==40 or mode==42 or mode==45)  )  :
 	if mode==144:
 		xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=True)
 	else:
