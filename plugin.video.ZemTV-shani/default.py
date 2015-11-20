@@ -318,24 +318,14 @@ def AddCricFree(url):
 ##http://c247.tv/
 #http://c247.tv/live.php?ch=Geo_Super
 #http://c247.tv/
-#    addDir('Ptv Sports P3G.Tv (requires new rtmp)' ,base64.b64decode('http://c247.tv/live.php?ch=Geo_Super') ,17,'', False, True,isItFolder=False)
-#    addDir('Star Sports 1 P3G.Tv (requires new rtmp)' ,base64.b64decode('http://www.p3g.tv/embedplayer/star1dontban/2/600/420' ),17,'', False, True,isItFolder=False)
-#    addDir('Star Sports 2 P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvc3RhcjJkb250YmFuLzIvNjAwLzQyMA==') ,17,'', False, True,isItFolder=False)
-#    addDir('Star Sports 3 P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvc3RhcjNkb250YmFuLzIvNjAwLzQyMA==') ,17,'', False, True,isItFolder=False)
-#    addDir('Star Sports 4 P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvZXNwbnN0YXI0MS8yLzYwMC80MDA=') ,17,'', False, True,isItFolder=False)
-#    
-#    addDir('GeoSuper P3G.Tv (requires new rtmp)' ,base64.b64decode('http://c247.tv/live.php?ch=Geo_Super') ,17,'', False, True,isItFolder=False)
-#    addDir('Ten Cricket P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvdGVuY3JpY2tldHpoLzIvNjQwLzQ0MA==') ,17,'', False, True,isItFolder=False)
-#    addDir('Ten sports P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvdGVucGt5YS8yLzY0MC80NDA=' ),17,'', False, True,isItFolder=False)
-#    addDir('Ten action P3G.Tv (requires new rtmp)' ,base64.b64decode('aHR0cDovL3d3dy5wM2cudHYvZW1iZWRwbGF5ZXIvcHQzbmFjdGlvbi8yLzY0MC80NDA=' ),17,'', False, True,isItFolder=False)
 
     
 def AddFlashtv(url):
-    addDir('Sky Sports 1' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kxJnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
-    addDir('Sky Sports 2' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kyJnZ3PTY1MCZ2aD00ODA=') ,32,'', False, True,isItFolder=False)
-    addDir('Sky Sports 3' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kzJnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
-    addDir('Sky Sports 4' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3k0JnZ3PTY1MCZ2aD00ODA=') ,32,'', False, True,isItFolder=False)
-    addDir('Sky Sports 5' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3k1JnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
+    addDir('ss 1' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kxJnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
+    addDir('ss 2' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kyJnZ3PTY1MCZ2aD00ODA=') ,32,'', False, True,isItFolder=False)
+    addDir('ss 3' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3kzJnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
+    addDir('ss 4' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3k0JnZ3PTY1MCZ2aD00ODA=') ,32,'', False, True,isItFolder=False)
+    addDir('ss 5' ,base64.b64decode('aHR0cDovL2ZsYXNodHYuY28vZW1iZWRvLnBocD9saXZlPXNra3k1JnZ3PTY1MCZ2aD00ODA='),32,'', False, True,isItFolder=False)
 
     
     
@@ -348,7 +338,7 @@ def AddSports(url):
         match.append((base64.b64decode('U2t5IFNwb3J0IDQ=')+' [Not working]','manual',base64.b64decode('aHR0cDovL2pweG1sLmphZG9vdHYuY29tL3Z1eG1sLnBocC9qYWRvb3htbC9wbGF5LzMxNQ=='),''))
         match.append((base64.b64decode('U2t5IFNwb3J0IDU=')+' [Not working]','manual',base64.b64decode('aHR0cDovL215amFkb290di5qYWRvb3R2LmNvbS9qbWFya3MvYm94L3BsYXlWaWRlby5waHA/cGxheVVybD1ydG1wOi8vcXVpbnplbGl2ZWZzLmZwbGl2ZS5uZXQvcXVpbnplbGl2ZS1saXZlL3NreXNwb3J0czUuc3RyZWFtP3NlY3VyaXR5dHlwZT0y'),''))
 
-    if 1==1:    
+    if 1==2:    
         match.append((base64.b64decode('U2t5IFNwb3J0IDE=')+' alt HD','gen',base64.b64decode('aHR0cDovL2Nkcy5hM2c2dDhtOS5od2Nkbi5uZXQvY2FsaXZlb3JpZ2luL3NreXNwb3J0czEuc3RyZWFtL3BsYXlsaXN0Lm0zdTg='),''))
         match.append((base64.b64decode('U2t5IFNwb3J0IDI=')+' alt HD','gen',base64.b64decode('aHR0cDovL2Nkcy5hM2c2dDhtOS5od2Nkbi5uZXQvY2FsaXZlb3JpZ2luL3NreXNwb3J0czIuc3RyZWFtL3BsYXlsaXN0Lm0zdTg='),''))
         match.append((base64.b64decode('U2t5IFNwb3J0IDM=')+' alt HD','gen',base64.b64decode('aHR0cDovL2Nkcy5hM2c2dDhtOS5od2Nkbi5uZXQvY2FsaXZlb3JpZ2luL3NreXNwb3J0czMuc3RyZWFtL3BsYXlsaXN0Lm0zdTg='),''))
@@ -571,8 +561,6 @@ def AddCricHD(url):
         response.close()
         pat='<a class="menuitem" href="(.*?)".*?img src="(.*?)".*?alt="(.*?)"'
         channels=re.findall(pat,videoPage)
-#        print channels
-#        channels=[('Sky Sports 1','1'),('Sky Sports 2','2'),('Sky Sports 3','3'),('Sky Sports 4','4'),('Sky Sports 5','5'),('Sky Sports F1','6') ,('BT Sport 1','7'),('BT Sports 2','8') ,('Willow Cricket','24') ,('Ptv Sports','15')   ]
         for channel in channels:
 #            print channel
             cname=channel[2]
@@ -588,8 +576,6 @@ def AddCricHD(url):
 
         pat='<b><a class="menuitem" href="(.*?)"><font size="4">(.*?)<'
         channels=re.findall(pat,videoPage)
-#        print channels
-#        channels=[('Sky Sports 1','1'),('Sky Sports 2','2'),('Sky Sports 3','3'),('Sky Sports 4','4'),('Sky Sports 5','5'),('Sky Sports F1','6') ,('BT Sport 1','7'),('BT Sports 2','8') ,('Willow Cricket','24') ,('Ptv Sports','15')   ]
         for channel in channels:
 #            print channel
             cname=channel[1]
@@ -608,27 +594,7 @@ def AddCricHD(url):
     except: traceback.print_exc(file=sys.stdout)
     
 
-#not in use
-def AddPopeLive(url):
-    try:
-#        req = urllib2.Request(url)
-#        req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
-#        response = urllib2.urlopen(req)
-#        videoPage =  response.read()
-#        response.close()
-#        pat='<a href="http://.*?/.*?/(.*?)-Live.*?/(.+?)" '
-#        channels=re.findall(pat,videoPage)
-#        print channels
-        channels=[('Sky Sports 1','1'),('Sky Sports 2','2'),('Sky Sports 3','3'),('Sky Sports 4','4'),('Sky Sports 5','5'),('Sky Sports F1','6') ,('BT Sport 1','7'),('BT Sports 2','8') ,('Willow Cricket','24') ,('Ptv Sports','15')   ]
-        for channel in channels:
-#            print channel
-            cname=channel[0]
-            cid=channel[1]
 
-#            addDir(cname ,'a',27,'', False, True,isItFolder=False)
-#            print 'adding'
-            addDir(cname ,cid,27,'', False, True,isItFolder=False)
-    except: traceback.print_exc(file=sys.stdout)
     
 def AddWillSportsOldSeries(url):
     try:
@@ -1926,6 +1892,8 @@ def PlayStreamSports(url):
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
 
 def getiptvmac():
+    import os,binascii
+  #  binascii.b2a_hex(os.urandom(1))
     return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
     
 def PlayiptvLink(url):

@@ -1,3 +1,6 @@
+[B]Version 4.0.1[/B]
+    -removed sports not working, added support for v5 to get it from external place 
+    
 [B]Version 3.9.9[/B]
     -added v5 channels, and new additionm in sports 
     

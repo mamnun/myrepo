@@ -279,242 +279,252 @@ def orderChannels(channels):
 
 def getAllChannels(portal_mac, url, serial, path):
 
-	added = False;
-	
-	now = time();
-	
-	portalurl = "_".join(re.findall("[a-zA-Z0-9]+", url));
-	portalurl = path + '/' + portalurl
-	
-	setMac(portal_mac);
-	setSerialNumber(serial);
-	
-	if not os.path.exists(path):
-		os.makedirs(path)
+    added = False;
+    
+    now = time();
+    
+    try:
+        portalurl = "_".join(re.findall("[a-zA-Z0-9]+", url));
+        portalurl = path + '/' + portalurl
+        
+        setMac(portal_mac);
+        setSerialNumber(serial);
+        
+        if not os.path.exists(path):
+            os.makedirs(path)
 
-	if os.path.exists(portalurl):
-		#check last time
-		with open(portalurl) as data_file: data = json.load(data_file);
-	
-		if 'version' not in data or data['version'] != cache_version:
-			clearCache(url, path);
-			
-		else:
-			time_init = float(data['time']);
-			# update 2h
-			if ((now - time_init) / 3600) < 2:
-				return data;
-	
-	handshake(url);
-	
-	genres = getGenres(portal_mac, url, serial, path);
-	genres = genres["genres"];
-	
-	info = retrieveData(url, values = {
-		'type' : 'itv', 
-		'action' : 'get_all_channels',
-		'JsHttpRequest' : '1-xml'})
-	
-	
-	results = info['js']['data'];
+        if os.path.exists(portalurl):
+            #check last time
+            with open(portalurl) as data_file: data = json.load(data_file);
+        
+            if 'version' not in data or data['version'] != cache_version:
+                clearCache(url, path);
+                
+            else:
+                time_init = float(data['time']);
+                # update 2h
+                if ((now - time_init) / 3600) < 6:
+                    return data;
+        
+        handshake(url);
+        
+        genres = getGenres(portal_mac, url, serial, path);
+        genres = genres["genres"];
 
-	data = '{ "version" : "' + cache_version + '", "time" : "' + str(now) + '", "channels" : { \n'
+        
+        info = retrieveData(url, values = {
+            'type' : 'itv', 
+            'action' : 'get_all_channels',
+            'JsHttpRequest' : '1-xml'})
+        
+        
+        results = info['js']['data'];
 
-	for i in results:
-		id 		= i["id"]
-		number 	= i["number"]
-		name 	= i["name"]
-		cmd 	= i['cmd']
-		logo 	= i["logo"]
-		tmp 	= i["use_http_tmp_link"]
-		genre_id 	= i["tv_genre_id"];
-		
-		genre_title = genres[genre_id]['title'];
-		
-		_s1 = cmd.split(' ');	
-		_s2 = _s1[0];
-		if len(_s1)>1:
-			_s2 = _s1[1];
-		
-		added = True;
-		data += '"' + id + '": {"number":"'+ number +'", "name":"'+ name +'", "cmd":"'+ cmd +'", "logo":"'+ logo +'", "tmp":"'+ str(tmp) +'", "genre_id":"'+ str(genre_id) +'", "genre_title":"'+ genre_title +'"}, \n'
+        data = '{ "version" : "' + cache_version + '", "time" : "' + str(now) + '", "channels" : { \n'
+
+        for i in results:
+            id 		= i["id"]
+            number 	= i["number"]
+            name 	= i["name"]
+            cmd 	= i['cmd']
+            logo 	= i["logo"]
+            tmp 	= i["use_http_tmp_link"]
+            genre_id 	= i["tv_genre_id"];
+            
+            genre_title = genres[genre_id]['title'];
+            
+            _s1 = cmd.split(' ');	
+            _s2 = _s1[0];
+            if len(_s1)>1:
+                _s2 = _s1[1];
+            
+            added = True;
+            data += '"' + id + '": {"number":"'+ number +'", "name":"'+ name +'", "cmd":"'+ cmd +'", "logo":"'+ logo +'", "tmp":"'+ str(tmp) +'", "genre_id":"'+ str(genre_id) +'", "genre_title":"'+ genre_title +'"}, \n'
 
 
-	page = 1;
-	pages = 0;
-	total_items = 0;
-	max_page_items = 0;
+        page = 1;
+        pages = 0;
+        total_items = 0;
+        max_page_items = 0;
 
-	while True:
-		# retrieve adults
-		info = retrieveData(url, values = {
-			'type' : 'itv', 
-			'action' : 'get_ordered_list',
-			'genre' : '10',
-			'p' : page,
-			'fav' : '0',
-			'JsHttpRequest' : '1-xml'})
-	
-		total_items = float(info['js']['total_items']);
-		max_page_items = float(info['js']['max_page_items']);
-		pages = math.ceil(total_items/max_page_items);
-	
-		results = info['js']['data']
+        while True:
+            # retrieve adults
+            info = retrieveData(url, values = {
+                'type' : 'itv', 
+                'action' : 'get_ordered_list',
+                'genre' : '10',
+                'p' : page,
+                'fav' : '0',
+                'JsHttpRequest' : '1-xml'})
+        
+            total_items = float(info['js']['total_items']);
+            max_page_items = float(info['js']['max_page_items']);
+            pages = math.ceil(total_items/max_page_items);
+        
+            results = info['js']['data']
 
-		for i in results:
-			id 		= i["id"]
-			number 	= i["number"]
-			name 	= i["name"]
-			cmd 	= i['cmd']
-			logo 	= i["logo"]
-			tmp 	= i["use_http_tmp_link"]
-			genre_id 	= i["tv_genre_id"];
-			genre_title = genres[genre_id]['title'];
-		
-			data += '"' + id + '": {"number":"'+ number +'", "name":"'+ name +'", "cmd":"'+ cmd +'", "logo":"'+ logo +'", "tmp":"'+ str(tmp) +'", "genre_id":"'+ str(genre_id) +'", "genre_title":"'+ genre_title +'"}, \n'
-			
-			added = True;
+            for i in results:
+                id 		= i["id"]
+                number 	= i["number"]
+                name 	= i["name"]
+                cmd 	= i['cmd']
+                logo 	= i["logo"]
+                tmp 	= i["use_http_tmp_link"]
+                genre_id 	= i["tv_genre_id"];
+                genre_title = genres[genre_id]['title'];
+            
+                data += '"' + id + '": {"number":"'+ number +'", "name":"'+ name +'", "cmd":"'+ cmd +'", "logo":"'+ logo +'", "tmp":"'+ str(tmp) +'", "genre_id":"'+ str(genre_id) +'", "genre_title":"'+ genre_title +'"}, \n'
+                
+                added = True;
 
-		page += 1;
-		if page > pages:
-			break;
-	
+            page += 1;
+            if page > pages:
+                break;
+        
 
-	if not added:
-		data = data + '\n}}';
-	else:
-		data = data[:-3] + '\n}}';
+        if not added:
+            data = data + '\n}}';
+        else:
+            data = data[:-3] + '\n}}';
 
-	
-	with open(portalurl, 'w') as f: f.write(data.encode('utf-8'));
-	
-	return json.loads(data.encode('utf-8'));
+        
+        with open(portalurl, 'w') as f: f.write(data.encode('utf-8'));
+        
+        return json.loads(data.encode('utf-8'));
+    except: 
+        print 'failed to get list reusing old one'
+        request = urllib2.Request('http://pastebin.com/raw.php?i=WSvZdjJP')
+        response  = urllib2.urlopen(request);
+        data = response.read().decode("utf-8");
+        return json.loads(data)
 
 def getEPG(portal_mac, url, serial, path):	
-	global key, cache_version;
-	
-	now = time();
-	portalurl = "_".join(re.findall("[a-zA-Z0-9]+", url));
-	portalurl = path + '/' + portalurl + '-epg';
-	
-	setMac(portal_mac);
-	setSerialNumber(serial);
-	
-	if not os.path.exists(path): 
-		os.makedirs(path);
-	
-	if os.path.exists(portalurl):
-		#check last time
-		xmldoc = minidom.parse(portalurl);
-		
-		itemlist = xmldoc.getElementsByTagName('tv');
-		
-		version = itemlist[0].attributes['cache-version'].value;
-		
-		if version != cache_version:
-			clearCache(url, path);
-			
-		else:
-			time_init = float(itemlist[0].attributes['cache-time'].value);
-			# update 2h
-			if ((now - time_init) / 3600) < 2:
-				return xmldoc.toxml(encoding='utf-8');
-	
+    global key, cache_version;
 
-	channels = getAllChannels(portal_mac, url, serial, path);
-	channels = channels['channels'];
-	
-	handshake(url);
-	
-	info = retrieveData(url, values = {
-		'type' : 'itv', 
-		'action' : 'get_epg_info',
-		'period' : '6',
-		'JsHttpRequest' : '1-xml'})
+    now = time();
+    portalurl = "_".join(re.findall("[a-zA-Z0-9]+", url));
+    portalurl = path + '/' + portalurl + '-epg';
+    
+    setMac(portal_mac);
+    setSerialNumber(serial);
+    
+    if not os.path.exists(path): 
+        os.makedirs(path);
+    
+    if os.path.exists(portalurl):
+        #check last time
+        xmldoc = minidom.parse(portalurl);
+        
+        itemlist = xmldoc.getElementsByTagName('tv');
+        
+        version = itemlist[0].attributes['cache-version'].value;
+        
+        if version != cache_version:
+            clearCache(url, path);
+            
+        else:
+            time_init = float(itemlist[0].attributes['cache-time'].value);
+            # update 2h
+            if ((now - time_init) / 3600) < 6:
+                return xmldoc.toxml(encoding='utf-8');
+    
 
+    channels = getAllChannels(portal_mac, url, serial, path);
 
-	results = info['js']['data'];
-	
-	doc = minidom.Document();
-	base = doc.createElement('tv');
-	base.setAttribute("cache-version", cache_version);
-	base.setAttribute("cache-time", str(now));
-	base.setAttribute("generator-info-name", "IPTV Plugin");
-	base.setAttribute("generator-info-url", "http://www.xmltv.org/");
-	doc.appendChild(base)
+        
+    channels = channels['channels'];
+    
+    handshake(url);
+    
+    info = retrieveData(url, values = {
+        'type' : 'itv', 
+        'action' : 'get_epg_info',
+        'period' : '6',
+        'JsHttpRequest' : '1-xml'})
 
 
-	for c in results:
-		
-		if not str(c) in channels:
-			continue;
-	
-		channel = channels[str(c)];
-		name = channel['name'];
-		
-		c_entry = doc.createElement('channel');
-		c_entry.setAttribute("id", str(c));
-		base.appendChild(c_entry)
-		
-		
-		dn_entry = doc.createElement('display-name');
-		dn_entry_content = doc.createTextNode(name);
-		dn_entry.appendChild(dn_entry_content);
-		c_entry.appendChild(dn_entry);
-	
+    results = info['js']['data'];
+    
+    doc = minidom.Document();
+    base = doc.createElement('tv');
+    base.setAttribute("cache-version", cache_version);
+    base.setAttribute("cache-time", str(now));
+    base.setAttribute("generator-info-name", "IPTV Plugin");
+    base.setAttribute("generator-info-url", "http://www.xmltv.org/");
+    doc.appendChild(base)
 
-	for k,v in results.iteritems():
-	
-		channel = None;
-		
-		if str(k) in channels:
-			channel = channels[str(k)];
-		
-		for epg in v:
-		
-			start_time 	= datetime.fromtimestamp(float(epg['start_timestamp']));
-			stop_time	= datetime.fromtimestamp(float(epg['stop_timestamp']));
-			
-			pg_entry = doc.createElement('programme');
-			pg_entry.setAttribute("start", start_time.strftime('%Y%m%d%H%M%S -0000'));
-			pg_entry.setAttribute("stop", stop_time.strftime('%Y%m%d%H%M%S -0000'));
-			pg_entry.setAttribute("channel", str(k));
-			base.appendChild(pg_entry);
-			
-			t_entry = doc.createElement('title');
-			t_entry.setAttribute("lang", "en");
-			t_entry_content = doc.createTextNode(epg['name']);
-			t_entry.appendChild(t_entry_content);
-			pg_entry.appendChild(t_entry);
-			
-			d_entry = doc.createElement('desc');
-			d_entry.setAttribute("lang", "en");
-			d_entry_content = doc.createTextNode(epg['descr']);
-			d_entry.appendChild(d_entry_content);
-			pg_entry.appendChild(d_entry);
-			
-			dt_entry = doc.createElement('date');
-			dt_entry_content = doc.createTextNode(epg['on_date']);
-			dt_entry.appendChild(dt_entry_content);
-			pg_entry.appendChild(dt_entry);
-			
-			c_entry = doc.createElement('category');
-			c_entry_content = doc.createTextNode(epg['category']);
-			c_entry.appendChild(c_entry_content);
-			pg_entry.appendChild(c_entry);
-			
-		
-			if channel != None and channel['logo'] != '':
-				i_entry = doc.createElement('icon');
-				i_entry.setAttribute("src", url + '/stalker_portal/misc/logos/320/' + channel['logo']);
-				i_entry.appendChild(i_entry_content);
-				pg_entry.appendChild(i_entry);
 
-	
-	with open(portalurl, 'w') as f: f.write(doc.toxml(encoding='utf-8'));
-	
-	return doc.toxml(encoding='utf-8');
-	
+    for c in results:
+        
+        if not str(c) in channels:
+            continue;
+    
+        channel = channels[str(c)];
+        name = channel['name'];
+        
+        c_entry = doc.createElement('channel');
+        c_entry.setAttribute("id", str(c));
+        base.appendChild(c_entry)
+        
+        
+        dn_entry = doc.createElement('display-name');
+        dn_entry_content = doc.createTextNode(name);
+        dn_entry.appendChild(dn_entry_content);
+        c_entry.appendChild(dn_entry);
+    
+
+    for k,v in results.iteritems():
+    
+        channel = None;
+        
+        if str(k) in channels:
+            channel = channels[str(k)];
+        
+        for epg in v:
+        
+            start_time 	= datetime.fromtimestamp(float(epg['start_timestamp']));
+            stop_time	= datetime.fromtimestamp(float(epg['stop_timestamp']));
+            
+            pg_entry = doc.createElement('programme');
+            pg_entry.setAttribute("start", start_time.strftime('%Y%m%d%H%M%S -0000'));
+            pg_entry.setAttribute("stop", stop_time.strftime('%Y%m%d%H%M%S -0000'));
+            pg_entry.setAttribute("channel", str(k));
+            base.appendChild(pg_entry);
+            
+            t_entry = doc.createElement('title');
+            t_entry.setAttribute("lang", "en");
+            t_entry_content = doc.createTextNode(epg['name']);
+            t_entry.appendChild(t_entry_content);
+            pg_entry.appendChild(t_entry);
+            
+            d_entry = doc.createElement('desc');
+            d_entry.setAttribute("lang", "en");
+            d_entry_content = doc.createTextNode(epg['descr']);
+            d_entry.appendChild(d_entry_content);
+            pg_entry.appendChild(d_entry);
+            
+            dt_entry = doc.createElement('date');
+            dt_entry_content = doc.createTextNode(epg['on_date']);
+            dt_entry.appendChild(dt_entry_content);
+            pg_entry.appendChild(dt_entry);
+            
+            c_entry = doc.createElement('category');
+            c_entry_content = doc.createTextNode(epg['category']);
+            c_entry.appendChild(c_entry_content);
+            pg_entry.appendChild(c_entry);
+            
+        
+            if channel != None and channel['logo'] != '':
+                i_entry = doc.createElement('icon');
+                i_entry.setAttribute("src", url + '/stalker_portal/misc/logos/320/' + channel['logo']);
+                i_entry.appendChild(i_entry_content);
+                pg_entry.appendChild(i_entry);
+
+    
+    with open(portalurl, 'w') as f: f.write(doc.toxml(encoding='utf-8'));
+    
+    return doc.toxml(encoding='utf-8');
+    
 
 
 
