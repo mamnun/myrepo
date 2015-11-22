@@ -1,3 +1,6 @@
+[B]Version 4.0.2[/B]
+    -retry login for v5 and updated link for external source 
+    
 [B]Version 4.0.1[/B]
     -removed sports not working, added support for v5 to get it from external place 
     

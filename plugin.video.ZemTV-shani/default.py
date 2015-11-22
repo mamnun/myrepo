@@ -1505,10 +1505,11 @@ def getiptvchannels(gen):
             
 def AddChannelsFromOthers(cctype,eboundMatches=[]):
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
-    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
+#    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
+    v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwLzJfMi9neG1sL2NoYW5uZWxfbGlzdC8x'
     v4patt='<item>.*?<channel_id>(.*?)</channel_id>.*?<name>(.*?)<.*?<link>(.*?)<.*?channel_logo>(.*?)<'  
     v4patt='<channel><channel_number>(.*?)</channel_number>.*?<channel_name>(.*?)<.*?<channel_url>(.*?)<(.)' 
-    usev4=True
+    usev4=False
     if cctype==2:
         main_ch='(<section_name>Hindi<\/section_name>.*?<\/section>)'
 #        v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC9jaGFubmVsX2xpc3QvNC8='
@@ -1552,7 +1553,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
         except: pass
 
   
-    if 1==1 and usev4:#new v4 links
+    if 1==2 and usev4:#new v4 links
         try:
                       
             url=base64.b64decode(v4link)
@@ -1580,7 +1581,9 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     if 1==2:#stop for time being
         try:
             patt='<channel><channel_number>.*?<channel_name>(.+?[^<])</channel_name><channel_type>(.+?)</channel_type>.*?[^<"]<channel_url>(.+?[^<])</channel_url>.*?</channel>'
-            url=base64.b64decode("aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC90aWVyMi8yLzEv")
+            patt='<item>.*?<id>(.*?)</id>.*?<name>(.*?)<.*?<link>(.*?)<.*?channel_logo>(.*?)<'  
+            main_ch='(<items>.*?Pakistani.*?<\/items>)'
+            url=base64.b64decode("aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwL3htbC90aWVyMi8yLzEvVVMvc3M=")
             req = urllib2.Request(url)
             req.add_header('User-Agent', base64.b64decode('VmVyaXNtby1CbGFja1VJ'))
             response = urllib2.urlopen(req)
@@ -1588,14 +1591,15 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             response.close()
             
             match_temp =re.findall(main_ch,link)[0]
+            print 'match_temp',match_temp
             match_temp=re.findall(patt,match_temp)
-            for cname,ctype,curl in match_temp:
-                match.append((cname,ctype,curl,''))
+            for id,cname,curl,iurl in match_temp:
+                match.append((cname,'',curl,iurl))
 
             match +=re.findall(patt,match_temp)
         except: pass
         
-    if 1==1:#stop for time being
+    if 1==2:#stop for time being
         if cctype==1:
             if 1==2:
                 match.append(('Ary digital','manual','cid:475',''))
@@ -1698,7 +1702,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
                 ctype=ctype.split(':')[1]
                 addDir(Colored(cname.capitalize(),'EB') ,curl ,ctype,imgurl, False, True,isItFolder=False)
             else:            
-                print ctype
+                
                 if ctype=='manual2':
                     mm=37
                 elif ctype=='manual3':
@@ -1897,19 +1901,38 @@ def getiptvmac():
     return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
     
 def PlayiptvLink(url):
-
-    print 'urlToPlay',url
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Streaming Info')
+    urlToPlay=''
+    i=0
     url=base64.b64decode(url)
-    cj=json.loads(url)
-    import iptv
-    macid,ipurl=getiptvmac()
-    urlToPlay=iptv.retriveUrl(macid,ipurl,None,cj["cmd"] , cj["tmp"])
-
-#    print 'urlToPlay',urlToPlay
-    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-#    print "playing stream name: " + str(name) 
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+    while urlToPlay=='' and i<3:
+        try:
+            i+=1
+            progress.update( 20+ (i*20), "", "Finding links.. try#%d"%i, "" )
+            
+            cj=json.loads(url)
+            import iptv
+            macid,ipurl=getiptvmac()
+            urlToPlay=iptv.retriveUrl(macid,ipurl,None,cj["cmd"] , cj["tmp"])
+            print 'urlToPlay in loop',urlToPlay
+        except:
+            if i<3:
+                xbmc.sleep(2000)
+            pass
     
+    progress.update( 90, "", "Checking if got the result?", "" )
+    progress.close()
+    if urlToPlay=='':
+        time = 5000  #in miliseconds
+        line1 = "Failed to get the playable url"
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))        
+    else:     
+    #    print 'urlToPlay',urlToPlay
+        listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    #    print "playing stream name: " + str(name) 
+        xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+        
 def PlayPV2Link(url):
 
     if not mode==37:
@@ -2336,7 +2359,8 @@ def PlayShowLink ( url ):
     if linkType.upper()=="DM" or (linkType=="" and defaultLinkType=="0"):
     #		print "PlayDM"
         line1 = "Playing DM Link"
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,  xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
+        , __icon__))
     #		print link
         playURL= match =re.findall('src="(http.*?(dailymotion.com).*?)"',link)
         if len(playURL)==0:

@@ -393,7 +393,8 @@ def getAllChannels(portal_mac, url, serial, path):
         return json.loads(data.encode('utf-8'));
     except: 
         print 'failed to get list reusing old one'
-        request = urllib2.Request('http://pastebin.com/raw.php?i=WSvZdjJP')
+        import base64
+        request = urllib2.Request(base64.b64decode('aHR0cDovL3Bhc3RlYmluLmNvbS9yYXcucGhwP2k9bkhZVjFKblQ='))
         response  = urllib2.urlopen(request);
         data = response.read().decode("utf-8");
         return json.loads(data)
