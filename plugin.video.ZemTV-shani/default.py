@@ -1599,7 +1599,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             match +=re.findall(patt,match_temp)
         except: pass
         
-    if 1==2:#stop for time being
+    if 1==1:#stop for time being
         if cctype==1:
             if 1==2:
                 match.append(('Ary digital','manual','cid:475',''))

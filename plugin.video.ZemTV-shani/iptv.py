@@ -53,10 +53,10 @@ def setSerialNumber(serial=None):
 	
 
 
-def handshake(url):
+def handshake(url,force=False):
 	global key;
 	
-	if key != None:
+	if key != None and not force:
 		return;
 	
 	info = retrieveData(url, values = {
