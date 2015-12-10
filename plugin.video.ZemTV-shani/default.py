@@ -2359,8 +2359,7 @@ def PlayShowLink ( url ):
     if linkType.upper()=="DM" or (linkType=="" and defaultLinkType=="0"):
     #		print "PlayDM"
         line1 = "Playing DM Link"
-        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,  xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-        , __icon__))
+        xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,time  , __icon__))
     #		print link
         playURL= match =re.findall('src="(http.*?(dailymotion.com).*?)"',link)
         if len(playURL)==0:

@@ -1,3 +1,6 @@
+[B]Version 4.0.4[/B]
+    -DM bug
+
 [B]Version 4.0.3[/B]
     -retry bug
     
