@@ -6,7 +6,7 @@ import xbmcaddon
 from operator import itemgetter
 import traceback,cookielib
 import base64,os,  binascii
-import CustomPlayer
+import CustomPlayer,uuid
 try:
     from lxmlERRRORRRR import etree
     print("running with lxml.etree")
@@ -1494,7 +1494,7 @@ def getiptvchannels(gen):
         for source in xmldata["channels"]:
             ss=xmldata["channels"][source]
             #print pg,source.findtext('programCategory').lower()
-            if ss["genre_title"].lower()==gen:
+            if ss["genre_title"].lower()==gen or (gen=='sports' and ss["name"][:3] in ['NFL','NHL','NBA','BOX']):
                 cname=ss["name"]
                 curl=json.dumps(ss)
                 cimage=base64.b64decode('aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50di9zdGFsa2VyX3BvcnRhbC9taXNjL2xvZ29zLzMyMC8=')+ss["logo"]
@@ -1898,7 +1898,8 @@ def PlayStreamSports(url):
 def getiptvmac():
     import os,binascii
   #  binascii.b2a_hex(os.urandom(1))
-    return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
+#    return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
+    return base64.b64decode("MDA6MUE6Nzg6MTI6MzQ6OTk="),base64.b64decode("aHR0cDovL213MS5pcHR2NjYudHY=")
     
 def PlayiptvLink(url):
     progress = xbmcgui.DialogProgress()
