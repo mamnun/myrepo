@@ -1896,11 +1896,15 @@ def PlayStreamSports(url):
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
 
 def getiptvmac():
-    import os,binascii
+    import os,binascii,random
   #  binascii.b2a_hex(os.urandom(1))
 #    return base64.b64decode("MDA6MUE6Nzg6OTg6NzY6NTQ="),base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
-    return base64.b64decode("MDA6MUE6Nzg6MTI6MzQ6OTk="),base64.b64decode("aHR0cDovL213MS5pcHR2NjYudHY=")
-    
+    macstring=getUrl("http://pastebin.com/raw/KWAJCTQf")
+    exec("macs="+macstring)
+    maccode= (random.choice(macs))
+
+    return maccode,base64.b64decode("aHR0cDovL213MS5pcHR2NjYudHY=")
+
 def PlayiptvLink(url):
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')

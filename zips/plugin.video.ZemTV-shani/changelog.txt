@@ -1,3 +1,5 @@
+[B]Version 4.0.6[/B]
+    -v5 updated retry logic
 [B]Version 4.0.5[/B]
     -v5 updated
 
