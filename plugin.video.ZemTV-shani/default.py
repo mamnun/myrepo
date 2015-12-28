@@ -250,7 +250,13 @@ def PlayCricFree(url):
             patt="id='(.*?)'.*?width='(.*)'.*?height='(.*?)'"
             gid,wd,ht=re.findall(patt,res)[0]
             referer=[('Referer',url3)]
-            url4='http://biggestplayer.me/streamcrnono.php?id=%s&width=%s&height=%s'%(gid,wd,ht)
+            
+            patt="src='(.*?)'"
+            jsUrl=re.findall(patt,res)[0]
+            jsData=getUrl(jsUrl)
+            patt="\.me\/(.*?)\?"
+            phpURL=re.findall(patt,jsData)[0]
+            url4='http://biggestplayer.me/%s?id=%s&width=%s&height=%s'%(phpURL,gid,wd,ht)
             progress.update( 80, "", "Finding links..last stage", "" )
             res=getUrl(url4,headers=referer)    
             patt='file: "(.*?)"'
@@ -1258,11 +1264,13 @@ def AddSmartCric(url):
 #                print curl
                 #if ctype<>'': cname+= '[' + ctype+']'
                 addDir(cname ,curl ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
+                fms=getUrl('http://publish.smartcric.com:1935/loadbalancer').split('=')[1]
                 if 'streamsList' in source and source["streamsList"] and len(source["streamsList"])>0:
                     for s in source["streamsList"]:
                         cname=s["caption"]
                         curl=s["streamName"]
                         streamid=str(s["streamId"])
+                        
                         curl1="http://"+fms+":8088/mobile/"+curl+"/playlist.m3u8?id="+streamid+match_pk+'|User-Agent=Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3';
                         addDir('    -'+cname +" (http)" ,curl1 ,15,'', False, True,isItFolder=False)		#name,url,mode,icon
                         #curl1="rtsp://"+"206.190.140.164"+":1935/mobile/"+curl+"?key="+match_sn+match_pk;
