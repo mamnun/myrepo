@@ -98,7 +98,9 @@ def Addtypes():
 	addDir('Express Shows', baseLink % 'express-entertainment' ,2,'http://i.imgur.com/RBlvLwp.png')
 	addDir('APlus Shows', baseLink % 'aplus-entertainment' ,2,'http://i.imgur.com/wynK0iI.png')
 	addDir('Urdu1 Shows', baseLink % 'urdu-1' ,2,'http://i.imgur.com/9i396WG.jpg')
-	addDir('Teleplays' ,'http://www.dramasonline.com/?cat=255' ,3,'')# these are is links
+	addDir('Ary Zindagi Shows', baseLink % 'ary-zindagi' ,2,'http://i.imgur.com/a1PH1wk.png')
+	addDir('SeeTV Shows', 'http://dramaonline.com/pakistani-dramas-see-tv-latest-dramas-episodes-online/' ,2,'http://i.imgur.com/BkJ1440.png')
+	addDir('Teleplays' ,'http://www.dramasonline.com/?cat=255' ,3,'http://i.imgur.com/FhL5Yas.png')# these are is links
 	addDir('Top Rated Dramas' ,'http://www.dramasonline.com/' ,5,'http://i.imgur.com/aFWO9Y7.png') # top 
 	addDir('Live Channels' ,'http://www.dramasonline.com/category/live-channels/' ,6,'') ##
 	addDir('Settings' ,'http://www.dramasonline.com/category/live-channels/' ,8,'',isItFolder=False) ##
