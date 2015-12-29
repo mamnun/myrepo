@@ -89,8 +89,8 @@ def get_params():
 def Addtypes():
 	baseLink = 'http://www.dramasonline.com/%s-latest-dramas-episodes-online/'
 	#2 is series=3 are links
-	addDir('All Recent Episodes' ,'http://dramaonline.com/wp-admin/admin-ajax.php$page$=1' ,3,'http://i.imgur.com/qSzxay9.png') #links 
-	addDir('HumTv Shows', baseLink % 'hum-tv' ,2,'http://i.imgur.com/SPbcdsI.png')
+	addDir('All Recent Episodes' ,'http://dramaonline.com/wp-admin/admin-ajax.php$page$=1' ,3,'http://i.imgur.com/qSzxay9.png') #links
+	addDir('HumTv Shows', 'http://www.dramasonline.com/hum-tv-new-dramas-episodes-online/' ,2,'http://i.imgur.com/SPbcdsI.png')
 	addDir('GeoTv Shows', baseLink % 'geo-tv' ,2,'http://i.imgur.com/YELzFHv.png')
 	addDir('PTV Home Shows', baseLink % 'ptv-home' ,2,'http://i.imgur.com/vJPo6xO.png')
 	addDir('AryDigital Shows', baseLink % 'ary-digital-tv' ,2,'http://i.imgur.com/Qpvx9N4.png')
@@ -122,16 +122,19 @@ def AddSeries(Fromurl):
 #	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
 
 
-	pattern = re.compile('<a (title=".*?"\s)*href="(?P<url>[^"]*)"\s*[^>]*><img (class="[^"]*")*.*?(\salt="(?P<alt>[^"]*)"|\ssrc="(?P<imgsrc>[^"]*)")+')
+	pattern = re.compile('<td><a (title=".*?"\s)*href="(?P<url>[^"]*)"[^>]*><img (class="[^"]*")*\s*(src="(?P<imgsrc1>[^"]*)"\salt="(?P<alt1>[^"]*)"|alt="(?P<alt2>[^"]*)"\ssrc="(?P<imgsrc2>[^"]*)")')
 
 	for cname in pattern.finditer(link):
-		item_name = name_from_re = cname.group('alt')
+		alt_text = cname.group('alt1') or cname.group('alt2')
+		img_src = cname.group('imgsrc1') or cname.group('imgsrc2')
+
+		item_name = name_from_re = alt_text
 		name_from_url = cname.group('url').rstrip('/').split('/')
 
 		# get last part of url
 		name_from_url = name_from_url[-1].replace('-', ' ')
 
-		#print '%s - %s' % (item_name, name_from_url)
+		#print '%s - %s - %s' % (item_name, name_from_url, name_from_re)
 
 		if (name_from_url.lower() != name_from_re.lower()):
 			item_name = name_from_url
@@ -140,14 +143,14 @@ def AddSeries(Fromurl):
 
 		#print item_name, cname[groupUrl], cname[groupImage]
 		if not '/category/' in  cname.group('url'):
-			addDir(item_name, cname.group('url'), 4, cname.group('imgsrc')) #name, url, mode, icon
+			addDir(item_name, cname.group('url'), 4, img_src) #name, url, mode, icon
 		else:
-			addDir(item_name, cname.group('url'), 3, cname.group('imgsrc')) #name, url, mode, icon        
+			addDir(item_name, cname.group('url'), 3, img_src) #name, url, mode, icon
 
 #	<a href="http://www.zemtv.com/page/2/">&gt;</a></li>
 
 	match =re.findall('"nextLink":"(http.*?)"', link)
-	print link,'match',match
+	#print link,'match',match
 	if len(match)==1:
 		addDir('Next Page' ,match[0].replace('\\/','/') ,2, '')
 
@@ -748,7 +751,8 @@ try:
 	elif mode==8:
 		print "Play url is "+url,mode
 		ShowSettings(url)
-except:
+except Exception, ex:
+	print ex
 	print 'somethingwrong'
 
 if not ( mode==7 or mode==4 or mode==9):
