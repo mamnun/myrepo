@@ -1,3 +1,5 @@
+[B]Version 4.0.8[/B]
+    -v3 updated
 [B]Version 4.0.7[/B]
     -sports section updated for smartcric and crifree
     
