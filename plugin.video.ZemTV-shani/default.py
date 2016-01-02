@@ -1885,10 +1885,11 @@ def getPV2Auth():
     TIME = time.time()
     second= str(TIME).split('.')[0]
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
-    token=  base64.b64encode( base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
+    token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
  
     req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYWN0aXZhdGUucGhwP3Rva2VuPQ==')+token)
     req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83MTEuNC42IERhcndpbi8xNC4wLjA=")) 
     response = urllib2.urlopen(req)
     link=response.read()
     return link
@@ -1959,8 +1960,13 @@ def PlayPV2Link(url):
         urlToPlay=re.findall(url+'..programTitle.*?programURL\\>(.*?)\\<',xmldata)[0]
     else:
         urlToPlay=base64.b64decode(url)
+
 #    print 'urlToPlay',urlToPlay    
     urlToPlay+=getPV2Auth()
+    if '|' not in urlToPlay:
+        urlToPlay+='|'
+    urlToPlay+='User-Agent: AppleCoreMedia/1.0.0.12H143 (iPhone; U; CPU OS 8_4 like Mac OS X; en_gb)'
+
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
