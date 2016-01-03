@@ -394,7 +394,7 @@ def AddSports(url):
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
     addDir('PTC sports' ,'sss',51,'')
-
+    addDir('Paktv sports' ,'sss',52,'')
     
 def PlayCricHD(url):
 
@@ -538,7 +538,18 @@ def AddPv2Sports(url=None):
             cid=source.findtext('programURL')
             cimage=source.findtext('programImage')
             addDir(cname ,base64.b64encode(cid),37,cimage, False, True,isItFolder=False)
-         
+def AddPakTVSports(url=None):
+    for cname,ctype,curl,imgurl in getPakTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return    
+                   
 def AddPTCSports(url=None):
     for cname,ctype,curl,imgurl in getptcchannels([],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
@@ -1504,6 +1515,29 @@ def AddEnteries(name, type=None):
     return
 
 
+def getPakTVChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getPakTVPage()
+        for source in xmldata:
+            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+                ss=source
+                cname=ss["channelName"]
+                if 'ebound.tv' in ss["channelLink"]:
+                    curl='ebound2:'+ss["channelLink"]
+                else:
+                    curl='direct:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+                cimage=ss["categoryLogo"]
+                
+                if len([i for i, x in enumerate(ret) if x[0] ==cname ])==0:                    
+                    ret.append((cname +' v7' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+
+
 def getptcchannels(categories, forSports=False):
     ret=[]
     try:
@@ -1520,7 +1554,9 @@ def getptcchannels(categories, forSports=False):
                     cimage=ss["imgurl"]
                     
                     if len([i for i, x in enumerate(ret) if x[0] ==cname ])==0:                    
-                        ret.append((cname +' v6' ,'manual', curl ,cimage))        
+                        ret.append((cname +' v6' ,'manual', curl ,cimage))  
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower() )                        
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
@@ -1550,6 +1586,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     isv3Off=selfAddon.getSetting( "isv3Off" )
     isv5Off=selfAddon.getSetting( "isv5Off" )
     isv6Off=selfAddon.getSetting( "isv6Off" )
+    isv7Off=selfAddon.getSetting( "isv7Off" )
     
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
@@ -1704,10 +1741,12 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     pg=None
     iptvgen=None
     ptcgen=None
+    paktvgen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
         ptcgen=['News','Entertainment','Islamic ','Cooking']
+        paktvgen=['News','Islamic','Cooking']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
@@ -1718,7 +1757,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     if isv3Off=='true': pg=None
     if isv5Off=='true': iptvgen=None
     if isv6Off=='true': ptcgen=None
-    
+    if isv7Off=='true': paktvgen=None
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -1745,7 +1784,14 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
         except:
             traceback.print_exc(file=sys.stdout)        
 
-            
+    if paktvgen:
+        try:
+            rematch=getPakTVChannels(paktvgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)                
+           
             
     if iptvgen:
         try:
@@ -1782,6 +1828,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
                     cc='blue'
                 elif cname.endswith('v6'):
                     cc='red'
+                elif cname.endswith('v7'):
+                    cc='orange'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -1941,6 +1989,30 @@ def getPTCUrl():
     pos = data.rfind(',')
     data=data[:pos]
     return json.loads(data+']}]}')
+
+def getPakTVPage():
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3NtYXJ0ZXJsb2dpeC5jb20vaW9zU2VjdXJlQXBwcy9QYWtUVi9WMS0zL21haW5Db250ZW50LnBocA==') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrVFYvMS4zLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    import rc
+    cryptor=rc.RNCryptor()
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("YkFuZ3I0bDF0dGwzNTY3"))
+    decrypted_data=json.loads(decrypted_data)
+    dataUrl=decrypted_data[0]["dataUrl"]
+
+    req = urllib2.Request( dataUrl)      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrVFYvMS4zLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("YkFuZ3I0bDF0dGwzNTY3"))
+    #print decrypted_data
+    return json.loads(decrypted_data)
 
     
 def getPV2Url():
@@ -2909,6 +2981,9 @@ try:
 	elif mode==51 :
 		print "Play url is "+url
 		AddPTCSports(url) 
+	elif mode==52 :
+		print "Play url is "+url
+		AddPakTVSports(url) 
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
