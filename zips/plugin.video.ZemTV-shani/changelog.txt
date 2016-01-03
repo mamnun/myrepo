@@ -1,3 +1,6 @@
+[B]Version 4.1.1[/B]
+    -added v7
+    
 [B]Version 4.1.0[/B]
     -v3.v6 updated colours and settings to turn them off
     
