@@ -12,6 +12,10 @@
 
           <setting type="sep"/>
 		<setting label="32022" type="bool"   id="isYellowOff" default="false"/>
+        <setting label="32026" type="bool"   id="isv3Off" default="false"/>
+        <setting label="32027" type="bool"   id="isv5Off" default="false"/>
+        <setting label="32028" type="bool"   id="isv6Off" default="false"/>
+        
           <setting type="sep"/>
          <setting label="32023" type="select" id="defualtSSSBitRate"  default="1300" values="Maximum (Highest Quality)|500|650|900|1300|1900|2700"/>
                                               

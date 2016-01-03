@@ -1,3 +1,6 @@
+[B]Version 4.1.0[/B]
+    -v3.v6 updated colours and settings to turn them off
+    
 [B]Version 4.0.9[/B]
     -v3 updated and p3g/streams updated in sports
 [B]Version 4.0.8[/B]

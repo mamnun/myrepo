@@ -393,7 +393,7 @@ def AddSports(url):
     addDir('PV2 Sports' ,'sss',36,'')
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
-    
+    addDir('PTC sports' ,'sss',51,'')
 
     
 def PlayCricHD(url):
@@ -539,6 +539,17 @@ def AddPv2Sports(url=None):
             cimage=source.findtext('programImage')
             addDir(cname ,base64.b64encode(cid),37,cimage, False, True,isItFolder=False)
          
+def AddPTCSports(url=None):
+    for cname,ctype,curl,imgurl in getptcchannels([],True):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return    
             
             
 def AddStreamSports(url=None):
@@ -1492,6 +1503,29 @@ def AddEnteries(name, type=None):
             traceback.print_exc(file=sys.stdout)
     return
 
+
+def getptcchannels(categories, forSports=False):
+    ret=[]
+    try:
+        import iptv
+        xmldata=getPTCUrl()
+        for source in xmldata["channelsCategories"]:
+            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+                for ss in source["channels"]:
+                    cname=ss["name"]
+                    if 'ebound.tv' in ss["url"]:
+                        curl='ebound2:'+ss["url"]
+                    else:
+                        curl='direct:'+ss["url"]
+                    cimage=ss["imgurl"]
+                    
+                    if len([i for i, x in enumerate(ret) if x[0] ==cname ])==0:                    
+                        ret.append((cname +' v6' ,'manual', curl ,cimage))        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+
+    
 def getiptvchannels(gen):
     
     ret=[]
@@ -1512,6 +1546,12 @@ def getiptvchannels(gen):
     return ret
             
 def AddChannelsFromOthers(cctype,eboundMatches=[]):
+
+    isv3Off=selfAddon.getSetting( "isv3Off" )
+    isv5Off=selfAddon.getSetting( "isv5Off" )
+    isv6Off=selfAddon.getSetting( "isv6Off" )
+    
+
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
 #    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
     v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwLzJfMi9neG1sL2NoYW5uZWxfbGlzdC8x'
@@ -1663,14 +1703,22 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
 
     pg=None
     iptvgen=None
+    ptcgen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
+        ptcgen=['News','Entertainment','Islamic ','Cooking']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
+        ptcgen=['Indian']
     else:
         pg='punjabi'
+    
+    if isv3Off=='true': pg=None
+    if isv5Off=='true': iptvgen=None
+    if isv6Off=='true': ptcgen=None
+    
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -1688,6 +1736,16 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             
         except:
             traceback.print_exc(file=sys.stdout)
+
+    if ptcgen:
+        try:
+            rematch=getptcchannels(ptcgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)        
+
+            
             
     if iptvgen:
         try:
@@ -1717,7 +1775,14 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
                     mm=45
                 else:
                     mm=11
-                addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+                cc='green'
+                if cname.endswith('v3'):
+                    cc='green'
+                elif cname.endswith('v5'):
+                    cc='blue'
+                elif cname.endswith('v6'):
+                    cc='red'
+                addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
 def addiptvSports(url):
@@ -1864,6 +1929,20 @@ def get_dag_url(page_data):
 
     return final_url
 
+def getPTCUrl():
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3N0cmVhbWlmeWZhZ2FpbmMuYXBwc3BvdC5jb20vaW9zL3Bha3R2L3Bha3R2Lmpzb24=') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("Y29tLm1hYWlkcGsuUGFrVHZDb25uZWN0aWZ5LzQuMiBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    maindata=json.loads(link)
+    decodeddata=maindata["Secret"]
+    decodeddata='ew0KDQogI'.join(decodeddata.split('ew0KDQogI')[:-1])
+    data=base64.b64decode(decodeddata)[:-1]
+    pos = data.rfind(',')
+    data=data[:pos]
+    return json.loads(data+']}]}')
+
+    
 def getPV2Url():
     import base64
     import time
@@ -1889,7 +1968,7 @@ def getPV2Auth():
  
     req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYWN0aXZhdGUucGhwP3Rva2VuPQ==')+token)
     req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83MTEuNC42IERhcndpbi8xNC4wLjA=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
     response = urllib2.urlopen(req)
     link=response.read()
     return link
@@ -1965,7 +2044,7 @@ def PlayPV2Link(url):
     urlToPlay+=getPV2Auth()
     if '|' not in urlToPlay:
         urlToPlay+='|'
-    urlToPlay+='User-Agent: AppleCoreMedia/1.0.0.12H143 (iPhone; U; CPU OS 8_4 like Mac OS X; en_gb)'
+    urlToPlay+='User-Agent: AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
 
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -1984,6 +2063,9 @@ def PlayOtherUrl ( url ):
     
     if "ebound:" in url:
         PlayLiveLink(url.split('ebound:')[1])
+        return
+    if "ebound2:" in url:
+        PlayEboundFromIOS(url.split('ebound2:')[1])
         return
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
@@ -2636,6 +2718,25 @@ def ShowAllSources(url, loadedLink=None):
 #			print 'linkType',linkType
 			PlayShowLink(url);
 
+def PlayEboundFromIOS(url):
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Streaming Info')
+    progress.update( 10, "", "Finding links..", "" )
+
+    req = urllib2.Request('http://eboundservices.com/hash/hash_app.php?code=com.maaidpk.PakTvConnectify')
+    req.add_header('User-Agent', 'com.maaidpk.PakTvConnectify/4.2 CFNetwork/758.0.2 Darwin/15.0.0')
+    req.add_header('Authorization','Digest username="hashapp", realm="Restricted area", nonce="5688ad3bc5566", uri="/hash/hash_app.php?code=com.maaidpk.PakTvConnectify", response="f4964251227b1c4fce0d6ffb5b707b4d", opaque="cdce8a5c95a1427d74df7acbf41c9ce0", cnonce="f4717cdf092fc347336d5cc1c756eb58", nc=00000003, qop="auth"')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    progress.update( 50, "", "Finding links..", "" )
+
+    playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+    progress.update( 100, "", "Almost done..", "" )
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    return
+
 def PlayLiveLink ( url ):
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
@@ -2665,8 +2766,6 @@ def PlayLiveLink ( url ):
     progress.update( 50, "", "Finding links..", "" )
 
     playfile =re.findall('videoLink =\'(.*?)\'',link)[0]
-
-    playfile
     
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -2807,6 +2906,9 @@ try:
 	elif mode==46 :
 		print "Play url is "+url
 		addiptvSports(url) 
+	elif mode==51 :
+		print "Play url is "+url
+		AddPTCSports(url) 
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
