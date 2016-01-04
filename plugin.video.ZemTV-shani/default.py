@@ -1529,7 +1529,7 @@ def getPakTVChannels(categories, forSports=False):
                     curl='direct:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
                 cimage=ss["categoryLogo"]
                 
-                if len([i for i, x in enumerate(ret) if x[0] ==cname ])==0:                    
+                if len([i for i, x in enumerate(ret) if x[0] ==cname +' v7' ])==0:                    
                     ret.append((cname +' v7' ,'manual', curl ,cimage))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
@@ -1553,7 +1553,7 @@ def getptcchannels(categories, forSports=False):
                         curl='direct:'+ss["url"]
                     cimage=ss["imgurl"]
                     
-                    if len([i for i, x in enumerate(ret) if x[0] ==cname ])==0:                    
+                    if len([i for i, x in enumerate(ret) if x[0] ==cname +' v6' ])==0:                    
                         ret.append((cname +' v6' ,'manual', curl ,cimage))  
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower() )                        

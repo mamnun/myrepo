@@ -1,3 +1,5 @@
+[B]Version 4.1.2[/B]
+    -duplication removed
 [B]Version 4.1.1[/B]
     -added v7
     
