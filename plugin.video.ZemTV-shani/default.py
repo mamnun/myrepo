@@ -395,6 +395,9 @@ def AddSports(url):
     addDir('cricfree.sx' ,'sss',41,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
+    addDir('UniTV sports' ,'sss',53,'')
+    
+    
     
 def PlayCricHD(url):
 
@@ -561,7 +564,18 @@ def AddPTCSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
-            
+
+def AddUniTVSports(url=None):
+    for cname,ctype,curl,imgurl in getUniTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs'],True):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return        
             
 def AddStreamSports(url=None):
     jsondata=getUrl('http://videostream.dn.ua/list/GetLeftMenuShort?lng=en')
@@ -1456,13 +1470,16 @@ def PlayWatchCric(url):
     xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
     xbmcPlayer.play(playlist) 
 
-def PlayGen(url):
+def PlayGen(url,checkUrl=False):
     url = base64.b64decode(url)
     print 'gen is '+url
 
     if url.startswith('plugin://'):
         xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
         return
+    if checkUrl:
+        headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
+        getUrl(url,timeout=5,headers=headers)
     playlist = xbmc.PlayList(1)
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -1524,7 +1541,7 @@ def getPakTVChannels(categories, forSports=False):
                 ss=source
                 cname=ss["channelName"]
                 if 'ebound.tv' in ss["channelLink"]:
-                    curl='ebound2:'+ss["channelLink"]
+                    curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
                     curl='direct:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
                 cimage=ss["categoryLogo"]
@@ -1537,6 +1554,29 @@ def getPakTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret
 
+def getUniTVChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getUniTVPage()
+#        print xmldata
+        for source in xmldata:#Cricket#
+            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+                ss=source
+                cname=ss["channelName"]
+                if 'ebound.tv' in ss["channelLink"]:
+                    curl='ebound2:'+ss["channelLink"].replace(':1935','')
+                else:
+                    curl='direct2:'+ss["channelLink"]
+                cimage=ss["categoryImageLink"]
+                
+                if len([i for i, x in enumerate(ret) if x[0] ==cname +' v8' ])==0:                    
+                    ret.append((cname +' v8' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
+
 
 def getptcchannels(categories, forSports=False):
     ret=[]
@@ -1548,7 +1588,7 @@ def getptcchannels(categories, forSports=False):
                 for ss in source["channels"]:
                     cname=ss["name"]
                     if 'ebound.tv' in ss["url"]:
-                        curl='ebound2:'+ss["url"]
+                        curl='ebound2:'+ss["url"].replace(':1935','')
                     else:
                         curl='direct:'+ss["url"]
                     cimage=ss["imgurl"]
@@ -1587,6 +1627,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     isv5Off=selfAddon.getSetting( "isv5Off" )
     isv6Off=selfAddon.getSetting( "isv6Off" )
     isv7Off=selfAddon.getSetting( "isv7Off" )
+    isv8Off=selfAddon.getSetting( "isv8Off" )
     
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
@@ -1742,11 +1783,13 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     iptvgen=None
     ptcgen=None
     paktvgen=None
+    unitvgen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
         ptcgen=['News','Entertainment','Islamic ','Cooking']
         paktvgen=['News','Islamic','Cooking']
+        unitvgen=['News','Relegious','Cooking','PAK&IND']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
@@ -1758,6 +1801,9 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     if isv5Off=='true': iptvgen=None
     if isv6Off=='true': ptcgen=None
     if isv7Off=='true': paktvgen=None
+    if isv8Off=='true': unitvgen=None
+    
+    
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -1791,7 +1837,15 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
                 match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)                
-           
+
+    if unitvgen:
+        try:
+            rematch=getUniTVChannels(unitvgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)                
+
             
     if iptvgen:
         try:
@@ -1830,6 +1884,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
                     cc='red'
                 elif cname.endswith('v7'):
                     cc='orange'
+                elif cname.endswith('v8'):
+                    cc='purple'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -2014,6 +2070,29 @@ def getPakTVPage():
     #print decrypted_data
     return json.loads(decrypted_data)
 
+def getUniTVPage():
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3VuaXZlcnNhbHR2LmRkbnMubmV0L1VuaXZlcnNhbC1UVi1IRC9jbXMvWFZlci9nZXRDb250dFYxLTAucGhw') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsVFZIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWpOMGRtVnljMkZzT21SeVFHY3diakZ2YzBBM09EWT0=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    import rc
+    cryptor=rc.RNCryptor()
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dGVsYzA5OVBAc3N3b3JkNzg2"))
+    decrypted_data=json.loads(decrypted_data)
+    dataUrl=decrypted_data[0]["LiveLink"]
+
+    req = urllib2.Request( dataUrl)      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsVFZIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWpOMGRtVnljMkZzT21SeVFHY3diakZ2YzBBM09EWT0=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dGVsYzA5OVBAc3N3b3JkNzg2"))
+    #print decrypted_data
+    return json.loads(decrypted_data)
     
 def getPV2Url():
     import base64
@@ -2141,6 +2220,9 @@ def PlayOtherUrl ( url ):
         return
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
+        return
+    if "direct2:" in url:
+        PlayGen(base64.b64encode(url.split('direct2:')[1]),True)
         return
     if "pv2:" in url:
         PlayPV2Link(url.split('pv2:')[1])
@@ -2984,6 +3066,10 @@ try:
 	elif mode==52 :
 		print "Play url is "+url
 		AddPakTVSports(url) 
+	elif mode==53 :
+		print "Play url is "+url
+		AddUniTVSports(url)         
+        
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
