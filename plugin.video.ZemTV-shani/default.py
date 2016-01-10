@@ -7,6 +7,7 @@ from operator import itemgetter
 import traceback,cookielib
 import base64,os,  binascii
 import CustomPlayer,uuid
+from time import time
 try:
     from lxmlERRRORRRR import etree
     print("running with lxml.etree")
@@ -52,7 +53,7 @@ mainurl=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20v')
 liveURL=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vbGl2ZS1wYWtpc3RhbmktbmV3cy1jaGFubmVscy8=')
 
 tabURL =base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb206ODg4OC91c2Vycy9yZXgvbV9saXZlLnBocD9hcHA9JXMmc3RyZWFtPSVz')
-
+DONOTCACHE=   selfAddon.getSetting( "donotcache" ) =="true"
 class NoRedirection(urllib2.HTTPErrorProcessor):
    def http_response(self, request, response):
        return response
@@ -199,6 +200,8 @@ def Addtypes():
 	addDir('Punjabi Live Channels' ,'PunjabiLive' ,2,'')
 	addDir('Sports' ,'Live' ,13,'')
 	addDir('Settings' ,'Live' ,6,'',isItFolder=False)
+	addDir('Clear Cache' ,'Live' ,54,'',isItFolder=False)
+
 	return
 
 def PlayFlashTv(url):
@@ -1513,10 +1516,15 @@ def AddEnteries(name, type=None):
         isYellowOff=selfAddon.getSetting( "isYellowOff" ) 
 #        print 'isPakistani',isPakistani,isYellowOff
         ret_match=[]
+        progress = xbmcgui.DialogProgress()
+        progress.create('Progress', 'Fetching Streaming Info')
+        progress.update( 10, "", "Loading Yellow Channels", "" )
         if isPakistani and not isYellowOff=="true":        
             #addDir(Colored('EboundServices Channels','EB',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon
             try:
+                
                 ret_match=AddChannelsFromEbound();#AddChannels()
+                progress.update( 20, "", "Loading Yellow Channels", "" )
                 print 'ret_match',ret_match
             except:
                 traceback.print_exc(file=sys.stdout)
@@ -1525,10 +1533,11 @@ def AddEnteries(name, type=None):
 #        addDir(Colored('Other sources','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)
         try:
             ctype=1 if name=='Pakistani Live Channels' else ( 2 if name=='Indian Live Channels' else 3)
-            AddChannelsFromOthers(ctype,ret_match)
+            AddChannelsFromOthers(ctype,ret_match,progress)
         except:
             print 'somethingwrong'
             traceback.print_exc(file=sys.stdout)
+        progress.close()
     return
 
 
@@ -1620,11 +1629,39 @@ def getiptvchannels(gen):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
-            
-def AddChannelsFromOthers(cctype,eboundMatches=[]):
+
+def storeCacheData(data, fname):
+    if DONOTCACHE: return
+    now=time()
+    sessiondata=json.loads('{"cache":[{"time":%s}]}'%str(now))
+    sessiondata["cache"][0]["data"]=data
+    with open(fname, 'w') as txtfile:
+        json.dump(sessiondata, txtfile)
+    print 'file saved',fname
+    
+def getCacheData(fname, timeout=0):
+    if DONOTCACHE: return None
+    with open(fname) as data_file:
+        data = json.loads(data_file.read())
+    currentime=0
+    time_init = float(data["cache"][0]["time"]);
+    now=time()
+    # update 12h
+    if (now - time_init)>timeout:
+        return None
+    else:
+        print 'returning data'
+        return data["cache"][0]["data"]
+        
+        
+    
+    
+def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
 
     isv3Off=selfAddon.getSetting( "isv3Off" )
+    isv3Off="true"
     isv5Off=selfAddon.getSetting( "isv5Off" )
+    isv5Off="true"
     isv6Off=selfAddon.getSetting( "isv6Off" )
     isv7Off=selfAddon.getSetting( "isv7Off" )
     isv8Off=selfAddon.getSetting( "isv8Off" )
@@ -1807,6 +1844,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+            progress.update( 20, "", "Loading v3", "" )
             xmldata=getPV2Url()
             sources=etree.fromstring(xmldata)
             ret=[]
@@ -1824,6 +1862,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
 
     if ptcgen:
         try:
+            progress.update( 60, "", "Loading v6 Channels", "" )
             rematch=getptcchannels(ptcgen)
             if len(rematch)>0:
                 match+=rematch
@@ -1832,6 +1871,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
 
     if paktvgen:
         try:
+            progress.update( 70, "", "Loading v7 Channels", "" )
             rematch=getPakTVChannels(paktvgen)
             if len(rematch)>0:
                 match+=rematch
@@ -1840,6 +1880,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
 
     if unitvgen:
         try:
+            progress.update( 80, "", "Loading v8 Channels", "" )
             rematch=getUniTVChannels(unitvgen)
             if len(rematch)>0:
                 match+=rematch
@@ -1849,6 +1890,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[]):
             
     if iptvgen:
         try:
+            progress.update( 90, "", "Loading v9 Channels", "" )
             rematch=getiptvchannels(iptvgen)
             if len(rematch)>0:
                 match+=rematch
@@ -2034,6 +2076,19 @@ def get_dag_url(page_data):
     return final_url
 
 def getPTCUrl():
+
+    
+
+    fname='ptcpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,2*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+
     req = urllib2.Request( base64.b64decode('aHR0cDovL3N0cmVhbWlmeWZhZ2FpbmMuYXBwc3BvdC5jb20vaW9zL3Bha3R2L3Bha3R2Lmpzb24=') )      
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("Y29tLm1hYWlkcGsuUGFrVHZDb25uZWN0aWZ5LzQuMiBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
     response = urllib2.urlopen(req)
@@ -2044,9 +2099,52 @@ def getPTCUrl():
     data=base64.b64decode(decodeddata)[:-1]
     pos = data.rfind(',')
     data=data[:pos]
-    return json.loads(data+']}]}')
+    jsondata= json.loads(data+']}]}')
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'ptc file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
 
+def clearCache():
+
+    files=[]
+    fname='paktvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]    
+
+    fname='ptcpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]    
+
+    fname='unitvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]    
+    
+    
+    for f in files:
+        delfile(f)
+
+    line1 = "Cache cleared."
+    xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,3000  , __icon__))        
+    
+def delfile(fname):
+    try:
+        os.remove(fname)
+    except: pass
 def getPakTVPage():
+
+    fname='paktvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,3*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+    
     req = urllib2.Request( base64.b64decode('aHR0cDovL3NtYXJ0ZXJsb2dpeC5jb20vaW9zU2VjdXJlQXBwcy9QYWtUVi9WMS0zL21haW5Db250ZW50LnBocA==') )      
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrVFYvMS4zLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
     req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
@@ -2062,15 +2160,35 @@ def getPakTVPage():
     req = urllib2.Request( dataUrl)      
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrVFYvMS4zLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
     req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
+    print 'getting paktvpage'
     response = urllib2.urlopen(req)
     link=response.read()
-
+    print 'reading paktvpage'
     d=base64.b64decode(link)    
+    print 'decoded paktvpage'
     decrypted_data = cryptor.decrypt(d, base64.b64decode("YkFuZ3I0bDF0dGwzNTY3"))
+    print 'decrypted paktvpage'
     #print decrypted_data
-    return json.loads(decrypted_data)
+    jsondata=json.loads(decrypted_data)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'paktv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
+        
 
 def getUniTVPage():
+    fname='unitvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,4*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
     req = urllib2.Request( base64.b64decode('aHR0cDovL3VuaXZlcnNhbHR2LmRkbnMubmV0L1VuaXZlcnNhbC1UVi1IRC9jbXMvWFZlci9nZXRDb250dFYxLTAucGhw') )      
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsVFZIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
     req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWpOMGRtVnljMkZzT21SeVFHY3diakZ2YzBBM09EWT0=")) 
@@ -2092,7 +2210,13 @@ def getUniTVPage():
     d=base64.b64decode(link)    
     decrypted_data = cryptor.decrypt(d, base64.b64decode("dGVsYzA5OVBAc3N3b3JkNzg2"))
     #print decrypted_data
-    return json.loads(decrypted_data)
+    jsondata=json.loads(decrypted_data)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'unitv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
     
 def getPV2Url():
     import base64
@@ -3069,6 +3193,9 @@ try:
 	elif mode==53 :
 		print "Play url is "+url
 		AddUniTVSports(url)         
+	elif mode==54 :
+		print "Play url is "+url
+		clearCache()
         
 except:
 	print 'somethingwrong'
