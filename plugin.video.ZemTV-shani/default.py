@@ -198,6 +198,7 @@ def Addtypes():
 	addDir('Pakistani Live Channels' ,'PakLive' ,2,'')
 	addDir('Indian Live Channels' ,'IndianLive' ,2,'')
 	addDir('Punjabi Live Channels' ,'PunjabiLive' ,2,'')
+	addDir('Movies' ,'movies',36,'')
 	addDir('Sports' ,'Live' ,13,'')
 	addDir('Settings' ,'Live' ,6,'',isItFolder=False)
 	addDir('Clear Cache' ,'Live' ,54,'',isItFolder=False)
@@ -396,7 +397,7 @@ def AddSports(url):
     addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
     addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
-#    addDir('PV2 Sports' ,'sss',36,'')
+#    addDir('PV2 Sports' ,'sports',36,'')
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
 
@@ -535,16 +536,46 @@ def GetSSSEvents(url):
         except: traceback.print_exc(file=sys.stdout)
         
     except: traceback.print_exc(file=sys.stdout)
-def AddPv2Sports(url=None):
+def AddPv2Sports(url):
+
     xmldata=getPV2Url()
     sources=etree.fromstring(xmldata)
     ret=[]
+    isMovies=False
+    colors=['blue']
+    if 'movies'== url:
+        url='latest movies,indian movies,english movies'.split(',')
+        colors=['blue','red','green']
+        isMovies=True
+    else:
+        url=[url]
+    res=[]
     for source in sources.findall('items'):
-        if source.findtext('programCategory').lower()=='sports':
+        if source.findtext('programCategory').lower() in url:
             cname=source.findtext('programTitle')
             cid=source.findtext('programURL')
             cimage=source.findtext('programImage')
-            addDir(cname ,base64.b64encode(cid),37,cimage, False, True,isItFolder=False)
+            seq=cname
+            if isMovies:
+                seq=str(url.index(source.findtext('programCategory').lower()))
+            ret.append((cname ,seq, cid ,cimage))   
+                
+        
+    if len(ret)>0:
+        ret=sorted(ret,key=lambda s: s[1].lower()   )
+
+    seq=""
+    prevseq="n"
+
+    col=colors[0]
+    for r in ret:
+        seq=r[1]        
+        if seq.isdigit() and prevseq<>seq:
+            col=colors[int(seq)]
+            addDir(Colored(url[int(seq)].capitalize(),col),'',37,'', False, True,isItFolder=True)            
+        prevseq=seq    
+        addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
+            
 def AddPakTVSports(url=None):
     for cname,ctype,curl,imgurl in getPakTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
@@ -580,7 +611,9 @@ def AddUniTVSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return        
-            
+
+
+    
 def AddStreamSports(url=None):
     jsondata=getUrl('http://videostream.dn.ua/list/GetLeftMenuShort?lng=en')
     sources= json.loads(jsondata)
@@ -3199,7 +3232,7 @@ try:
 	elif mode==54 :
 		print "Play url is "+url
 		clearCache()
-        
+
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
