@@ -385,20 +385,21 @@ def AddSports(url):
         m=11 if ty=='manual' else 33
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
-    addDir('IPTV Sports' ,'sss',46,'')
+#    addDir('IPTV Sports' ,'sss',46,'')
+    addDir('PTC sports' ,'sss',51,'')
+    addDir('Paktv sports' ,'sss',52,'')
+    addDir('UniTV sports' ,'sss',53,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
-    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
+#    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
     addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
     addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
-    addDir('PV2 Sports' ,'sss',36,'')
+#    addDir('PV2 Sports' ,'sss',36,'')
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
-    addDir('PTC sports' ,'sss',51,'')
-    addDir('Paktv sports' ,'sss',52,'')
-    addDir('UniTV sports' ,'sss',53,'')
+
     
     
     
@@ -1369,7 +1370,7 @@ def PlayWatchCric(url):
         c='kaskatijaEkonomista'
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5saXZlZmxhc2hwbGF5ZXIubmV0L3Jlc291cmNlcy9zY3JpcHRzL2ZwbGF5ZXIuc3dm')
         sitename='www.liveflashplayer.net'
-        loadbalanacername=sitename
+        loadbalanacername='www.liveflashpublisher.com'
         pat_e=' g=\'(.*?)\';'
         app='stream'
         pat_js='channel=\'(.*?)\''
@@ -1391,7 +1392,7 @@ def PlayWatchCric(url):
         ccommand='%s;FALSE;FALSE;' #stop sending and waiting
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5zdHJlYW1pZnlwbGF5ZXIuY29tL3Jlc291cmNlcy9zY3JpcHRzL2VwbGF5ZXIuc3dm')
         sitename='www.streamifyplayer.com'
-        loadbalanacername=sitename
+        loadbalanacername='www.streamifypublisher.com'
         pat_e='channel.*?g=\'(.*?)\''
         app='live'
         pat_js='channel=\'(.*?)\''
@@ -1417,6 +1418,7 @@ def PlayWatchCric(url):
     progress.update( 40, "", "Building request links..", "" )
         
     match_urljs =re.findall(pat_js,link)[0]
+    match_code =match_urljs
     try:
         width='620'
         height='430'
@@ -1430,7 +1432,7 @@ def PlayWatchCric(url):
 #    print 'width,height',width,height
     #print link
     match_e =re.findall(pat_e,link)[0]
-    
+#    print 'match_e',match_e,match_urljs
     match_urljs=('http://%s/embedplayer/'%sitename)+match_urljs+'/'+match_e+'/'+width+'/'+height
     
     
@@ -1447,7 +1449,7 @@ def PlayWatchCric(url):
     if 'pk=' in match_flash:
         matchid+="&pk="+match_flash.split('pk=')[1].split('\'')[0].split('\"')[0]
     
-    lb_url='http://%s:1935/loadbalancer?%s'%(loadbalanacername,matchid)
+    lb_url='http://%s:1935/loadbalancer?%s'%(loadbalanacername,match_code)
         
     req = urllib2.Request(lb_url)
     req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
@@ -2273,6 +2275,7 @@ def getiptvmac():
     maccode= (random.choice(macs))
 
     return maccode,base64.b64decode("aHR0cDovL213MS5pcHR2NjYudHY=")
+#    return maccode,base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
 
 def PlayiptvLink(url):
     progress = xbmcgui.DialogProgress()
