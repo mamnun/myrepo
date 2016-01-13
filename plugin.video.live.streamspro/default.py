@@ -2725,7 +2725,7 @@ elif mode==17:
                 
 #            ln+='</item>'
 #        print 'ln',ln
-        addon_log(ln)
+        addon_log(repr(ln))
         getData('','',ln)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
     else:
