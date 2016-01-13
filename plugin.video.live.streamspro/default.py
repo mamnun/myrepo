@@ -2661,7 +2661,7 @@ elif mode==17:
     data=None
     if regexs and 'listrepeat' in urllib.unquote_plus(regexs):
         listrepeat,ret,m,regexs =getRegexParsed(regexs, url)
-#        print listlink,listtitle,listthumbnail,ret
+        #print listrepeat,ret,m,regexs
         d=''
 #        print 'm is' , m
 #        print 'regexs',regexs
@@ -2693,13 +2693,21 @@ elif mode==17:
                                         if type(the_value) is dict:
                                             for the_keyl, the_valuel in the_value.iteritems():
                                                 if the_valuel is not None:
-                                                    the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )                                            
+                                                    if isinstance(obj,tuple):
+                                                        the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                    else:
+                                                        the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
                                         else:
-                                            the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                            if isinstance(obj,tuple):
+                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                            else:
+                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
                     if isinstance(obj,tuple):
+
                         listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
                     else:
                         listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8')) 
+#                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
                 
                 #newcopy = urllib.quote(repr(newcopy))
@@ -2716,7 +2724,8 @@ elif mode==17:
 #            print newcopy
                 
 #            ln+='</item>'
-        #create xml here
+#        print 'ln',ln
+        addon_log(ln)
         getData('','',ln)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
     else:
