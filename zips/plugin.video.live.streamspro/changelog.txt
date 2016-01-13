@@ -1,3 +1,6 @@
+Version 2.0.2
+googleReCaptcha function implemented
+
 Version 2.0.1
 Bug fix in listrepeat for single items. also now param0 is available which will be row number
 
