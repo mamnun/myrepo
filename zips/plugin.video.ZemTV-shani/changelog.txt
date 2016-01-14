@@ -1,3 +1,6 @@
+[B]Version 4.1.7[/B]
+    -KTN news
+    
 [B]Version 4.1.6[/B]
     -movies section
     

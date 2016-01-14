@@ -1027,15 +1027,16 @@ def getMatchUrl(matchid):
         
 def PlaySSSEvent(url):
 
-
-    murl=base64.b64decode('aHR0cDovL3d3dy5zdXBlcnNwb3J0LmNvbS92aWRlby9wbGF5ZXJsaXZlanNvbi5hc3B4P3ZpZD0lcw==')
-    matchid=url.split('/')[-1]
-    match_url=murl%matchid
-    match_json=getUrl(match_url)
-    match=json.loads(match_json)
-    matchurl=match['result']['services']['videoURL']
- 
-    finalUrl=getdecSSMatchUrl(matchurl,'LIVE')
+    if 1==1:
+        murl=base64.b64decode('aHR0cDovL3d3dy5zdXBlcnNwb3J0LmNvbS92aWRlby9wbGF5ZXJsaXZlanNvbi5hc3B4P3ZpZD0lcw==')
+        matchid=url.split('/')[-1]
+        match_url=murl%matchid
+        match_json=getUrl(match_url)
+        match=json.loads(match_json)
+        matchurl=match['result']['services']['videoURL']
+     
+        finalUrl=getdecSSMatchUrl(matchurl,'LIVE')
+    #finalUrl='http://nowweb-lh.akamaihd.net/z/SS1_1@309701/manifest.f4m?hdcore=3.8.0&g=XIIDEIONSTNW&plugin=aasp-3.8.0.52.27'
     if 'manifest.f4m' in finalUrl:
         maxbitrate='0'
         maxbitrate_settings=selfAddon.getSetting('defualtSSSBitRate')
@@ -1833,6 +1834,9 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             match.append((base64.b64decode('R2VvIFRleiB2Mg=='),'manual',base64.b64decode('cHYyOkdlbyB0ZXp6'),''))
             match.append((base64.b64decode('S1ROIHYy'),'manual',base64.b64decode('cHYyOktUTg=='),''))
             match.append((base64.b64decode('S1ROIE5FV1MgdjI='),'manual',base64.b64decode('cHYyOktUTiBORVdT'),''))
+            
+            match.append((base64.b64decode('S1ROIEVudC4gKHdlYnNpdGUp'),'manual','direct:'+"rtmp://103.24.96.74/ktn/ playpath=ktn swfUrl=http://ktntv.tv/wp-content/player/jwplayer.flash.swf pageUrl=http://www.ktntv.tv/ live=1",''))
+            match.append((base64.b64decode('S1ROIE5FV1MgKHdlYnNpdGUp'),'manual','direct:'+"rtmp://103.24.96.74/ktn/ playpath=ktnnews swfUrl=http://ktntv.tv/wp-content/player/jwplayer.flash.swf pageUrl=http://www.ktnnews.tv/ live=1",''))
             match.append(('Makkah (youtube)','manual','','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'ArVmnth5jB4'))
             match.append(('Madina (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'4OoKpZWJASY',''))
             
@@ -1940,6 +1944,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         if 1==1:#ctype=='liveWMV' or ctype=='manual':
 #            print curl
             #if ctype<>'': cname+= '[' + ctype+']'
+            if isv3Off and curl.startswith('pv2:'):
+                continue
             cname=cname.encode('ascii', 'ignore').decode('ascii')
             if ctype.startswith('ebmode:'):
                 ctype=ctype.split(':')[1]
