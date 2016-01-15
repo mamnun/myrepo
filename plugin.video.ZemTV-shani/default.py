@@ -578,7 +578,7 @@ def AddPv2Sports(url):
         addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
             
 def AddPakTVSports(url=None):
-    for cname,ctype,curl,imgurl in getPakTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
+    for cname,ctype,curl,imgurl in getPakTVChannels(['Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -590,7 +590,7 @@ def AddPakTVSports(url=None):
     return    
                    
 def AddPTCSports(url=None):
-    for cname,ctype,curl,imgurl in getptcchannels([],True):
+    for cname,ctype,curl,imgurl in getptcchannels(['Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -1235,6 +1235,7 @@ def AddWillowCric(url):
             addDir('  Source 4' ,'%s:4'%str(matchid),21,'', False, True,isItFolder=False)		#name,url,mode,icon
 
         addDir(Colored('Live Games','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
+#        print 'matches',matches
         if matches["result"]["live"]:
             live_games=matches["result"]["live"]
             for game in live_games:
@@ -1251,8 +1252,10 @@ def AddWillowCric(url):
                     url=base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYvRXZlbnRNZ210LyVzVVJMLmFzcD9taWQ9JXM=')%(st,match_id)
                     videoPage = getUrl(url,cookieJar=cookieJar)
                     videos=json.loads(videoPage)
-                    for video in videos["roku"]["URL"]:
-                        addDir(Colored('Source %s %s '%(str(video["priority"]), video["player"]),'ZM',True) +entry_name ,match_id+':'+str(video["priority"]),21,'', False, True,isItFolder=False)		#name,url,mode,icon
+                    print 'videos',videos
+                    if "roku" in videos:
+                        for video in videos["roku"]["URL"]:
+                            addDir(Colored('Source %s %s '%(str(video["priority"]), video["player"]),'ZM',True) +entry_name ,match_id+':'+str(video["priority"]),21,'', False, True,isItFolder=False)		#name,url,mode,icon
 #                else:
 #                    addDir(entry_name ,match_id,21,'', False, True,isItFolder=False)		#name,url,mode,icon           
         else:
@@ -1621,7 +1624,7 @@ def getUniTVChannels(categories, forSports=False):
         xmldata=getUniTVPage()
 #        print xmldata
         for source in xmldata:#Cricket#
-            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 ss=source
                 cname=ss["channelName"]
                 if 'ebound.tv' in ss["channelLink"]:
@@ -1645,7 +1648,7 @@ def getptcchannels(categories, forSports=False):
         import iptv
         xmldata=getPTCUrl()
         for source in xmldata["channelsCategories"]:
-            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 for ss in source["channels"]:
                     cname=ss["name"]
                     if 'ebound.tv' in ss["url"]:
@@ -1879,7 +1882,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
-        ptcgen=['News','Entertainment','Islamic ','Cooking']
+        ptcgen=['News','Entertainment','Islamic','Cooking']
         paktvgen=['News','Islamic','Cooking']
         unitvgen=['News','Relegious','Cooking','PAK&IND']
     elif cctype==2:
