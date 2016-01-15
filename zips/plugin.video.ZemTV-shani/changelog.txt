@@ -1,3 +1,6 @@
+[B]Version 4.1.8[/B]
+    -SS is back...but hardcoded ids
+    
 [B]Version 4.1.7[/B]
     -KTN news
     

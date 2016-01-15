@@ -501,23 +501,24 @@ def GetSSSEvents(url):
         
 #        print 'channels_string',channels_string
         channels = json.loads(channels_string)
-#        print channels
+        print channels
 
         
 #            sid=series["Id"]
         addDir('Maxbitrate Settings' ,'Live' ,6,'',isItFolder=False)
-        
-        addDir(Colored('Live Events','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon   
-        try:
-            for channel in channels["EventLiveStreamNow"]:
-                if channel["IsLiveNow"]:
-                    ptitle=channel["Title"]
-                    cname=channel["Channel"]
-                    link=channel["Link"]
+  
+        if 1==2:
+            addDir(Colored('Live Events[NOT WORKING]','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon   
+            try:
+                for channel in channels["EventLiveStreamNow"]:
+                    if channel["IsLiveNow"]:
+                        ptitle=channel["Title"]
+                        cname=channel["Channel"]
+                        link=channel["Link"]
 
-        #            addDir(cname ,'a',27,'', False, True,isItFolder=False)
-                    addDir('  '+cname + ' ' + ptitle ,link,35,'', False, False,isItFolder=False)
-        except: traceback.print_exc(file=sys.stdout)
+            #            addDir(cname ,'a',27,'', False, True,isItFolder=False)
+                        addDir('  '+cname + ' ' + ptitle ,link,35,'', False, False,isItFolder=False)
+            except: traceback.print_exc(file=sys.stdout)
 
         addDir(Colored('Channels','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon   
         try:
@@ -1027,7 +1028,7 @@ def getMatchUrl(matchid):
         
 def PlaySSSEvent(url):
 
-    if 1==1:
+    if 1==2:
         murl=base64.b64decode('aHR0cDovL3d3dy5zdXBlcnNwb3J0LmNvbS92aWRlby9wbGF5ZXJsaXZlanNvbi5hc3B4P3ZpZD0lcw==')
         matchid=url.split('/')[-1]
         match_url=murl%matchid
@@ -1036,7 +1037,22 @@ def PlaySSSEvent(url):
         matchurl=match['result']['services']['videoURL']
      
         finalUrl=getdecSSMatchUrl(matchurl,'LIVE')
-    #finalUrl='http://nowweb-lh.akamaihd.net/z/SS1_1@309701/manifest.f4m?hdcore=3.8.0&g=XIIDEIONSTNW&plugin=aasp-3.8.0.52.27'
+#    print 'aaaaaaaaaaaaaaaaaaaa',name.strip()
+    sts=[base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzFfMUAzMDk3MDEvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVhTU0NVQVBSRkVPUSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzJfMUAzMDk2OTYvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdVVFhIVFpUVlFKTiZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzNfMUAzMDk2OTcvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPU1SS0tOVVRNTktUSiZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzRfMUAzMDk2OTkvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdLVkNKWE5FVVRLUCZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzVfMUAzMDk3MDQvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdLVkNKWE5FVVRLUCZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzZfMUAzMDk3MDAvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVdSSkZYWkRMQk5HSSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
+    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzdfMUAzMDk3MDMvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVlUQllTS0pMV0hZRSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw==")]
+
+    n=0
+    finalUrl=""
+    if name.strip().startswith('SS'):
+       nm= int(name.strip().split(' ')[0].replace('SS',''))-1
+       finalUrl=sts[nm]
+
+    #SS2_1@27052#
     if 'manifest.f4m' in finalUrl:
         maxbitrate='0'
         maxbitrate_settings=selfAddon.getSetting('defualtSSSBitRate')
