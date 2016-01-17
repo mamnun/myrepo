@@ -1085,6 +1085,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                                 urllib2.install_opener(urllib2.build_opener(current_proxies))
                             
                             link=javascriptUnEscape(link)
+                            #print repr(link)
                             #print link This just print whole webpage in LOG
                             if 'includeheaders' in m:
                                 #link+=str(response.headers.get('Set-Cookie'))
@@ -1110,6 +1111,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             if forCookieJarOnly:
                                 return cookieJar# do nothing
                             link=val
+                            link=javascriptUnEscape(link)
                         else:
                             link=m['page']
                 if '$pyFunction:playmedia(' in m['expres'] or 'ActivateWindow'  in m['expres']  or '$PLAYERPROXY$=' in url  or  any(x in url for x in g_ignoreSetResolved):
