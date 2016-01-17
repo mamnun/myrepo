@@ -1,3 +1,6 @@
+Version 2.0.7
+language support in recaptcha
+
 Version 2.0.6
 support google uncaptcha recaptcha with user input
 

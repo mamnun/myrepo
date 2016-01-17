@@ -214,12 +214,12 @@ def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None, noredir=Fals
     return link;
 
 class UnCaptchaReCaptcha:
-    def processCaptcha(self, key):
+    def processCaptcha(self, key,lang):
         
         headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
                  ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
                  ("Referer", "https://www.google.com/recaptcha/api2/demo"),
-                 ("Accept-Language", "en")];
+                 ("Accept-Language", lang)];
 
         html=getUrl("http://www.google.com/recaptcha/api/fallback?k=" + key,headers=headers);
         token=""
@@ -249,7 +249,7 @@ class UnCaptchaReCaptcha:
             headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
                  ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
                  ("Referer", "http://www.google.com/recaptcha/api/fallback?k=" + key),
-                 ("Accept-Language", "en")];
+                 ("Accept-Language", lang)];
                
             cval=re.findall('name="c" value="(.*?)"',html)[0]
             captcha_imgurl = "https://www.google.com"+payload.replace('&amp;','&')
@@ -275,7 +275,7 @@ class UnCaptchaReCaptcha:
         return token
 
 
-def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)"'):
+def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)"',lang="en"):
 
     headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
          ("Referer", "http://www.livetv.tn/")];
@@ -285,7 +285,7 @@ def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)
     token=""
     if len(sitekey)>=1:
         c=UnCaptchaReCaptcha()
-        token=c.processCaptcha(sitekey[0])
+        token=c.processCaptcha(sitekey[0],lang)
         if returnpage:
             headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
              ("Referer", sitename)];
