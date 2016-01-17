@@ -1,3 +1,6 @@
+Version 2.0.6
+support google uncaptcha recaptcha with user input
+
 Version 2.0.5
 vipracing to return "" if playpath is ""
 
