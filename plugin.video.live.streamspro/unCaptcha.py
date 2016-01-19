@@ -33,7 +33,14 @@ class cInputWindow(xbmcgui.WindowDialog):
         self.addControl(self.strActionInfo)
         
         self.cptloc = kwargs.get('captcha')
-        self.img = xbmcgui.ControlImage(335,200,624,400,self.cptloc)
+        #self.img = xbmcgui.ControlImage(335,200,624,400,self.cptloc)
+        imgw=400
+        imgh=300
+        imgX=335
+        imgY=200
+        pw=imgw/3
+        ph=imgh/3
+        self.img = xbmcgui.ControlImage(imgX,imgY,imgw,imgh,self.cptloc)
         self.addControl(self.img)
         
         self.chk=[0]*9
@@ -41,47 +48,33 @@ class cInputWindow(xbmcgui.WindowDialog):
         self.chkstate=[False]*9
         
         #self.chk[0] = xbmcgui.ControlCheckMark(335,200,200,200,'select',checkWidth=30, checkHeight=30)
-        if 1==2:
-            self.chk[0]= xbmcgui.ControlCheckMark(335, 190, 220, 150, '1', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[1]= xbmcgui.ControlCheckMark(335+200, 190, 220, 150, '2', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[2]= xbmcgui.ControlCheckMark(335+400, 190, 220, 150, '3', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            
-            self.chk[3]= xbmcgui.ControlCheckMark(335, 190+130, 220, 150, '4', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[4]= xbmcgui.ControlCheckMark(335+200, 190+130, 220, 150, '5', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[5]= xbmcgui.ControlCheckMark(335+400, 190+130, 220, 150, '6', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-          
-            
-            self.chk[6]= xbmcgui.ControlCheckMark(335, 190+260, 220, 150, '7', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[7]= xbmcgui.ControlCheckMark(335+200, 190+260, 220, 150, '8', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[8]= xbmcgui.ControlCheckMark(335+400, 190+260, 220, 150, '9', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-        else:
         
-            self.chk[0]= xbmcgui.ControlImage(335, 190, 220, 150,check_image)# '', font='font1',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[1]= xbmcgui.ControlImage(335+200, 190, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[2]= xbmcgui.ControlImage(335+400, 190, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            
-            self.chk[3]= xbmcgui.ControlImage(335, 190+130, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[4]= xbmcgui.ControlImage(335+200, 190+130, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[5]= xbmcgui.ControlImage(335+400, 190+130, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-          
-            
-            self.chk[6]= xbmcgui.ControlImage(335, 190+260, 220, 150,check_image)#, '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[7]= xbmcgui.ControlImage(335+200, 190+260, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
-            self.chk[8]= xbmcgui.ControlImage(335+400, 190+260, 220, 150,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[0]= xbmcgui.ControlImage(imgX,imgY, pw, ph,check_image)# '', font='font1',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[1]= xbmcgui.ControlImage(imgX+pw,imgY, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[2]= xbmcgui.ControlImage(imgX+pw+pw,imgY, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
         
+        self.chk[3]= xbmcgui.ControlImage(imgX,imgY+ph, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[4]= xbmcgui.ControlImage(imgX+pw,imgY+ph, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[5]= xbmcgui.ControlImage(imgX+pw+pw,imgY+ph, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+      
         
-            self.chkbutton[0]= xbmcgui.ControlButton(335, 190, 210, 150, '1', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[1]= xbmcgui.ControlButton(335+200, 190, 220, 150, '2', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[2]= xbmcgui.ControlButton(335+400, 190, 220, 150, '3', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            
-            self.chkbutton[3]= xbmcgui.ControlButton(335, 190+130, 210, 150, '4', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[4]= xbmcgui.ControlButton(335+200, 190+130, 220, 150, '5', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[5]= xbmcgui.ControlButton(335+400, 190+130, 220, 150, '6', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-          
-            
-            self.chkbutton[6]= xbmcgui.ControlButton(335, 190+260, 210, 150, '7', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[7]= xbmcgui.ControlButton(335+200, 190+260, 220, 150, '8', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
-            self.chkbutton[8]= xbmcgui.ControlButton(335+400, 190+260, 220, 150, '9', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chk[6]= xbmcgui.ControlImage(imgX,imgY+ph+ph, pw, ph,check_image)#, '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[7]= xbmcgui.ControlImage(imgX+pw,imgY+ph+ph, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+        self.chk[8]= xbmcgui.ControlImage(imgX+pw+pw,imgY+ph+ph, pw, ph,check_image)# '', font='font14',focusTexture=check_image ,noFocusTexture=uncheck_image,checkWidth=220,checkHeight=150)
+    
+    
+        self.chkbutton[0]= xbmcgui.ControlButton(imgX,imgY, pw, ph, '1', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[1]= xbmcgui.ControlButton(imgX+pw,imgY, pw, ph, '2', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[2]= xbmcgui.ControlButton(imgX+pw+pw,imgY, pw, ph, '3', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        
+        self.chkbutton[3]= xbmcgui.ControlButton(imgX,imgY+ph, pw, ph, '4', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[4]= xbmcgui.ControlButton(imgX+pw,imgY+ph, pw, ph, '5', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[5]= xbmcgui.ControlButton(imgX+pw+pw,imgY+ph, pw, ph, '6', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+      
+        
+        self.chkbutton[6]= xbmcgui.ControlButton(imgX,imgY+ph+ph, pw, ph, '7', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[7]= xbmcgui.ControlButton(imgX+pw,imgY+ph+ph, pw, ph, '8', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
+        self.chkbutton[8]= xbmcgui.ControlButton(imgX+pw+pw,imgY+ph+ph, pw, ph, '9', font='font1');#,focusTexture=check_image ,noFocusTexture=uncheck_image);#,checkWidth=220,checkHeight=150)
             
         
 
@@ -96,8 +89,8 @@ class cInputWindow(xbmcgui.WindowDialog):
         
         #self.chk[0].setSelected(False)
         
-        self.cancelbutton = xbmcgui.ControlButton(335+312-100,610,100,40,'Cancel',alignment=2)
-        self.okbutton = xbmcgui.ControlButton(335+312+50,610,100,40,'OK',alignment=2)
+        self.cancelbutton = xbmcgui.ControlButton(imgX+(imgw/2)-110,imgY+imgh+10,100,40,'Cancel',alignment=2)
+        self.okbutton = xbmcgui.ControlButton(imgX+(imgw/2)+10,imgY+imgh+10,100,40,'OK',alignment=2)
         self.addControl(self.okbutton)
         self.addControl(self.cancelbutton)
 
@@ -218,7 +211,7 @@ class UnCaptchaReCaptcha:
         
         headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
                  ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
-                 ("Referer", "https://www.google.com/recaptcha/api2/demo"),
+                ("Referer", "https://www.google.com/recaptcha/api2/demo/"),
                  ("Accept-Language", lang)];
 
         html=getUrl("http://www.google.com/recaptcha/api/fallback?k=" + key,headers=headers);
@@ -277,9 +270,7 @@ class UnCaptchaReCaptcha:
 
 def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)"',lang="en"):
 
-    headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
-         ("Referer", "http://www.livetv.tn/")];
-     
+
     sitepage=getUrl(sitename,cookieJar=cj)
     sitekey=re.findall(captcharegex,sitepage)
     token=""
