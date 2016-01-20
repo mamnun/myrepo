@@ -211,7 +211,7 @@ class UnCaptchaReCaptcha:
         
         headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
                  ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"),
-                ("Referer", "https://www.google.com/recaptcha/api2/demo/"),
+                ("Referer", "https://www.google.com/recaptcha/api2/demo"),
                  ("Accept-Language", lang)];
 
         html=getUrl("http://www.google.com/recaptcha/api/fallback?k=" + key,headers=headers);
@@ -268,18 +268,21 @@ class UnCaptchaReCaptcha:
         return token
 
 
-def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)"',lang="en"):
+def performCaptcha(sitename,cj,returnpage=True,captcharegex='data-sitekey="(.*?)"',lang="en",headers=None):
 
 
-    sitepage=getUrl(sitename,cookieJar=cj)
+    sitepage=getUrl(sitename,cookieJar=cj,headers=headers)
     sitekey=re.findall(captcharegex,sitepage)
     token=""
     if len(sitekey)>=1:
         c=UnCaptchaReCaptcha()
         token=c.processCaptcha(sitekey[0],lang)
         if returnpage:
-            headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
-             ("Referer", sitename)];
+            if headers==None:
+                headers=[("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:37.0) Gecko/20100101 Firefox/37.0"),
+                 ("Referer", sitename)];
+            else:
+                headers+=[("Referer", sitename)]
             sitepage=getUrl(sitename,cookieJar=cj,post=urllib.urlencode({"g-recaptcha-response":token}),headers=headers)
             
     if returnpage:
