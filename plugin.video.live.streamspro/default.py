@@ -1720,7 +1720,9 @@ def doEval(fun_call,page_data,Cookie_Jar,m):
     exec ('ret_val='+fun_call)
 #    print ret_val
     #exec('ret_val=1+1')
-    return str(ret_val)
+    try:
+        return str(ret_val)
+    except: return ret_val
 
 def doEvalFunction(fun_call,page_data,Cookie_Jar,m):
 #    print 'doEvalFunction'
@@ -1732,7 +1734,9 @@ def doEvalFunction(fun_call,page_data,Cookie_Jar,m):
     f.close()
     import LSProdynamicCode
     ret_val=LSProdynamicCode.GetLSProData(page_data,Cookie_Jar,m)
-    return str(ret_val)
+    try:
+        return str(ret_val)
+    except: return ret_val
 
 
 def getGoogleRecaptchaResponse(captchakey, cj,type=1): #1 for get, 2 for post, 3 for rawpost
@@ -2696,19 +2700,30 @@ elif mode==17:
                                             for the_keyl, the_valuel in the_value.iteritems():
                                                 if the_valuel is not None:
                                                     if isinstance(obj,tuple):
-                                                        the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                        try:
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                        except: the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
                                                     else:
-                                                        the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                        try:
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                        except: the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj )
                                         else:
                                             if isinstance(obj,tuple):
-                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                try:
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].encode('utf-8') )
+                                                except: the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] ) 
                                             else:
-                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                try:
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                except: the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj )
                     if isinstance(obj,tuple):
-
-                        listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
+                        try:
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8'))
+                        except: listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i])
                     else:
-                        listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8')) 
+                        try:
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8')) 
+                        except: listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj)
 #                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
                 
