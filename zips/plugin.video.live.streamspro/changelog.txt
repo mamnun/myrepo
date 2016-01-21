@@ -1,3 +1,6 @@
+Version 2.0.9
+better unicode support in repeat list
+
 Version 2.0.8
 recaptcha improved
 
