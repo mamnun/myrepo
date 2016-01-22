@@ -2702,28 +2702,34 @@ elif mode==17:
                                                     if isinstance(obj,tuple):
                                                         try:
                                                             the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
-                                                        except: the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                        except: 
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] )
                                                     else:
                                                         try:
                                                             the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
-                                                        except: the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj )
+                                                        except:
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj)
                                         else:
                                             if isinstance(obj,tuple):
                                                 try:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].encode('utf-8') )
-                                                except: the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] ) 
+                                                     the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                except:
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] )
                                             else:
                                                 try:
                                                     the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
-                                                except: the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj )
+                                                except:
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj)
                     if isinstance(obj,tuple):
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8'))
-                        except: listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i])
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
+                        except:
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i]) 
                     else:
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8')) 
-                        except: listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj)
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8'))
+                        except: 
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj)
 #                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
                 
