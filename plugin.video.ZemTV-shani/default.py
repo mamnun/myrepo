@@ -1537,7 +1537,7 @@ def PlayGen(url,checkUrl=False):
         return
     if checkUrl and url.startswith('http'):
         headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
-        getUrl(url,timeout=5,headers=headers)
+        getUrl(url.split('|')[0],timeout=5,headers=headers)
     playlist = xbmc.PlayList(1)
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
