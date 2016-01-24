@@ -1887,7 +1887,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         iptvgen="pakistani"
         ptcgen=['News','Entertainment','Islamic','Cooking']
         paktvgen=['News','Islamic','Cooking']
-        unitvgen=['News','Relegious','Cooking','PAK&IND']
+        unitvgen=['News','Religious','Cooking','PAK&IND']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
