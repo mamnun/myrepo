@@ -1832,8 +1832,11 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 match.append(('Express Entertainment','manual','cid:793',''))
 
             match.append(('ETV Urdu','manual','etv',''))
-            match.append(('Ary Zindagi','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5emluZGFnaS50di8='),base64.b64decode('aHR0cDovL3d3dy5hcnl6aW5kYWdpLnR2L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE0LzEwL0ZpbmFsLWxvZ28tMi5naWY=')))
-            match.append(('QTV','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5cXR2LnR2Lw=='),base64.b64decode('aHR0cDovL2FyeXF0di50di93cC1jb250ZW50L3VwbG9hZHMvMjAxNC8xMi9hcnktcXR2LTEtY29weS5qcGc=')))
+            match.append(('Ary Zindagi (website)','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5emluZGFnaS50di8='),base64.b64decode('aHR0cDovL3d3dy5hcnl6aW5kYWdpLnR2L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE0LzEwL0ZpbmFsLWxvZ28tMi5naWY=')))
+            match.append(('Ary News (website)','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5bmV3cy50di8='),base64.b64decode('aHR0cDovL2FyeW5ld3MudHYvZW4vd3AtY29udGVudC91cGxvYWRzLzIwMTQvMDYvZmluYWwuZ2lm')))
+            match.append(('Ary Music (website)','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5bXVzaWsudHYv'),base64.b64decode('aHR0cDovL2FyeW11c2lrLnR2L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE0LzA4L2FyeW11c2lrLWxvZ28xLnBuZw==')))
+            match.append(('Ary Digital (website)','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5ZGlnaXRhbC50di8='),base64.b64decode('aHR0cDovL3d3dy5hcnlkaWdpdGFsLnR2L3dwLWNvbnRlbnQvdXBsb2Fkcy8yMDE0LzEyL2RpZ2l0YWwtbG9nby5naWY=')))
+            match.append(('QTV (website)','manual',base64.b64decode('aHR0cDovL2xpdmUuYXJ5cXR2LnR2Lw=='),base64.b64decode('aHR0cDovL2FyeXF0di50di93cC1jb250ZW50L3VwbG9hZHMvMjAxNC8xMi9hcnktcXR2LTEtY29weS5qcGc=')))
             
             match.append((base64.b64decode('RHVueWEgKHdlYnNpdGUp'),'manual',base64.b64decode('aHR0cDovL2ltb2IuZHVueWFuZXdzLnR2OjE5MzUvbGl2ZS9zbWlsOnN0cmVhbS5zbWlsL3BsYXlsaXN0Lm0zdTg='),''))
             match.append((base64.b64decode('TmV3cyBvbmUgKHdlYnNpdGUp'),'manual','direct:'+base64.b64decode('aHR0cDovL2Nkbi5lYm91bmQudHYvdHYvbmV3c29uZS9wbGF5bGlzdC5tM3U4'),''))
@@ -2157,16 +2160,29 @@ def getPTCUrl():
     decodeddata=maindata["Secret"]
     decodeddata='ew0KDQogI'.join(decodeddata.split('ew0KDQogI')[:-1])
     data=base64.b64decode(decodeddata)[:-1]
-    pos = data.rfind(',')
-    data=data[:pos]
-    jsondata= json.loads(data+']}]}')
+
+    if '"categoryName": "appsetting"' in data:
+        data=data.split('"categoryName": "appsetting"')[0]
+        print 'xxxxxxxxxxxxxxxxx',data[-100:]
+        print 'xxxxxxxxxxxxxxxxx end'
+        pos = data.rfind(',')
+        data=data[:pos]
+        pos = data.rfind(',')
+        data=data[:pos]
+        data+=']}'
+    else:
+        pos = data.rfind(',')
+        data=data[:pos]
+        data+=']}]}'
+    #print data 
+    jsondata= json.loads(data)
+    print jsondata
     try:
         storeCacheData(jsondata,fname)
     except:
         print 'ptc file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
-
 def clearCache():
 
     files=[]
@@ -2412,12 +2428,17 @@ def PlayOtherUrl ( url ):
     if "pv2:" in url:
         PlayPV2Link(url.split('pv2:')[1])
         return    
-    if url==base64.b64decode('aHR0cDovL2xpdmUuYXJ5emluZGFnaS50di8=') or url==base64.b64decode('aHR0cDovL2xpdmUuYXJ5cXR2LnR2Lw=='):
+    if url in [base64.b64decode('aHR0cDovL2xpdmUuYXJ5bmV3cy50di8='),
+            base64.b64decode('aHR0cDovL2xpdmUuYXJ5emluZGFnaS50di8='),
+            base64.b64decode('aHR0cDovL2xpdmUuYXJ5cXR2LnR2Lw=='),
+            base64.b64decode('aHR0cDovL2xpdmUuYXJ5bXVzaWsudHYv'),
+            base64.b64decode('aHR0cDovL2xpdmUuYXJ5ZGlnaXRhbC50di8=')]:
         req = urllib2.Request(url)
-#        req.add_header('User-Agent', base64.b64decode('VmVyaXNtby1CbGFja1VJXygyLjQuNy41LjguMC4zNCk=')) 
+        req.add_header('User-Agent', base64.b64decode('TW96aWxsYS81LjAgKFdpbmRvd3MgTlQgNi4xOyBXT1c2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzQ3LjAuMjUyNi4xMTEgU2FmYXJpLzUzNy4zNg==')) 
         response = urllib2.urlopen(req)
         link=response.read()
-        curlpatth='file: "(htt.*?)"' if 'qtv' not in url else 'file: \'(.*?)\''
+#        curlpatth='file: "(htt.*?)"' if 'qtv' not in url else 'file: \'(.*?)\''
+        curlpatth='file: [\'"](.*?)[\'"]'
         if curlpatth.startswith('rtmp'): curlpatth+=' timeout=20'
         progress.update( 50, "", "Preparing url..", "" )
         dag_url =re.findall(curlpatth,link)[0]
