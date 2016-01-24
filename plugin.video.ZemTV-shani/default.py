@@ -1535,7 +1535,7 @@ def PlayGen(url,checkUrl=False):
     if url.startswith('plugin://'):
         xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
         return
-    if checkUrl:
+    if checkUrl and url.startswith('http'):
         headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
         getUrl(url,timeout=5,headers=headers)
     playlist = xbmc.PlayList(1)
@@ -1607,7 +1607,7 @@ def getPakTVChannels(categories, forSports=False):
                 if 'ebound.tv' in ss["channelLink"]:
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
-                    curl='direct:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+                    curl='direct2:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
                 cimage=ss["categoryLogo"]
                 
                 if len([i for i, x in enumerate(ret) if x[0] ==cname +' v7' ])==0:                    
@@ -1654,7 +1654,7 @@ def getptcchannels(categories, forSports=False):
                     if 'ebound.tv' in ss["url"]:
                         curl='ebound2:'+ss["url"].replace(':1935','')
                     else:
-                        curl='direct:'+ss["url"]
+                        curl='direct2:'+ss["url"]
                     cimage=ss["imgurl"]
                     
                     if len([i for i, x in enumerate(ret) if x[0] ==cname +' v6' ])==0:                    
@@ -2158,22 +2158,24 @@ def getPTCUrl():
     link=response.read()
     maindata=json.loads(link)
     decodeddata=maindata["Secret"]
-    decodeddata='ew0KDQogI'.join(decodeddata.split('ew0KDQogI')[:-1])
-    data=base64.b64decode(decodeddata)[:-1]
-
-    if '"categoryName": "appsetting"' in data:
-        data=data.split('"categoryName": "appsetting"')[0]
-        print 'xxxxxxxxxxxxxxxxx',data[-100:]
-        print 'xxxxxxxxxxxxxxxxx end'
-        pos = data.rfind(',')
-        data=data[:pos]
-        pos = data.rfind(',')
-        data=data[:pos]
-        data+=']}'
-    else:
-        pos = data.rfind(',')
-        data=data[:pos]
-        data+=']}]}'
+    #decodeddata='ew0KDQogI'.join(decodeddata.split('ew0KDQogI')[:-1])
+    #data=base64.b64decode(decodeddata)[:-1]
+    decodeddata=decodeddata.replace('nbUioPLk6nbviOP0kjgfreWEur','')
+    decodeddata=decodeddata+'='*(len(decodeddata) % 4)
+    data=base64.b64decode(decodeddata)
+#    if '"categoryName": "appsetting"' in data:
+#        data=data.split('"categoryName": "appsetting"')[0]
+#        print 'xxxxxxxxxxxxxxxxx',data[-100:]
+#        print 'xxxxxxxxxxxxxxxxx end'
+#        pos = data.rfind(',')
+#        data=data[:pos]
+#        pos = data.rfind(',')
+#        data=data[:pos]
+#        data+=']}'
+#    else:
+#        pos = data.rfind(',')
+#        data=data[:pos]
+#        data+=']}]}'
     #print data 
     jsondata= json.loads(data)
     print jsondata
