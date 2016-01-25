@@ -1618,6 +1618,29 @@ def getPakTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret
 
+
+
+    
+def getDittoChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getDittoPage()
+#        print xmldata
+        for source in xmldata:#Cricket#
+            if 1==1:#source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+                ss=source
+                cname=ss["name"]
+                cimage=ss["poster"]
+                curl="ditto:http://www.dittotv.com/index.php?r=live-tv/link&name=%s"%urllib.quote_plus(cname)
+                
+                if 1==1:#len([i for i, x in enumerate(ret) if x[0] ==cname +' v8' ])==0:                    
+                    ret.append((cname +' ditto' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
+
 def getUniTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -1639,8 +1662,7 @@ def getUniTVChannels(categories, forSports=False):
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
-    return ret    
-
+    return ret  
 
 def getptcchannels(categories, forSports=False):
     ret=[]
@@ -1720,6 +1742,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isv6Off=selfAddon.getSetting( "isv6Off" )
     isv7Off=selfAddon.getSetting( "isv7Off" )
     isv8Off=selfAddon.getSetting( "isv8Off" )
+    isdittoOff=selfAddon.getSetting( "isdittoOff" )
     
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
@@ -1866,7 +1889,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
 
 
         elif cctype==2:
-            match.append(('Color','manual','cid:316',''))
+            print 'no'
+#            match.append(('Color','manual','cid:316',''))
 
         
 #    match.append((base64.b64decode('U2t5IFNwb3J0IDE='),'manual',base64.b64decode('aHR0cDovL2pweG1sLmphZG9vdHYuY29tL3Z1eG1sLnBocC9qYWRvb3htbC9wbGF5LzMxNg=='),''))
@@ -1882,6 +1906,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     ptcgen=None
     paktvgen=None
     unitvgen=None
+    dittogen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
@@ -1892,6 +1917,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         pg='indian'
         iptvgen="indian"
         ptcgen=['Indian']
+        dittogen="ind"
     else:
         pg='punjabi'
     
@@ -1900,7 +1926,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isv6Off=='true': ptcgen=None
     if isv7Off=='true': paktvgen=None
     if isv8Off=='true': unitvgen=None
-    
+    if isdittoOff=='true': dittogen=None
     
     if pg:
         try:
@@ -1947,7 +1973,15 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)                
-
+    if dittogen:
+        try:
+            print 'ditto'
+            progress.update( 85, "", "Loading ditto Channels", "" )
+            rematch=getDittoChannels(dittogen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)     
             
     if iptvgen:
         try:
@@ -2211,6 +2245,12 @@ def delfile(fname):
     try:
         os.remove(fname)
     except: pass
+
+def getDittoPage():
+    html= getUrl('http://www.dittotv.com/index.php?r=live-tv%2Fview')
+    links=re.findall('liveTvs = (\[.*\])',html)[0]
+    return eval(links)
+
 def getPakTVPage():
 
     fname='paktvpage.json'
@@ -2420,6 +2460,9 @@ def PlayOtherUrl ( url ):
         return
     if "ebound2:" in url:
         PlayEboundFromIOS(url.split('ebound2:')[1])
+        return
+    if "ditto:" in url:
+        PlayDittoLive(url.split('ditto:')[1])
         return
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
@@ -3080,6 +3123,27 @@ def ShowAllSources(url, loadedLink=None):
 #			print 'linkType',linkType
 			PlayShowLink(url);
 
+
+def PlayDittoLive(url):
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Streaming Info')
+    progress.update( 10, "", "Finding links..", "" )
+
+    req = urllib2.Request(url)
+    req.add_header('Referer', 'http://www.dittotv.com/index.php?r=live-tv/view&id=10019')
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    progress.update( 50, "", "Finding links..", "" )
+    import json
+    data=json.loads(link)
+    playfile=data["link"]+'|User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36&Referer='+urllib.unquote(url)
+#    playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+    progress.update( 100, "", "Almost done..", "" )
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    return            
 def PlayEboundFromIOS(url):
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
