@@ -1621,8 +1621,25 @@ def getPakTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret
 
+    
+def getCFChannels(category):
+    ret=[]
+    try:
+        xmldata=getCFPage(category)
+#        print xmldata
+        for source in xmldata:
 
-
+            ss=source
+            cname=ss["Title"]
+            cimage=ss["ThumbnailURL"]
+            curl="CF:"+ss["ContentId"]
+                    
+            ret.append((cname +' CF' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
     
 def getDittoChannels(categories, forSports=False):
     ret=[]
@@ -1634,7 +1651,7 @@ def getDittoChannels(categories, forSports=False):
                 ss=source
                 cname=ss["name"]
                 cimage=ss["poster"]
-                curl="ditto:http://www.dittotv.com/index.php?r=live-tv/link&name=%s"%urllib.quote_plus(cname)
+                curl=base64.b64decode("ZGl0dG86aHR0cDovL3d3dy5kaXR0b3R2LmNvbS9pbmRleC5waHA/cj1saXZlLXR2L2xpbmsmbmFtZT0lcw==")%urllib.quote_plus(cname)
                 
                 if 1==1:#len([i for i, x in enumerate(ret) if x[0] ==cname +' v8' ])==0:                    
                     ret.append((cname +' ditto' ,'manual', curl ,cimage))   
@@ -1746,6 +1763,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isv7Off=selfAddon.getSetting( "isv7Off" )
     isv8Off=selfAddon.getSetting( "isv8Off" )
     isdittoOff=selfAddon.getSetting( "isdittoOff" )
+    isCFOff=selfAddon.getSetting( "isCFOff" )
     
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
@@ -1910,19 +1928,24 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     paktvgen=None
     unitvgen=None
     dittogen=None
+    CFgen=None
+
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
         ptcgen=['News','Entertainment','Islamic','Cooking']
         paktvgen=['News','Islamic','Cooking']
         unitvgen=['News','Religious','Cooking','PAK&IND']
+        CFgen="4"
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
         ptcgen=['Indian']
         dittogen="ind"
+        CFgen="6"
     else:
         pg='punjabi'
+        CFgen="1314"
     
     if isv3Off=='true': pg=None
     if isv5Off=='true': iptvgen=None
@@ -1930,6 +1953,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isv7Off=='true': paktvgen=None
     if isv8Off=='true': unitvgen=None
     if isdittoOff=='true': dittogen=None
+    if isCFOff=='true': CFgen=None
     
     if pg:
         try:
@@ -1978,9 +2002,18 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             traceback.print_exc(file=sys.stdout)                
     if dittogen:
         try:
-            print 'ditto'
+            
             progress.update( 85, "", "Loading ditto Channels", "" )
             rematch=getDittoChannels(dittogen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)     
+    if CFgen:
+        try:
+            
+            progress.update( 85, "", "Loading CF Channels", "" )
+            rematch=getCFChannels(CFgen)
             if len(rematch)>0:
                 match+=rematch
         except:
@@ -2028,6 +2061,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     cc='orange'
                 elif cname.endswith('v8'):
                     cc='purple'
+                elif cname.lower().endswith(' ditto'):
+                    cc='green'
+                elif cname.lower().endswith(' cf'):
+                    cc='blue'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -2250,10 +2287,16 @@ def delfile(fname):
     except: pass
 
 def getDittoPage():
-    html= getUrl('http://www.dittotv.com/index.php?r=live-tv%2Fview')
+    html= getUrl(base64.b64decode('aHR0cDovL3d3dy5kaXR0b3R2LmNvbS9pbmRleC5waHA/cj1saXZlLXR2JTJGdmlldw=='))
     links=re.findall('liveTvs = (\[.*\])',html)[0]
     return eval(links)
+    
+def getCFPage(catId):
+    headers=[('User-Agent',base64.b64decode('Q0ZVTlRWLzMuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))]
+    html= getUrl(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWNvbnRlbnQmY2F0ZWdvcnlpZD0lcyZkZXZpY2U9aW9zJnZlcnNpb249MCZrZXk9Q1l4UElWRTlhZQ==')%catId,headers=headers)
+    return json.loads(html)
 
+    
 def getPakTVPage():
 
     fname='paktvpage.json'
@@ -2466,6 +2509,9 @@ def PlayOtherUrl ( url ):
         return
     if "ditto:" in url:
         PlayDittoLive(url.split('ditto:')[1])
+        return
+    if "CF:" in url:
+        PlayCFLive(url.split('CF:')[1])
         return
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
@@ -3133,7 +3179,7 @@ def PlayDittoLive(url):
     progress.update( 10, "", "Finding links..", "" )
 
     req = urllib2.Request(url)
-    req.add_header('Referer', 'http://www.dittotv.com/index.php?r=live-tv/view&id=10019')
+    req.add_header('Referer', base64.b64decode('aHR0cDovL3d3dy5kaXR0b3R2LmNvbS9pbmRleC5waHA/cj1saXZlLXR2L3ZpZXcmaWQ9MTAwMTk='))
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36')
     response = urllib2.urlopen(req)
     link=response.read()
@@ -3146,7 +3192,34 @@ def PlayDittoLive(url):
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
-    return            
+    return      
+def PlayCFLive(url):
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Streaming Info')
+    progress.update( 10, "", "Finding links..", "" )
+
+    req = urllib2.Request(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWRldGFpbHMmQCZkZXZpY2U9aW9zJnZlcnNpb249MCZjb250ZW50aWQ9JXMmc2lkPSZ1PW1hYWxAZ21haWwuY29t')%url)
+    req.add_header('User-Agent', base64.b64decode('Q0ZVTlRWLzMuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    progress.update( 50, "", "Finding links..", "" )
+    import json
+    data=json.loads(link)
+    playfile=""
+    
+    playfile=data[0]["HLSURL"]
+    if playfile=="":
+        playfile=data[0]["SamsungURL"]
+    if playfile=="":
+        playfile=data[0]["PanasonicURL"]
+                
+    playfile+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+#    playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+    progress.update( 100, "", "Almost done..", "" )
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    return  
 def PlayEboundFromIOS(url):
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')

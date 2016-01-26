@@ -1,3 +1,6 @@
+[B]Version 4.2.5[/B]
+    -CF Added
+    
 [B]Version 4.2.4[/B]
     -first time install blank folders
 [B]Version 4.2.3[/B]
