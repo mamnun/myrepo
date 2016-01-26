@@ -54,6 +54,9 @@ liveURL=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vbGl2ZS1wYWtpc3RhbmktbmV3cy
 
 tabURL =base64.b64decode('aHR0cDovL3d3dy5lYm91bmRzZXJ2aWNlcy5jb206ODg4OC91c2Vycy9yZXgvbV9saXZlLnBocD9hcHA9JXMmc3RyZWFtPSVz')
 DONOTCACHE=   selfAddon.getSetting( "donotcache" ) =="true"
+if not selfAddon.getSetting( "dummy" )=="true":
+    selfAddon.setSetting( "dummy" ,"true")
+
 class NoRedirection(urllib2.HTTPErrorProcessor):
    def http_response(self, request, response):
        return response
