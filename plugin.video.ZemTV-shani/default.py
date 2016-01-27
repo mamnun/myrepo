@@ -390,6 +390,7 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
+    addDir('IpBox sports' ,'sss',55,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
@@ -604,6 +605,15 @@ def AddPTCSports(url=None):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
 
+def AddIpBoxChannels(url=None):
+    for cname,ctype,curl,imgurl in getIpBoxChannels(True):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        mm=11
+#        print repr(curl)
+       
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return     
+    
 def AddUniTVSports(url=None):
     for cname,ctype,curl,imgurl in getUniTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
@@ -1660,7 +1670,28 @@ def getDittoChannels(categories, forSports=False):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret    
-
+    
+def getIpBoxChannels(forSports=False):
+    ret=[]
+    try:
+        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdQ=='))
+#        print xmldata
+        if forSports:
+            reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+        else:
+            reg='#EXTINF:-1,(Yupp):(.*)\s(.*)'
+        xmldata=re.findall(reg,html,re.IGNORECASE)
+        for source in xmldata:#Cricket#
+            ss=source
+            cname=ss[0] if forSports else ss[1] 
+            curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+            ret.append((cname +' Ipbox' ,'manual', curl ,''))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
 def getUniTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -1763,7 +1794,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isv7Off=selfAddon.getSetting( "isv7Off" )
     isv8Off=selfAddon.getSetting( "isv8Off" )
     isdittoOff=selfAddon.getSetting( "isdittoOff" )
-    isCFOff=selfAddon.getSetting( "isCFOff" )
+    isCFOff=selfAddon.getSetting( "isCFOff" )  
+    isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
     
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
@@ -1929,6 +1961,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     unitvgen=None
     dittogen=None
     CFgen=None
+    ipBoxGen=None
 
     if cctype==1:
         pg='pakistan'
@@ -1943,9 +1976,11 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         ptcgen=['Indian']
         dittogen="ind"
         CFgen="6"
+        ipBoxGen=1
     else:
         pg='punjabi'
         CFgen="1314"
+        
     
     if isv3Off=='true': pg=None
     if isv5Off=='true': iptvgen=None
@@ -1953,7 +1988,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isv7Off=='true': paktvgen=None
     if isv8Off=='true': unitvgen=None
     if isdittoOff=='true': dittogen=None
-    if isCFOff=='true': CFgen=None
+    if isCFOff=='true': CFgen=None    
+    if isIpBoxff=='true': ipBoxGen=None
     
     if pg:
         try:
@@ -2019,10 +2055,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         except:
             traceback.print_exc(file=sys.stdout)     
             
-    if iptvgen:
+    if ipBoxGen:
         try:
-            progress.update( 90, "", "Loading v9 Channels", "" )
-            rematch=getiptvchannels(iptvgen)
+            progress.update( 90, "", "Loading IpBox Channels", "" )
+            rematch=getIpBoxChannels(False)
             if len(rematch)>0:
                 match+=rematch
         except:
@@ -2053,8 +2089,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 cc='green'
                 if cname.endswith('v3'):
                     cc='green'
-                elif cname.endswith('v5'):
-                    cc='blue'
+                elif cname.lower().endswith('ipbox'):
+                    cc='ffcc00cc'
                 elif cname.endswith('v6'):
                     cc='red'
                 elif cname.endswith('v7'):
@@ -3420,6 +3456,9 @@ try:
 	elif mode==54 :
 		print "Play url is "+url
 		clearCache()
+	elif mode==55 :
+		print "Play url is "+url
+		AddIpBoxChannels(url)     
 
 except:
 	print 'somethingwrong'
