@@ -2566,7 +2566,7 @@ if not url is None:
     addon_log("URL: "+str(url.encode('utf-8')))
 addon_log("Name: "+str(name))
 
-if not playitem ==None:
+if not playitem =='':
     s=getSoup('',data=playitem)
     name,url,regexs=getItems(s,None,dontLink=True)
     mode=117 
