@@ -1,3 +1,6 @@
+[B]Version 2.5.5[/B]
+- support for vidrail sources
+
 [B]Version 2.5.4[/B]
 - fixed hum links, thanks to Kashif
 

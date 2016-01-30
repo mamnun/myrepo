@@ -424,7 +424,11 @@ def SelectUrl(html, url):
 		mainUrl=getPlaywireUrl(html,True)
 		if (mainUrl):
 			available_source.append('Playwire Video')
-		defaultlinks=['Dailymotion Video', 'Tune Video', 'Playwire Video']
+		mainUrl=getVidrailUrl(html,True)
+		if mainUrl and len(mainUrl)>0:
+			available_source.append('Vidrail Video')
+
+		defaultlinks=['Dailymotion Video', 'Tune Video', 'Playwire Video','Vidrail Video']
 		defaultLinkType=selfAddon.getSetting( "DefaultVideoType" ) 
 		if defaultLinkType is None or defaultLinkType == '':
 			defaultLinkType='0'
@@ -442,6 +446,32 @@ def SelectUrl(html, url):
 	except:
 		traceback.print_exc(file=sys.stdout)
 		return None
+def getVidrailUrl(html, short):
+    playURL = None
+    newFormat = False
+
+    try:
+        match =re.findall('src="(.*?(vidrail\.com).*?)"', html)
+
+        if len(match)>0:
+            playURL=match[0]
+            
+        if short:
+            return playURL
+
+        if playURL is None:
+            return None
+        playURL=match[0][0]
+        pat='<source src="(.*?)"'
+        link=getUrl(playURL)
+        playURL=re.findall(pat, link)
+        if len(playURL)==0:
+            return None
+        return playURL[0]
+
+    except:
+        traceback.print_exc(file=sys.stdout)
+        return None
 
 def _play_from_available_sources(defaultLinkType, available_source, html):
 	index=0
@@ -466,7 +496,8 @@ def _play_from_available_sources(defaultLinkType, available_source, html):
 			ret = getTuneTvUrl(html,False)
 		elif 'Playwire Video'==linkType:
 			ret = getPlaywireUrl(html,False)
-
+		elif 'Vidrail Video'==linkType:
+			ret = getVidrailUrl(html,False)
 		if not ret and len(available_source) > 1:
 			# try next available source
 			available_source.remove(defaultLinkType)
