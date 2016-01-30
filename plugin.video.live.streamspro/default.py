@@ -487,7 +487,7 @@ def getSubChannelItems(name,url,fanart):
         items = channel_list('subitem')
         getItems(items,fanart)
 
-def getItems(items,fanart):
+def getItems(items,fanart,dontLink=False):
         total = len(items)
         addon_log('Total Items: %s' %total)
         add_playlist = addon.getSetting('add_playlist')
@@ -723,6 +723,8 @@ def getItems(items,fanart):
                     if len(playlist) > 1:
                         addLink('', name,thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
                 else:
+                    if dontLink:
+                        return name,url[0],regexs
                     if isXMLSource:
                             if not regexs == None: #<externallink> and <regex>
                                 addDir(name.encode('utf-8'),ext_url[0].encode('utf-8'),1,thumbnail,fanart,desc,genre,date,None,'!!update',regexs,url[0].encode('utf-8'))
@@ -2430,6 +2432,7 @@ def playsetresolved(url,name,iconimage,setresolved=True):
         liz.setProperty("IsPlayable","true")
         liz.setPath(url)
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+           
     else:
         xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
 
@@ -2550,7 +2553,12 @@ try:
     regexs=params["regexs"]
 except:
     pass
-
+playitem=''
+try:
+    playitem=urllib.unquote_plus(params["playitem"])
+except:
+    pass
+    
 addon_log("Mode: "+str(mode))
 
 
@@ -2558,6 +2566,10 @@ if not url is None:
     addon_log("URL: "+str(url.encode('utf-8')))
 addon_log("Name: "+str(name))
 
+if not playitem ==None:
+    s=getSoup('',data=playitem)
+    name,url,regexs=getItems(s,None,dontLink=True)
+    mode=117 
 if mode==None:
     addon_log("getSources")
     getSources()
@@ -2661,7 +2673,7 @@ elif mode==16:
     getCommunitySources(url,browse=True)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
-elif mode==17:
+elif mode==17 or mode==117:
     addon_log("getRegexParsed")
 
     data=None
@@ -2753,6 +2765,7 @@ elif mode==17:
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
     else:
         url,setresolved = getRegexParsed(regexs, url)
+        print url,setresolved,'imhere'
         if url:
             if '$PLAYERPROXY$=' in url:
                 url,proxy=url.split('$PLAYERPROXY$=')
