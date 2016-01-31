@@ -1,3 +1,6 @@
+Version 2.1.4
+  return NOTPACKED or UNPACKEDFAILED when the html is not having p.a.c.k.e.d section or it fails
+
 Version 2.1.3
   bug grr
 

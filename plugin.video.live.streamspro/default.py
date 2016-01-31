@@ -1135,7 +1135,6 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             val=doEvalFunction(m['expres'],link,cookieJar,m)
                         if 'ActivateWindow' in m['expres']: return
 #                        print 'url k val',url,k,val
-
                         url = url.replace("$doregex[" + k + "]", val)
                     else:
                         if 'listrepeat' in m:
@@ -1160,6 +1159,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             #val=urllib.unquote_plus(val)
                             import HTMLParser
                             val=HTMLParser.HTMLParser().unescape(val)
+                        
                         url = url.replace("$doregex[" + k + "]", val)
                         #return val
                 else:
@@ -1529,10 +1529,14 @@ def get_unpacked( page_value, regex_for_text='', iterations=1, total_iteration=1
             page_value= getUrl(page_value)
 #        print 'page_value',page_value
         if regex_for_text and len(regex_for_text)>0:
-            page_value=re.compile(regex_for_text).findall(page_value)[0] #get the js variable
+            try:
+                page_value=re.compile(regex_for_text).findall(page_value)[0] #get the js variable
+            except: return 'NOTPACKED'
 
         page_value=unpack(page_value,iterations,total_iteration)
-    except: traceback.print_exc(file=sys.stdout)
+    except:
+        page_value='UNPACKEDFAILED'
+        traceback.print_exc(file=sys.stdout)
 #    print 'unpacked',page_value
     if 'sav1live.tv' in page_value:
         page_value=page_value.replace('sav1live.tv','sawlive.tv') #quick fix some bug somewhere
