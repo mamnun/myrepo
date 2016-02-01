@@ -1674,7 +1674,9 @@ def getDittoChannels(categories, forSports=False):
 def getIpBoxChannels(forSports=False):
     ret=[]
     try:
-        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdQ=='))
+        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdSZvdXRwdXQ9bXBlZ3Rz'))
+
+
 #        print xmldata
         if forSports:
             reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
@@ -1685,6 +1687,7 @@ def getIpBoxChannels(forSports=False):
             ss=source
             cname=ss[0] if forSports else ss[1] 
             curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+            curl='direct:'+ss[2].replace('\r','')+'|User-Agent=VLC/2.1.3 LibVLC/2.1.3'
             ret.append((cname +' Ipbox' ,'manual', curl ,''))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
