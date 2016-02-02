@@ -1548,7 +1548,7 @@ def PlayGen(url,checkUrl=False):
     if url.startswith('plugin://'):
         xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
         return
-    if checkUrl and url.startswith('http'):
+    if checkUrl and url.startswith('http') and '.m3u' in url:
         headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
         getUrl(url.split('|')[0],timeout=5,headers=headers)
     playlist = xbmc.PlayList(1)

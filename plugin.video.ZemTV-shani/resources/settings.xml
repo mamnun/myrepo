@@ -19,6 +19,7 @@
         <setting label="32030" type="bool"   id="isv8Off" default="false"/>    
         <setting label="32032" type="bool"   id="isdittoOff" default="false"/>    
         <setting label="32033" type="bool"   id="isCFOff" default="false"/>    
+        <setting label="32034" type="bool"   id="isIpBoxff" default="false"/>    
           <setting type="sep"/>
                   <setting label="32031" type="bool"   id="donotcache" default="false"/>    
           <setting type="sep"/>
