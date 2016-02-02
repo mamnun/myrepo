@@ -1,3 +1,5 @@
+[B]Version 4.2.7[/B]
+    -Ipbox removed
 [B]Version 4.2.6[/B]
     -Ipbox
 [B]Version 4.2.5[/B]

@@ -390,7 +390,7 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
-    addDir('IpBox sports' ,'sss',55,'')
+#    addDir('IpBox sports' ,'sss',55,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
