@@ -1,3 +1,5 @@
+Version 2.1.5
+    support for AADecoder (japanese/emoticon encoding)
 Version 2.1.4
   return NOTPACKED or UNPACKEDFAILED when the html is not having p.a.c.k.e.d section or it fails
 
