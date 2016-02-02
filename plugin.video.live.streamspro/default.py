@@ -10,6 +10,7 @@ import xbmcvfs
 import traceback
 import cookielib
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
+viewmode=None
 try:
     from xml.sax.saxutils import escape
 except: traceback.print_exc()
@@ -274,6 +275,7 @@ def getCommunitySources(browse=False):
                 addDir(name,url+name,11,icon,fanart,'','','','','download')
 
 def getSoup(url,data=None):
+        global viewmode
         if url.startswith('http://') or url.startswith('https://'):
             data = makeRequest(url)
             if re.search("#EXTM3U",data) or 'm3u' in url:
@@ -299,6 +301,12 @@ def getSoup(url,data=None):
             else:
                 addon_log("Soup Data not found!")
                 return
+        if '<SetViewMode>' in data:
+            try:
+                viewmode=re.findall('<SetViewMode>(.*?)<',data)[0]
+                xbmc.executebuiltin("Container.SetViewMode(%s)"%viewmode)
+                print 'done setview',viewmode
+            except: pass
         return BeautifulSOAP(data, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
 
 
@@ -2828,3 +2836,7 @@ elif mode==53:
     addon_log("Requesting JSON-RPC Items")
     pluginquerybyJSON(url)
     #xbmcplugin.endOfDirectory(int(sys.argv[1]))
+if not viewmode==None:
+   print 'setting view mode'
+   xbmc.executebuiltin("Container.SetViewMode(%s)"%viewmode)
+    
