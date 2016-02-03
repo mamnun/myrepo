@@ -1,3 +1,5 @@
+Version 2.1.6
+    support for cryptojs (moje-filmy.tk) and viewmode
 Version 2.1.5
     support for AADecoder (japanese/emoticon encoding)
 Version 2.1.4
