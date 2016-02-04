@@ -49,12 +49,16 @@ def encode(plaintext,passphrase,saltsize=8):
     enctext= decryptor.encrypt(plaintext)
     return base64.b64encode("Salted__"+salt+enctext)
 
-    
-def decode(ciphertext,passphrase):
-    salt=base64.b64decode(ciphertext)[8:16]
+##''if salt is provided, it should be string
+##ciphertext is base64 and passphrase is string
+def decode(ciphertext,passphrase,salt=None):
+    ciphertext=base64.b64decode(ciphertext)
+    if not salt:
+        salt=ciphertext[8:16]
+        ciphertext=ciphertext[16:]
     data = evpKDF(passphrase, salt)
     decryptor = pyaes.new(data['key'], pyaes.MODE_CBC, IV=data['iv'])
-    d= decryptor.decrypt(base64.b64decode(ciphertext)[16:])
+    d= decryptor.decrypt(ciphertext)
     return PKCS7Encoder().decode(d)
 
 def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None):
@@ -107,10 +111,28 @@ def gettvnDecryptedURL(cookiejar=None,globalkey="XXX",passphrase="turbo", videoi
 
     url=eval(url)["url"]
     finalurl=decode(url, key)
+    print finalurl
     finalurl=eval(finalurl)["url"]
     finalurl=finalurl.replace('\\/','/')
     return finalurl
-#print pubkey
+
+
+#import binascii
+#import hashlib
+#key, iv = EVP_BytesToKey(hashlib.md5, pp, salt, 32, 16, 1)
+#print key,iv
+#print 1/0
+#print 'salt=%s' % binascii.b2a_hex(salt)
+#print 'key=%s' % binascii.b2a_hex(key)
+#print 'iv =%s' % binascii.b2a_hex(iv)
+
+#print  decode(ct,pp,salt)
+#decryptor = pyaes.new(key, pyaes.MODE_CBC, IV=iv)
+#d= decryptor.decrypt(ct)
+#print d
+
+    #print pubkey
 #c=cookielib.LWPCookieJar()
 #print gettvnDecryptedURL(c)
+
 
