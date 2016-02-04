@@ -390,7 +390,7 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
-#    addDir('IpBox sports' ,'sss',55,'')
+    addDir('IpBox sports (experimental may not work)' ,'sss',55,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
@@ -1795,7 +1795,7 @@ def getCacheData(fname, timeout=0):
 def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
 
     isv3Off=selfAddon.getSetting( "isv3Off" )
-    isv3Off="true"
+    #isv3Off="true"
     isv5Off=selfAddon.getSetting( "isv5Off" )
     isv5Off="true"
     isv6Off=selfAddon.getSetting( "isv6Off" )
@@ -2538,7 +2538,7 @@ def PlayPV2Link(url):
     urlToPlay+=getPV2Auth()
     if '|' not in urlToPlay:
         urlToPlay+='|'
-    urlToPlay+='User-Agent: AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+    urlToPlay+='User-Agent: AppleCoreMedia/1.0.0.13D15 (iPhone; U; CPU OS 9_2_1 like Mac OS X; en_gb)'
 
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )

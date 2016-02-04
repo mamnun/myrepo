@@ -1,3 +1,5 @@
+[B]Version 4.2.9[/B]
+    -v3 channels are back, also ipbox enabled on requests
 [B]Version 4.2.8[/B]
     -ditto channels manual
 [B]Version 4.2.7[/B]
