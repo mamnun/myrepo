@@ -401,7 +401,7 @@ def AddSports(url):
     addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
     addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
-#    addDir('PV2 Sports' ,'sports',36,'')
+    addDir('PV2 Sports' ,'sports',36,'')
     addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
 
