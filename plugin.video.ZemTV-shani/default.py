@@ -1554,37 +1554,45 @@ def PlayWatchCric(url):
     playlist.add(url,listitem)
     xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
     xbmcPlayer.play(playlist) 
+
+def getYPUrl(url):
+    ret=None
+    try:
+        html=getUrl(url)
+        rr='aspx\?cid=([0-9]*)'
+        tmp=re.findall(rr,html)
+        if len(tmp)==0:
+        
+            rr='script type.*?src=[\'"](.*?embed.*?js)[\'"]'
+            emburl=re.findall(rr,html)[0]
+
+            emhtm=getUrl(emburl)
+            rr='\?id=([0-9]*)'
+            videoid=re.findall(rr,emhtm)[0]
+        else:
+            videoid=tmp[0]
+    
+        pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
+        emhtm=getUrl(pageurl)
+        rr='file:\'(http.*?)\''    
+        finalUrl=re.findall(rr,emhtm)
+        #if len(finalUrl)==0:
+        #    
+        #    pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
+        #    #emhtm=getUrl(pageurl)
+        #    emhtm=getUrlFromUS(pageurl)
+        #    rr='file:\'(http.*?)\''    
+        #    finalUrl=re.findall(rr,emhtm)
+        ret=finalUrl[0]
+        
+    except: pass
+    return ret
     
 def PlayYP(url):
     url = base64.b64decode(url)
     #print 'gen is '+url
-    html=getUrl(url)
-    rr='aspx\?cid=([0-9]*)'
-    tmp=re.findall(rr,html)
-    if len(tmp)==0:
-    
-        rr='script type.*?src=[\'"](.*?embed.*?js)[\'"]'
-        emburl=re.findall(rr,html)[0]
 
-        emhtm=getUrl(emburl)
-        rr='\?id=([0-9]*)'
-        videoid=re.findall(rr,emhtm)[0]
-    else:
-        videoid=tmp[0]
-    
-    pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
-    emhtm=getUrl(pageurl)
-    rr='file:\'(http.*?)\''    
-    finalUrl=re.findall(rr,emhtm)
-    if len(finalUrl)==0:
-        
-        pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
-        #emhtm=getUrl(pageurl)
-        emhtm=getUrlFromUS(pageurl)
-        rr='file:\'(http.*?)\''    
-        finalUrl=re.findall(rr,emhtm)
-    finalUrl=finalUrl[0]
-     
+    finalUrl=getYPUrl(url)
         
     finalUrl=urllib.quote_plus(finalUrl+'&g=FLONTKRDWKGI&hdcore=3.2.0&amp;plugin=jwplayer-3.2.0.1|Referer=http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=195')
     finalUrl='plugin://plugin.video.f4mTester/?url='+finalUrl
@@ -1700,11 +1708,11 @@ def getCFChannels(category):
         traceback.print_exc(file=sys.stdout)
     return ret  
     
-def getYPChannels(url):
+def getYPChannels(url,progress):
     ret=[]
     try:
         
-        xmldata=getYPPage(url)
+        xmldata=getYPPage(url,progress)
         for source in xmldata:
 
             ss=source
@@ -1868,10 +1876,12 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isv5Off="true"
     isv6Off=selfAddon.getSetting( "isv6Off" )
     isv7Off=selfAddon.getSetting( "isv7Off" )
+    isv7Off="true"
     isv8Off=selfAddon.getSetting( "isv8Off" )
     isdittoOff=selfAddon.getSetting( "isdittoOff" )
     isCFOff=selfAddon.getSetting( "isCFOff" )  
     isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
+    isIpBoxff="true"
     isYPgenOff= selfAddon.getSetting( "isYPOff" )
     
 
@@ -2141,7 +2151,9 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         try:
             
             progress.update( 87, "", "Loading YP Channels", "" )
-            rematch=getYPChannels(YPgen)
+            
+            rematch=getYPChannels(YPgen,progress)
+            progress.update( 87, "", "Loading YP Channels loaded", "" )
             if len(rematch)>0:
                 match+=rematch
         except:
@@ -2407,6 +2419,11 @@ def clearCache():
     fname='pv2tvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]    
+
+    for p in ['u','p','h']:
+        fname='yptvpage_%s.json'%p
+        fname=os.path.join(profile_path, fname)
+        files+=[fname]       
     
     for f in files:
         try:
@@ -2435,10 +2452,39 @@ def getDittoPage():
 
     return r
 
-def getYPPage(url):
+def getYPPage(url,progress):
+    
+
+    p="u" if 'urdu' in url.lower() else 'h' if 'hindi' in url.lower() else 'p'
+    
+    fname='yptvpage_%s.json'%p
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,5*24*60*60)
+        if not jsondata==None:
+            return json.loads(jsondata)
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
     headers=[('User-Agent','CFUNTV/3.1 CFNetwork/758.0.2 Darwin/15.0.0Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.97 Safari/537.36')]
     html= getUrl(url,headers=headers)
-    return re.findall('<a href="(.*?)".*?img.*?src="(.*?)".*?alt=\'(.*?)\'',html)
+    links= re.findall('<a href="(.*?)".*?img.*?src="(.*?)".*?alt=\'(.*?)\'',html)
+    ret=[]
+    ln=0
+    for l in links:
+        ln+=1
+        progress.update( int((ln*100)/len(links)), "", "Filtering YP links..%d of %d"%(ln, len(links) ))
+        if not getYPUrl(l[0])==None:
+            ret+=[l]
+    links=ret
+    jj=json.dumps(links)
+    try:
+        storeCacheData(jj,fname)
+    except:
+        print 'yp file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return links
  
     
 def getCFPage(catId):
