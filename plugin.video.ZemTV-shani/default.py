@@ -1049,22 +1049,30 @@ def PlaySSSEvent(url):
         match_json=getUrl(match_url)
         match=json.loads(match_json)
         matchurl=match['result']['services']['videoURL']
+       
      
+        matchurl="bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57165e0f3f9b4099ba0f648d8742acefbc0c57d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db"
         finalUrl=getdecSSMatchUrl(matchurl,'LIVE')
+        print 'dec',finalUrl
+       
 #    print 'aaaaaaaaaaaaaaaaaaaa',name.strip()
-    sts=[base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzFfMUAzMDk3MDEvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVhTU0NVQVBSRkVPUSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzJfMUAzMDk2OTYvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdVVFhIVFpUVlFKTiZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzNfMUAzMDk2OTcvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPU1SS0tOVVRNTktUSiZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzRfMUAzMDk2OTkvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdLVkNKWE5FVVRLUCZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzVfMUAzMDk3MDQvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPUdLVkNKWE5FVVRLUCZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzZfMUAzMDk3MDAvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVdSSkZYWkRMQk5HSSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw=="),
-    base64.b64decode("aHR0cDovL25vd3dlYi1saC5ha2FtYWloZC5uZXQvei9TUzdfMUAzMDk3MDMvbWFuaWZlc3QuZjRtP2hkY29yZT0zLjguMCZnPVlUQllTS0pMV0hZRSZwbHVnaW49YWFzcC0zLjguMC41Mi4yNw==")]
-
+    sts=["bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57165e0f3f9b4099ba0f648d8742acefbc0c57d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf571652ffd197868c8ba23f74f8c6ed24d02157d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf5716dff663f438bc70808e422cef4c665cd357d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57164b74e2107bd1b84b155d86c84b10113057d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57169962732038b02c08b062a3391c1f13c057d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf571647dec4b1fa9327a801c77533ca16482d57d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+        "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf5716b55f6d0d5802a828a606fb76fa2c0d7757d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db"]
+    blitz="bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57165b1423947b96824d87141cfa88e02f0f57d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db"
     n=0
     finalUrl=""
-    if name.strip().startswith('SS'):
+    if name.strip().startswith('SS') and  "blitz" not  in name.lower():
        nm= int(name.strip().split(' ')[0].replace('SS',''))-1
        finalUrl=sts[nm]
+    else:
+        finalUrl=blitz
+        
+    finalUrl=getdecSSMatchUrl(finalUrl,'LIVE')
 
     #SS2_1@27052#
     if 'manifest.f4m' in finalUrl:
