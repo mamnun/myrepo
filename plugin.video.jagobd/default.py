@@ -122,7 +122,8 @@ def getLiveUrl(url):
         return None
     #print zzUrl,'zzURL'
     progress.update( 70, "", "Finding links..", "" )
-
+    if zzUrl.startswith("//"):
+        zzUrl='http:'+zzUrl
     link=getURL(zzUrl,referer=url, mobile=False).result;
     #print link,zzUrl
     #link=zzUrl
