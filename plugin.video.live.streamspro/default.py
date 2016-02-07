@@ -1143,7 +1143,11 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             val=doEvalFunction(m['expres'],link,cookieJar,m)
                         if 'ActivateWindow' in m['expres']: return
 #                        print 'url k val',url,k,val
-                        url = url.replace("$doregex[" + k + "]", val)
+                        #print 'repr',repr(val)
+                        
+                        try:
+                            url = url.replace(u"$doregex[" + k + "]", val)
+                        except: url = url.replace("$doregex[" + k + "]", val.decode("utf-8"))
                     else:
                         if 'listrepeat' in m:
                             listrepeat=m['listrepeat']
@@ -1184,7 +1188,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
             url=url.replace('$get_cookies$',getCookiesString(cookieJar))
 
         if recursiveCall: return url
-        print 'final url',url
+        #print 'final url',repr(url)
         if url=="":
             return
         else:
@@ -2481,8 +2485,8 @@ def d2x(d, root="root",nested=0):
 
     op = lambda tag: '<' + tag + '>'
     cl = lambda tag: '</' + tag + '>\n'
-    ml = lambda v,xml: xml + op(key) + str(v) + cl(key)
 
+    ml = lambda v,xml: xml + op(key) + str(v) + cl(key)
     xml = op(root) + '\n' if root else ""
 
     for key,vl in d.iteritems():
@@ -2497,7 +2501,12 @@ def d2x(d, root="root",nested=0):
             xml = ml('\n' + d2x(vl,None,nested+1),xml)         
         if vtype is not list and vtype is not dict: 
             if not vl is None: vl=escape(vl)
-            xml = ml(vl,xml)
+            #print repr(vl)
+            if vl is None:
+                xml = ml(vl,xml)
+            else:
+                #xml = ml(escape(vl.encode("utf-8")),xml)
+                xml = ml(vl.encode("utf-8"),xml)
 
     xml += cl(root) if root else ""
 
@@ -2765,19 +2774,22 @@ elif mode==17 or mode==117:
                     regex_xml=d2x(newcopy,'lsproroot')
                     regex_xml=regex_xml.split('<lsproroot>')[1].split('</lsproroot')[0]
               
-                ln+='\n<item>%s\n%s</item>'%(listrepeatT,regex_xml)   
+                #ln+='\n<item>%s\n%s</item>'%(listrepeatT.encode("utf-8"),regex_xml)   
+                try:
+                    ln+='\n<item>%s\n%s</item>'%(listrepeatT,regex_xml)
+                except: ln+='\n<item>%s\n%s</item>'%(listrepeatT.encode("utf-8"),regex_xml)
             except: traceback.print_exc(file=sys.stdout)
 #            print repr(ln)
 #            print newcopy
                 
 #            ln+='</item>'
-#        print 'ln',ln
+        #print 'ln',repr(ln)
         addon_log(repr(ln))
         getData('','',ln)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
     else:
         url,setresolved = getRegexParsed(regexs, url)
-        print url,setresolved,'imhere'
+        #print repr(url),setresolved,'imhere'
         if url:
             if '$PLAYERPROXY$=' in url:
                 url,proxy=url.split('$PLAYERPROXY$=')
