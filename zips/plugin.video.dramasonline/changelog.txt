@@ -1,3 +1,7 @@
+[B]Version 2.5.6[/B]
+- vidrail and tunepk fixed. 
+-Fixed playwire urls playing next episodes hilights instead of full current episode (thanks to kashif)
+
 [B]Version 2.5.5[/B]
 - support for vidrail sources
 

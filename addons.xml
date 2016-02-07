@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.dramasonline"
        name="DramasOnline.com"
-       version="2.5.5"
+       version="2.5.6"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
