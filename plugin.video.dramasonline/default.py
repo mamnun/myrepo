@@ -323,7 +323,7 @@ def getPlaywireUrl(html, short):
 
 			if len(match):
 				newFormat = True
-				playURL=match[0]
+				playURL=match[ len(match) - 1 ]
 
 		print playURL
 		if short:
