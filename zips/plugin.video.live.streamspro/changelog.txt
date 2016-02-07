@@ -1,3 +1,5 @@
+Version 2.2.0
+    improved unicode error trapping
 Version 2.1.9
     improved unicode error trapping
 Version 2.1.8

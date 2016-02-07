@@ -1129,7 +1129,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                 if  '$doregex' in m['expres']:
                     m['expres']=getRegexParsed(regexs, m['expres'],cookieJar,recursiveCall=True,cachedPages=cachedPages)
                 if not m['expres']=='':
-#                    print 'doing it ',m['expres']
+                    #print 'doing it ',m['expres']
                     if '$LiveStreamCaptcha' in m['expres']:
                         val=askCaptcha(m,link,cookieJar)
                         #print 'url and val',url,val
@@ -1171,8 +1171,9 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             #val=urllib.unquote_plus(val)
                             import HTMLParser
                             val=HTMLParser.HTMLParser().unescape(val)
-                        
-                        url = url.replace("$doregex[" + k + "]", val)
+                        try:
+                            url = url.replace("$doregex[" + k + "]", val)
+                        except: url = url.replace("$doregex[" + k + "]", val.decode("utf-8"))
                         #return val
                 else:
                     url = url.replace("$doregex[" + k + "]",'')
