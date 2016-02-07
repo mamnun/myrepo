@@ -68,9 +68,45 @@ class AADecoder(object):
 
             #print 'found',found,enc_char
             if not found:
-                result = re.search("\((.*)\)\+ ?", enc_char, re.DOTALL)
+                #enc_char=enc_char.replace('(ﾟΘﾟ)','1').replace('(ﾟｰﾟ)','4').replace('(c^_^o)','0').replace('(o^_^o)','3')
+                #print 'enc_char',enc_char
+                startpos=0
+                findClose=True
+                balance=1
+                result=[]
+                if enc_char.startswith('('):
+                    l=0
+                    
+                    for t in enc_char[1:]:
+                        l+=1
+                        #print 'looping',findClose,startpos,t,balance
+                        if findClose and t==')':
+                            balance-=1;
+                            if balance==0:
+                                result+=[enc_char[startpos:l+1]]
+                                findClose=False
+                                continue
+                        elif not findClose and t=='(':
+                            startpos=l
+                            findClose=True
+                            balance=1
+                            continue
+                        elif t=='(':
+                            balance+=1
+                 
+                            
+                            
+                                
+                
+                #print 'normal',enc_char
+                #if enc_char.startswith('((') or enc_char.startswith('(-(') or enc_char.startswith('(+('):
+                #    rr='(\(.*?\)\))\+'
+                #else:
+                #    rr="(\(.*?\))\+"
+                #result = re.findall("(\(.*?\))\+", enc_char)
+                #print 'res',result
                # result = re.search("\((.+?)\)\+ ?", enc_char, re.DOTALL)
-                if result is None:
+                if result is None or len(result)==0:
                     return ""
                 else:
                     #print 'here', enc_char
@@ -78,28 +114,38 @@ class AADecoder(object):
                     #print 'here',repr(enc_char)
                     #print 'decodeme',result.group(1)
                     #value = self.decode_digit(result.group(1), radix)
-                    value = self.decode_digit(enc_char, radix)
-                    #print 'va',value
-                    if value == "":
-                        return ""
-                    else:
-                        return value
-                        str_char += value
+                    for r in result:
+                        value = self.decode_digit(r, radix)
+                        #print 'va',value
+                        if value == "":
+                            return ""
+                        else:
+                            
+                            str_char += value
+                    return str_char
 
             enc_char = enc_char[len(end_char):]
 
         return str_char
 
     def decode_digit(self, enc_int, radix):
-    
-        enc_int=enc_int.replace('(ﾟΘﾟ)','1').replace('(ﾟｰﾟ)','4').replace('(c^_^o)','0').replace('(o^_^o)','3')
+        enc_int=enc_int.replace('(ﾟΘﾟ)','1').replace('(ﾟｰﾟ)','4').replace('(c^_^o)','0').replace('(o^_^o)','3')  
+
         rr='(\(.+?\)\))\+'
         rerr=enc_int.split('))+')#re.findall(rr,enc_int)
         v=""
         #print rerr
         for c in rerr:
             if len(c)>0:
-                v+=str(eval(c+'))'))
+                #print 'v',c
+                if c.strip().endswith('+'):
+                    c=c.strip()[:-1]
+                #print 'v',c
+                startbrackets=len(c)-len(c.replace('(',''))
+                endbrackets=len(c)-len(c.replace(')',''))
+                if startbrackets>endbrackets:
+                    c+=')'*startbrackets-endbrackets
+                v+=str(eval(c))
         return v
             
         # mode 0=+, 1=-
@@ -149,6 +195,7 @@ class AADecoder(object):
         alt_char = "(oﾟｰﾟo)+ "
 
         out = ''
+        print data
         while data != '':
             # Check new char
             if data.find(begin_char) != 0:
@@ -176,14 +223,17 @@ class AADecoder(object):
             #print repr(enc_char),radix
             #print enc_char.replace('(ﾟΘﾟ)','1').replace('(ﾟｰﾟ)','4').replace('(c^_^o)','0').replace('(o^_^o)','3')
             
-           
+            #print 'The CHAR',enc_char,radix
             str_char = self.decode_char(enc_char, radix)
+            
             if str_char == "":
                 print "no match :  "
                 print  data + "\nout = " + out + "\n"
                 return False
-
+            #print 'sofar',str_char,radix,out
+            
             out += chr(int(str_char, radix))
+            #print 'sfar',chr(int(str_char, radix)),out
 
         if out == "":
             print "no match : " + data
