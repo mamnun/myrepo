@@ -2444,11 +2444,19 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
         
 def playsetresolved(url,name,iconimage,setresolved=True):
     if setresolved:
+        setres=True
+        if '$$LSDirect$$' in url:
+            url=url.replace('$$LSDirect$$','')
+            setres=False
+
         liz = xbmcgui.ListItem(name, iconImage=iconimage)
         liz.setInfo(type='Video', infoLabels={'Title':name})
         liz.setProperty("IsPlayable","true")
         liz.setPath(url)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
+        if not setres:
+            xbmc.Player().play(url)
+        else:
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, liz)
            
     else:
         xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
@@ -2669,8 +2677,15 @@ elif mode==11:
 elif mode==12:
     addon_log("setResolvedUrl")
     if not url.startswith("plugin://plugin") or not any(x in url for x in g_ignoreSetResolved):#not url.startswith("plugin://plugin.video.f4mTester") :
+        setres=True
+        if '$$LSDirect$$' in url:
+            url=url.replace('$$LSDirect$$','')
+            setres=False
         item = xbmcgui.ListItem(path=url)
-        xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
+        if not setres:
+            xbmc.Player().play(url)
+        else: 
+            xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
     else:
 #        print 'Not setting setResolvedUrl'
         xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
