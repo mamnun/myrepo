@@ -583,7 +583,7 @@ def AddPv2Sports(url):
         addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
             
 def AddPakTVSports(url=None):
-    for cname,ctype,curl,imgurl in getPakTVChannels(['Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
+    for cname,ctype,curl,imgurl in getPakTVChannels(['PSL','Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -595,7 +595,7 @@ def AddPakTVSports(url=None):
     return    
                    
 def AddPTCSports(url=None):
-    for cname,ctype,curl,imgurl in getptcchannels(['Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
+    for cname,ctype,curl,imgurl in getptcchannels(['PSL','Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
