@@ -373,7 +373,7 @@ def getDailyMotionUrl(html, short):
 def getTuneTvUrl(html, short):
 	try:
 		# Find the first match
-		playURL =re.search('(tune.pk.*\/embed_player.php\?vid=(\d+).*?)"',html)
+		playURL =re.search('(tune.pk.*\/embed_player.php\?\s*?vid=(\d+).*?)"',html)
 		print 'getTuneTvUrl: %s' % playURL
 		if short:
 			return playURL
