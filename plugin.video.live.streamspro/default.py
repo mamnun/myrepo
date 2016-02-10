@@ -20,7 +20,7 @@ except:
     import simplejson as json
 import SimpleDownloader as downloader
 import time
-
+tsdownloader=False
 resolve_url=['180upload.com', 'allmyvideos.net', 'bestreams.net', 'clicknupload.com', 'cloudzilla.to', 'movshare.net', 'novamov.com', 'nowvideo.sx', 'videoweed.es', 'daclips.in', 'datemule.com', 'fastvideo.in', 'faststream.in', 'filehoot.com', 'filenuke.com', 'sharesix.com', 'docs.google.com', 'plus.google.com', 'picasaweb.google.com', 'gorillavid.com', 'gorillavid.in', 'grifthost.com', 'hugefiles.net', 'ipithos.to', 'ishared.eu', 'kingfiles.net', 'mail.ru', 'my.mail.ru', 'videoapi.my.mail.ru', 'mightyupload.com', 'mooshare.biz', 'movdivx.com', 'movpod.net', 'movpod.in', 'movreel.com', 'mrfile.me', 'nosvideo.com', 'openload.io', 'played.to', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'primeshare.tv', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'sharerepo.com', 'stagevu.com', 'streamcloud.eu', 'streamin.to', 'thefile.me', 'thevideo.me', 'tusfiles.net', 'uploadc.com', 'zalaa.com', 'uploadrocket.net', 'uptobox.com', 'v-vids.com', 'veehd.com', 'vidbull.com', 'videomega.tv', 'vidplay.net', 'vidspot.net', 'vidto.me', 'vidzi.tv', 'vimeo.com', 'vk.com', 'vodlocker.com', 'xfileload.com', 'xvidstage.com', 'zettahost.tv']
 g_ignoreSetResolved=['plugin.video.dramasonline','plugin.video.f4mTester','plugin.video.shahidmbcnet','plugin.video.SportsDevil','plugin.stream.vaughnlive.tv','plugin.video.ZemTV-shani']
 
@@ -275,8 +275,13 @@ def getCommunitySources(browse=False):
                 addDir(name,url+name,11,icon,fanart,'','','','','download')
 
 def getSoup(url,data=None):
-        global viewmode
+        global viewmode,tsdownloader
+        tsdownloader=False
         if url.startswith('http://') or url.startswith('https://'):
+
+            if '$$TSDOWNLOADER$$' in url:
+                tsdownloader=True
+                url=url.replace("$$TSDOWNLOADER$$","")
             data = makeRequest(url)
             if re.search("#EXTM3U",data) or 'm3u' in url:
 #                print 'found m3u data'
@@ -394,8 +399,10 @@ def parse_m3u(data):
     content = data.rstrip()
     match = re.compile(r'#EXTINF:(.+?),(.*?)[\n\r]+([^\r\n]+)').findall(content)
     total = len(match)
+    print 'tsdownloader',tsdownloader
 #    print 'total m3u links',total
     for other,channel_name,stream_url in match:
+        
         if 'tvg-logo' in other:
             thumbnail = re_me(other,'tvg-logo=[\'"](.*?)[\'"]')
             if thumbnail:
@@ -412,6 +419,7 @@ def parse_m3u(data):
 
         else:
             thumbnail = ''
+        
         if 'type' in other:
             mode_type = re_me(other,'type=[\'"](.*?)[\'"]')
             if mode_type == 'yt-dl':
@@ -425,6 +433,8 @@ def parse_m3u(data):
                 continue
             elif mode_type == 'ftv':
                 stream_url = 'plugin://plugin.video.F.T.V/?name='+urllib.quote(channel_name) +'&url=' +stream_url +'&mode=125&ch_fanart=na'
+        elif tsdownloader and '.ts' in stream_url:
+            stream_url = 'plugin://plugin.video.f4mTester/?url='+urllib.quote_plus(stream_url)+'&amp;streamtype=TSDOWNLOADER&name='+urllib.quote(channel_name)
         addLink(stream_url, channel_name,thumbnail,'','','','','',None,'',total)
 def getChannelItems(name,url,fanart):
         soup = getSoup(url)
