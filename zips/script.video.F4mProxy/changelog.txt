@@ -87,4 +87,7 @@ small error in hls
 return true when played
 [B]Version 2.3.4[/B]
 renamed util folder due to clash
+[B]Version 2.4.0[/B]
+Support for TSDownloader
+
 

@@ -1,3 +1,5 @@
+[B]Version 4.3.6[/B]
+    Ipbox Improved still in beta
 [B]Version 4.3.5[/B]
     SS is back
 [B]Version 4.3.4[/B]

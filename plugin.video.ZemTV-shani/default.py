@@ -391,7 +391,7 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
-    addDir('IpBox sports (experimental may not work)' ,'sss',55,'')
+    addDir('IpBox sports (Beta1 requires F4mTester)' ,'sss',55,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
@@ -1615,6 +1615,7 @@ def PlayGen(url,checkUrl=False):
     if url.startswith('plugin://'):
         xbmc.executebuiltin("xbmc.PlayMedia("+url+")")
         return
+    
     if checkUrl and url.startswith('http') and '.m3u' in url:
         headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
         getUrl(url.split('|')[0],timeout=5,headers=headers)
@@ -1690,7 +1691,7 @@ def getPakTVChannels(categories, forSports=False):
                     curl='direct2:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
                 cimage=ss["categoryLogo"]
                 
-                if len([i for i, x in enumerate(ret) if x[0] ==cname +' v7' ])==0:                    
+                if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     ret.append((cname +' v7' ,'manual', curl ,cimage))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
@@ -1763,21 +1764,43 @@ def getDittoChannels(categories, forSports=False):
 def getIpBoxChannels(forSports=False):
     ret=[]
     try:
-        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdSZvdXRwdXQ9bXBlZ3Rz'))
 
+#        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdSZvdXRwdXQ9bXBlZ3Rz'))
+#        html=getUrl('http://iptv.wssiptv.com/get.php?username=gil71&password=Aimee211204&type=m3u&output=hls')
+#        html=getUrl("http://iptv-online.ddns.net:8000/get.php?username=calogero&password=calogero&type=m3u&output=mpegts")
+#        html=getUrl("http://satloveriptv.com:8090/get.php?username=pakistan&password=pakistan&type=m3u&output=mpegts")
+#        html=getUrl("http://89.163.148.31:8000/get.php?username=aytac&password=aytac&type=m3u")
+#        html=getUrl("http://213.136.90.30:8000/get.php?username=test&password=test&type=m3u&output=mpegts")
+        servers=getUrl("http://pastebin.com/raw/GrYKMHrF")
+        servers=servers.splitlines()
 
-#        print xmldata
-        if forSports:
-            reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
-        else:
-            reg='#EXTINF:-1,(Yupp):(.*)\s(.*)'
-        xmldata=re.findall(reg,html,re.IGNORECASE)
-        for source in xmldata:#Cricket#
-            ss=source
-            cname=ss[0] if forSports else ss[1] 
-            curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
-            curl='direct:'+ss[2].replace('\r','')+'|User-Agent=VLC/2.1.3 LibVLC/2.1.3'
-            ret.append((cname +' Ipbox' ,'manual', curl ,''))   
+        import time
+        for ln in servers:
+            if not ln.startswith("##") and len(ln)>0:
+                ##serial:mac:time:text
+                print ln
+                servername,surl=ln.split('$')
+                
+                html=getUrl(surl)
+
+        #        print xmldata
+                if forSports:
+                    reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+                else:
+                    reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
+                xmldata=re.findall(reg,html,re.IGNORECASE)
+                
+                for source in xmldata:#Cricket#
+                    ss=source
+                    cname=ss[0] if forSports else ss[1] 
+                    if '.ts' in ss[2]:
+                        #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
+                        #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+                        #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
+                        curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                        ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                        #print 'iptv',curl
+                        ret.append((cname +' '+servername+' Ipbox' ,'manual', curl ,''))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
@@ -1788,18 +1811,21 @@ def getUniTVChannels(categories, forSports=False):
     ret=[]
     try:
         xmldata=getUniTVPage()
-#        print xmldata
+        #print xmldata
         for source in xmldata:#Cricket#
             if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+
                 ss=source
                 cname=ss["channelName"]
+                #print cname
                 if 'ebound.tv' in ss["channelLink"]:
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
                     curl='direct2:'+ss["channelLink"]
                 cimage=ss["categoryImageLink"]
                 
-                if len([i for i, x in enumerate(ret) if x[0] ==cname +' v8' ])==0:                    
+                if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
+                    #print cname
                     ret.append((cname +' v8' ,'manual', curl ,cimage))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
@@ -1822,7 +1848,7 @@ def getptcchannels(categories, forSports=False):
                         curl='direct2:'+ss["url"]
                     cimage=ss["imgurl"]
                     
-                    if len([i for i, x in enumerate(ret) if x[0] ==cname +' v6' ])==0:                    
+                    if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
                         ret.append((cname +' v6' ,'manual', curl ,cimage))  
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower() )                        
@@ -1889,7 +1915,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isdittoOff=selfAddon.getSetting( "isdittoOff" )
     isCFOff=selfAddon.getSetting( "isCFOff" )  
     isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
-    isIpBoxff="true"
+    #isIpBoxff="true"
     isYPgenOff= selfAddon.getSetting( "isYPOff" )
     
 
@@ -2169,6 +2195,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             
     if ipBoxGen:
         try:
+            
             progress.update( 90, "", "Loading IpBox Channels", "" )
             rematch=getIpBoxChannels(False)
             if len(rematch)>0:
@@ -2660,6 +2687,11 @@ def getiptvmac():
     return maccode,base64.b64decode("aHR0cDovL213MS5pcHR2NjYudHY=")
 #    return maccode,base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
 
+def playipbox(finalUrl):
+    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER'%(urllib.quote_plus(finalUrl))
+#    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(finalUrl))
+    xbmc.executebuiltin('XBMC.RunPlugin('+finalUrl+')') 
+    
 def PlayiptvLink(url):
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
@@ -2738,6 +2770,9 @@ def PlayOtherUrl ( url ):
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
         return    
+    if "ipbox:" in url:
+        playipbox(url.split('ipbox:')[1])
+        return
     if "YP:" in url:
         PlayYP(base64.b64encode(url.split('YP:')[1]))
         return
