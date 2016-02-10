@@ -26,3 +26,5 @@ B]Version 1.0.3[/B]
 - Updated decryption
 [B]Version 1.1.1[/B]
 - Updated regex 
+[B]Version 1.1.2[/B]
+- Updated regex 
