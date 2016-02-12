@@ -1,3 +1,5 @@
+[B]Version 4.3.8[/B]
+    useragent for pv2
 [B]Version 4.3.7[/B]
     Added sport365, removed streams till we fix it properly
 [B]Version 4.3.6[/B]
