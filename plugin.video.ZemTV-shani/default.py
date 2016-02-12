@@ -617,21 +617,34 @@ def AddSports365Channels(url=None):
     linkshtml=getUrl(liveurl)
     reg="px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
     sportslinks=re.findall(reg,linkshtml)
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'Fetching Live Links')
+    c=0
     for tm,nm,lnk,cat in sportslinks:
+        c+=1
         cat=cat.split("/")[0]
-        addDir(Colored(cat.capitalize()+": "+tm+" : "+nm.capitalize() ,'ZM') ,"" ,0 ,"",isItFolder=False)
-        if not lnk.startswith("http"):
-            lnk='http://www.sport365.live'+lnk
-        matchhtml=getUrl(lnk)
-        reg=".open\('(.*?)'.*?>(.*?)<"
-        sourcelinks=re.findall(reg,matchhtml)
-        for curl,cname in sourcelinks:
-            cname=cname.encode('ascii', 'ignore').decode('ascii')
-            mm=11
-            curl="Sports365:"+curl
-    #        print repr(curl)
-           
-            addDir(Colored("  -"+cname.capitalize(),'') ,base64.b64encode(curl) ,mm ,"", False, True,isItFolder=False)		#name,url,mode,icon
+        progress.update( (c*100/len(sportslinks)), "", "fetting links for "+nm, "" )
+        try:
+            addDir(Colored(cat.capitalize()+": "+tm+" : "+nm.capitalize() ,'ZM') ,"" ,0 ,"",isItFolder=False)
+            if not lnk.startswith("http"):
+                lnk='http://www.sport365.live'+lnk
+            matchhtml=getUrl(lnk)
+            reg=".open\('(.*?)'.*?>(.*?)<"
+            sourcelinks=re.findall(reg,matchhtml)
+            if len(sourcelinks)==0:
+                addDir(Colored("  -"+"No links available yet, Refresh 5 mins before start.",'') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+            else:
+                for curl,cname in sourcelinks:
+                    try:
+                        cname=cname.encode('ascii', 'ignore').decode('ascii')
+                        mm=11
+                        curl="Sports365:"+curl
+                #        print repr(curl)
+                       
+                        addDir(Colored("  -"+cname.capitalize(),'') ,base64.b64encode(curl) ,mm ,"", False, True,isItFolder=False)		#name,url,mode,icon
+                    except: pass
+        except: pass
+    progress.close()
     return   
     
 def AddIpBoxChannels(url=None):
@@ -1793,42 +1806,39 @@ def getIpBoxChannels(forSports=False):
     ret=[]
     try:
 
-#        html=getUrl(base64.b64decode('aHR0cDovL2lwdHYud3NzaXB0di5jb20vZ2V0LnBocD91c2VybmFtZT1naWw3MSZwYXNzd29yZD1BaW1lZTIxMTIwNCZ0eXBlPW0zdSZvdXRwdXQ9bXBlZ3Rz'))
-#        html=getUrl('http://iptv.wssiptv.com/get.php?username=gil71&password=Aimee211204&type=m3u&output=hls')
-#        html=getUrl("http://iptv-online.ddns.net:8000/get.php?username=calogero&password=calogero&type=m3u&output=mpegts")
-#        html=getUrl("http://satloveriptv.com:8090/get.php?username=pakistan&password=pakistan&type=m3u&output=mpegts")
-#        html=getUrl("http://89.163.148.31:8000/get.php?username=aytac&password=aytac&type=m3u")
-#        html=getUrl("http://213.136.90.30:8000/get.php?username=test&password=test&type=m3u&output=mpegts")
+
         servers=getUrl("http://pastebin.com/raw/GrYKMHrF")
         servers=servers.splitlines()
 
         import time
         for ln in servers:
             if not ln.startswith("##") and len(ln)>0:
-                ##serial:mac:time:text
-                print ln
-                servername,surl=ln.split('$')
-                
-                html=getUrl(surl)
+                try:
+                    ##serial:mac:time:text
+                    print ln
+                    servername,surl=ln.split('$')
+                    
+                    html=getUrl(surl)
 
-        #        print xmldata
-                if forSports:
-                    reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
-                else:
-                    reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
-                xmldata=re.findall(reg,html,re.IGNORECASE)
-                
-                for source in xmldata:#Cricket#
-                    ss=source
-                    cname=ss[0] if forSports else ss[1] 
-                    if '.ts' in ss[2]:
-                        #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
-                        #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
-                        #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
-                        curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                        ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                        #print 'iptv',curl
-                        ret.append((cname +' '+servername+' Ipbox' ,'manual', curl ,''))   
+            #        print xmldata
+                    if forSports:
+                        reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+                    else:
+                        reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
+                    xmldata=re.findall(reg,html,re.IGNORECASE)
+                    
+                    for source in xmldata:#Cricket#
+                        ss=source
+                        cname=ss[0] if forSports else ss[1] 
+                        if '.ts' in ss[2]:
+                            #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
+                            #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+                            #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
+                            curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                            ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                            #print 'iptv',curl
+                            ret.append((cname +' '+servername+' Ipbox' ,'manual', curl ,''))   
+                except: pass
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
