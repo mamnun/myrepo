@@ -395,6 +395,7 @@ def AddSports(url):
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
+    addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
 #    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
@@ -605,7 +606,34 @@ def AddPTCSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
-
+    
+def AddSports365Channels(url=None):
+    mainhtml=getUrl("http://www.sport365.live/en/main")
+    reg="updateDivContentIcon.*?'(\/en\/.*?)'\);"
+    liveurl=re.findall(reg,mainhtml)[0]
+    if not liveurl.startswith("http"):
+        liveurl='http://www.sport365.live'+liveurl
+    liveurl+='/-'+'0'
+    linkshtml=getUrl(liveurl)
+    reg="px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
+    sportslinks=re.findall(reg,linkshtml)
+    for tm,nm,lnk,cat in sportslinks:
+        cat=cat.split("/")[0]
+        addDir(Colored(cat.capitalize()+": "+tm+" : "+nm.capitalize() ,'ZM') ,"" ,0 ,"",isItFolder=False)
+        if not lnk.startswith("http"):
+            lnk='http://www.sport365.live'+lnk
+        matchhtml=getUrl(lnk)
+        reg=".open\('(.*?)'.*?>(.*?)<"
+        sourcelinks=re.findall(reg,matchhtml)
+        for curl,cname in sourcelinks:
+            cname=cname.encode('ascii', 'ignore').decode('ascii')
+            mm=11
+            curl="Sports365:"+curl
+    #        print repr(curl)
+           
+            addDir(Colored("  -"+cname.capitalize(),'') ,base64.b64encode(curl) ,mm ,"", False, True,isItFolder=False)		#name,url,mode,icon
+    return   
+    
 def AddIpBoxChannels(url=None):
     for cname,ctype,curl,imgurl in getIpBoxChannels(True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
@@ -2724,7 +2752,28 @@ def PlayiptvLink(url):
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     #    print "playing stream name: " + str(name) 
         xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
-        
+def playSports365(url):
+    import HTMLParser
+    h = HTMLParser.HTMLParser()
+
+    #urlToPlay=base64.b64decode(url)
+    html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')])
+    reg="iframe frameborder=0.*?src=\"(.*?)\""
+    linkurl=re.findall(reg,html)[0]
+    enclinkhtml=getUrl(h.unescape(linkurl))
+    reg='player_div", "st".*?file":"(.*?)"'
+    enclink=re.findall(reg,enclinkhtml)[0]
+    print 'enclink',enclink
+    sitekey="OgUl"#hardcoded
+    import live365
+    
+    urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=http://cdn-b.streamshell.net/swf/uppod-hls.swf&amp;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"
+    
+    print 'urlToPlay',urlToPlay
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+#    print "playing stream name: " + str(name) 
+    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+    
 def PlayPV2Link(url):
 
     if not mode==37:
@@ -2763,6 +2812,9 @@ def PlayOtherUrl ( url ):
         return
     if "ditto:" in url:
         PlayDittoLive(url.split('ditto:')[1])
+        return
+    if "Sports365:" in url:
+        playSports365(url.split('Sports365:')[1])
         return
     if "CF:" in url:
         PlayCFLive(url.split('CF:')[1])
@@ -3684,6 +3736,9 @@ try:
 	elif mode==55 :
 		print "Play url is "+url
 		AddIpBoxChannels(url)     
+	elif mode==56 :
+		print "Play url is 56"+url
+		AddSports365Channels(url)     
 
 except:
 	print 'somethingwrong'
