@@ -367,7 +367,7 @@ def getFirstPTSFrom(data,rpid, initpts,type="video" ):
                                 decodeddts =int(''.join([firstpartdts.bin, secondpartdts.bin, thirdpartdts.bin]),2)#
                 if decodedpts and (type=="" or av==type):
                     ##print decodedpts
-                    if decodedpts>=initpts:
+                    if decodedpts>initpts:
                         return decodedpts,currentpost
         else:
             found=True
