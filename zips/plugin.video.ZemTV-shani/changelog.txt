@@ -1,3 +1,5 @@
+[B]Version 4.4.2[/B]
+    365 time bug
 [B]Version 4.4.1[/B]
     365 improved
 [B]Version 4.4.0[/B]

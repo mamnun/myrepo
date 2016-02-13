@@ -606,24 +606,35 @@ def AddPTCSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
+    
+def total_seconds(dt):
+    # Keep backward compatibility with Python 2.6 which doesn't have
+    # this method
+    import datetime
+    if hasattr(datetime, 'total_seconds'):
+        return dt.total_seconds()
+    else:
+        return (dt.microseconds + (dt.seconds + dt.days * 24 * 3600) * 10**6) / 10**6
+        
 def getutfoffset():
     import time
     from datetime import datetime
 
     ts = time.time()
-    utc_offset = (datetime.fromtimestamp(ts) -
-            datetime.utcfromtimestamp(ts)).total_seconds()
+    utc_offset = total_seconds((   datetime.fromtimestamp(ts)-datetime.utcfromtimestamp(ts)))/60
               
     return int(utc_offset)
     
 def AddSports365Channels(url=None):
-    mainhtml=getUrl("http://www.sport365.live/en/main")
+   # headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
+    mainhtml=getUrl("http://www.sport365.live/en/main")#,headers=headers)
     reg="updateDivContentIcon.*?'(\/en\/.*?)'\);"
     liveurl=re.findall(reg,mainhtml)[0]
     if not liveurl.startswith("http"):
         liveurl='http://www.sport365.live'+liveurl
-    liveurl+='/-'+str(getutfoffset())
+    liveurl+='/'+str(getutfoffset())
     linkshtml=getUrl(liveurl)
+    #print linkshtml
     reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
     sportslinks=re.findall(reg,linkshtml)
     progress = xbmcgui.DialogProgress()
