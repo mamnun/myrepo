@@ -606,6 +606,15 @@ def AddPTCSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
+def getutfoffset():
+    import time
+    from datetime import datetime
+
+    ts = time.time()
+    utc_offset = (datetime.fromtimestamp(ts) -
+            datetime.utcfromtimestamp(ts)).total_seconds()
+              
+    return int(utc_offset)
     
 def AddSports365Channels(url=None):
     mainhtml=getUrl("http://www.sport365.live/en/main")
@@ -613,33 +622,69 @@ def AddSports365Channels(url=None):
     liveurl=re.findall(reg,mainhtml)[0]
     if not liveurl.startswith("http"):
         liveurl='http://www.sport365.live'+liveurl
-    liveurl+='/-'+'0'
+    liveurl+='/-'+str(getutfoffset())
     linkshtml=getUrl(liveurl)
-    reg="px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
+    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
     sportslinks=re.findall(reg,linkshtml)
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Live Links')
+#    print sportslinks
     c=0
-    for tm,nm,lnk,cat in sportslinks:
+    addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+    import HTMLParser
+    h = HTMLParser.HTMLParser()
+    for tp,tm,nm,lng,lnk,cat in sportslinks:
         c+=1
         cat=cat.split("/")[0]
         progress.update( (c*100/len(sportslinks)), "", "fetting links for "+nm, "" )
-        try:
-            addDir(Colored(cat.capitalize()+": "+tm+" : "+nm.capitalize() ,'ZM') ,"" ,0 ,"",isItFolder=False)
+        try:    
+            qty=""
+            cat=cat.replace('&nbsp;','')
+            lng=lng.replace('&nbsp;','')
+            mm=nm.replace('&nbsp;','')
+            #print nm,tp
+            if 'span' in lng:
+                lng=lng.split('>')
+                qty=lng[-2].split('<')[0]
+                lng= lng[-1]
+            if len(qty)>0:
+                qty=Colored("["+qty+"]","red")
+            addDir(Colored(cat.capitalize()+": "+tm+" : "+ qty+' ['+lng+']:'+nm  ,'ZM') ,"" ,0 ,"",isItFolder=False)
             if not lnk.startswith("http"):
                 lnk='http://www.sport365.live'+lnk
-            matchhtml=getUrl(lnk)
+            if tp=="green":
+                matchhtml=getUrl(lnk)
+            else:
+                matchhtml=""
+##                <script>document.write("<iframe width="+w+" height="+h+" frameborder=0 marginheight=0 marginwidth=0 scrolling=no src=\'http://realstream.pw/en/player/56bee5aa62f11508442203/4/4/56bf38bb05d68/CzechRepublic-Russia/"+w+"/"+h+"\'><\/iframe>");</script>
             reg=".open\('(.*?)'.*?>(.*?)<"
             sourcelinks=re.findall(reg,matchhtml)
+            b6=False
             if len(sourcelinks)==0:
+                reg="showPopUpCode\\('(.*?)'.*?\\.write.*?d64\\(\\\\\\'(.*?)\\\\\\'\\)"
+                sourcelinks=re.findall(reg,matchhtml)
+                #print sourcelinks
+                b6=True
+            
+            if len(sourcelinks)==0:
+                print 'No links',matchhtml
                 addDir(Colored("  -"+"No links available yet, Refresh 5 mins before start.",'') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
             else:
                 for curl,cname in sourcelinks:
                     try:
+                        if b6:
+                            curl,cname=cname,curl
+                            #print b6,curl
+                            curl=base64.b64decode(curl)
+                            curl=re.findall('(http.*?)"',curl)[0]#+'/768/432'
+                        
                         cname=cname.encode('ascii', 'ignore').decode('ascii')
                         mm=11
+                        
+                      
                         curl="Sports365:"+curl
-                #        print repr(curl)
+                        #print repr(curl)
+                
                        
                         addDir(Colored("  -"+cname.capitalize(),'') ,base64.b64encode(curl) ,mm ,"", False, True,isItFolder=False)		#name,url,mode,icon
                     except: pass
