@@ -2816,7 +2816,7 @@ def getiptvmac():
 #    return maccode,base64.b64decode("aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50dg==")
 
 def playipbox(finalUrl):
-    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=TSDOWNLOADER'%(urllib.quote_plus(finalUrl))
+    finalUrl='plugin://plugin.video.f4mTester/?name=%s&url=%s&streamtype=TSDOWNLOADER'%(name,urllib.quote_plus(finalUrl))
 #    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(finalUrl))
     xbmc.executebuiltin('XBMC.RunPlugin('+finalUrl+')') 
     
