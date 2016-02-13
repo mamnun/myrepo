@@ -1,3 +1,5 @@
+[B]Version 4.4.0[/B]
+    retry in Streams in sports section
 [B]Version 4.3.9[/B]
     retry in Streams in sports section
 [B]Version 4.3.8[/B]

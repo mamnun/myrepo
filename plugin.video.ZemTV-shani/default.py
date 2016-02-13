@@ -2721,28 +2721,32 @@ def PlayStreamSports(url):
     print 'urlToPlay',urlToPlay
 #    servers=["OTMuMTg5LjU4LjQy","MTg1LjI4LjE5MC4xNTg=","MTc4LjE3NS4xMzIuMjEw","MTc4LjE3LjE2OC45MA=="];
     servers=["MTc4LjE3LjE2OC45MA=="]#works for sl2
-    servers=["OTMuMTg5LjU4LjM4"]#works for sl5
+    servers=["OTMuMTg5LjU4LjQy"]#works for sl5
+    servers=["93.189.58.42","185.28.190.158","178.175.132.210","178.17.168.90","185.56.137.178","94.242.254.72"];
+    servers=["178.17.168.90","185.28.190.158"];
     sid=int(math.floor(random.random()*len(servers)) )
     rr=7
     if urlToPlay.startswith('xgame'):
         rr=2
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'trying server')
+    
+    for sr in servers:
+        for s in range(1,rr):
+            if progress.iscanceled(): return ""
+            progress.update( s*10, "", "Server#%d"%s, "" )
+            if urlToPlay.startswith('xgame'):
+                newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1tcDQ6JXNfNzIwIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)
+            else:
+                #newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wlc18lcyBjb25uPVM6Y2xpZW50IGNvbm49UzozLjEuMC40IHN3ZlVybD1odHRwOi8vdmlkZW9zdHJlYW0uZG4udWEvdmlkZW9wYWdlL2ltYWdlcy9WaWRlb1BsYXllci5zd2Y/eCBwYWdlVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvdmlkZW9QYWdlLnBocD8gdGltZW91dD0xMA==')%(base64.b64decode(servers[sid]),str(s),urlToPlay)        
+                newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wlc18lcyBjb25uPVM6Y2xpZW50IGNvbm49UzozLjEuMC40IHN3ZlVybD1odHRwOi8vdmlkZW9zdHJlYW0uZG4udWEvdmlkZW9wYWdlL2ltYWdlcy9WaWRlb1BsYXllci5zd2Y/eCBwYWdlVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvdmlkZW9QYWdlLnBocD8gdGltZW91dD0xMA==')%(sr,str(s),urlToPlay)        
+            listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+            print "playing stream name: " + str(name) 
+            #xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
             
-    for s in range(1,rr):
-        if progress.iscanceled(): return ""
-        progress.update( s*10, "", "Server#%d"%s, "" )
-        if urlToPlay.startswith('xgame'):
-            newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1tcDQ6JXNfNzIwIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)
-        else:
-            newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wlc18lcyBjb25uPVM6Y2xpZW50IGNvbm49UzozLjEuMC40IHN3ZlVybD1odHRwOi8vdmlkZW9zdHJlYW0uZG4udWEvdmlkZW9wYWdlL2ltYWdlcy9WaWRlb1BsYXllci5zd2Y/eCBwYWdlVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvdmlkZW9QYWdlLnBocD8gdGltZW91dD0xMA==')%(base64.b64decode(servers[sid]),str(s),urlToPlay)        
-        listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-        print "playing stream name: " + str(name) 
-        #xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
-        
-        if tryplay(newurl,listitem):
-            break
-        #print 'tryplay',tt
+            if tryplay(newurl,listitem):
+                break
+            #print 'tryplay',tt
 
 def getiptvmac():
     import os,binascii,random
