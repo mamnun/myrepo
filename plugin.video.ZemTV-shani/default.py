@@ -404,7 +404,7 @@ def AddSports(url):
     addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
     addDir('PV2 Sports' ,'sports',36,'')
-#    addDir('Streams' ,'sss',39,'')
+    addDir('Streams' ,'sss',39,'')
     addDir('cricfree.sx' ,'sss',41,'')
 
     
@@ -677,7 +677,8 @@ def AddStreamSports(url=None):
     addDir('Refresh' ,'Live' ,39,'')
     for source in sources["Value"]:
         cname=Colored(source["Sport"] ,'EB')
-        if not "cyber" in cname:
+        #print 'source["VI"]',source["VI"],cname
+        if not "cyber" in cname.lower() and not 'xgame' in source["VI"]:
             if "Opp1" in source and not source["Opp1"].encode('ascii','ignore')=="":
                 cname+=" :" + source["Opp1"].encode('ascii','ignore') + " vs " +source["Opp2"].encode('ascii','ignore') 
             else:
@@ -2697,22 +2698,51 @@ def getPV2Auth():
     response = urllib2.urlopen(req)
     link=response.read()
     return link
+    
+def tryplay(url,listitem):    
+    import  CustomPlayer,time
 
+    player = CustomPlayer.MyXBMCPlayer()
+    start = time.time() 
+    #xbmc.Player().play( liveLink,listitem)
+    player.play( url, listitem)
+    xbmc.sleep(2000)
+    while player.is_active:
+        xbmc.sleep(200)
+        if player.urlplayed:
+            return True
+    
+    return False
+                
 def PlayStreamSports(url):
 
     urlToPlay=base64.b64decode(url)
     import math,random
+    print 'urlToPlay',urlToPlay
 #    servers=["OTMuMTg5LjU4LjQy","MTg1LjI4LjE5MC4xNTg=","MTc4LjE3NS4xMzIuMjEw","MTc4LjE3LjE2OC45MA=="];
     servers=["MTc4LjE3LjE2OC45MA=="]#works for sl2
-    servers=["MTc4LjE3NS4xMzIuMjEw"]#works for sl5
+    servers=["OTMuMTg5LjU4LjM4"]#works for sl5
     sid=int(math.floor(random.random()*len(servers)) )
+    rr=7
     if urlToPlay.startswith('xgame'):
-        urlToPlay=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1tcDQ6JXNfNzIwIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)
-    else:
-        urlToPlay=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2w1XyVzIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)        
-    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    print "playing stream name: " + str(name) 
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
+        rr=2
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'trying server')
+            
+    for s in range(1,rr):
+        if progress.iscanceled(): return ""
+        progress.update( s*10, "", "Server#%d"%s, "" )
+        if urlToPlay.startswith('xgame'):
+            newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1tcDQ6JXNfNzIwIGNvbm49UzpjbGllbnQgY29ubj1TOjMuMS4wLjQgc3dmVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvaW1hZ2VzL1ZpZGVvUGxheWVyLnN3Zj94IHBhZ2VVcmw9aHR0cDovL3ZpZGVvc3RyZWFtLmRuLnVhL3ZpZGVvcGFnZS92aWRlb1BhZ2UucGhwPyB0aW1lb3V0PTEw')%(base64.b64decode(servers[sid]),urlToPlay)
+        else:
+            newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wlc18lcyBjb25uPVM6Y2xpZW50IGNvbm49UzozLjEuMC40IHN3ZlVybD1odHRwOi8vdmlkZW9zdHJlYW0uZG4udWEvdmlkZW9wYWdlL2ltYWdlcy9WaWRlb1BsYXllci5zd2Y/eCBwYWdlVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvdmlkZW9QYWdlLnBocD8gdGltZW91dD0xMA==')%(base64.b64decode(servers[sid]),str(s),urlToPlay)        
+        listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+        print "playing stream name: " + str(name) 
+        #xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
+        
+        if tryplay(newurl,listitem):
+            break
+        #print 'tryplay',tt
 
 def getiptvmac():
     import os,binascii,random
