@@ -5,7 +5,7 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # by DrZ3r0
 # ------------------------------------------------------------
-
+# Modified by Shani 
 import re,urllib2
 
 #from core import logger
@@ -127,7 +127,16 @@ class AADecoder(object):
             enc_char = enc_char[len(end_char):]
 
         return str_char
-
+    def parseJSString(self,s):
+        try:
+            #print s
+            offset=1 if s[0]=='+' else 0
+            tmp=(s.replace('!+[]','1').replace('!![]','1').replace('[]','0'))#.replace('(','str(')[offset:])
+            val = int(eval(tmp))
+            return val
+        except:
+            pass
+        
     def decode_digit(self, enc_int, radix):
         enc_int=enc_int.replace('(ﾟΘﾟ)','1').replace('(ﾟｰﾟ)','4').replace('(c^_^o)','0').replace('(o^_^o)','3')  
 
@@ -145,7 +154,10 @@ class AADecoder(object):
                 endbrackets=len(c)-len(c.replace(')',''))
                 if startbrackets>endbrackets:
                     c+=')'*startbrackets-endbrackets
-                v+=str(eval(c))
+                if '[' in c :
+                    v+=str(self.parseJSString(c))
+                else:
+                    v+=str(eval(c))
         return v
             
         # mode 0=+, 1=-
@@ -195,7 +207,7 @@ class AADecoder(object):
         alt_char = "(oﾟｰﾟo)+ "
 
         out = ''
-        print data
+        #print data
         while data != '':
             # Check new char
             if data.find(begin_char) != 0:

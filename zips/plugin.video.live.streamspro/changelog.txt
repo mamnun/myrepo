@@ -1,3 +1,5 @@
+Version 2.2.3
+    aadecoder fix
 Version 2.2.2
     Support of $$TSDOWNLOADER$$ parameter in m3u url, if present, the .ts enteries will be executed with f4mtester.
 Version 2.2.1
