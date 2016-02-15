@@ -60,7 +60,8 @@ def Addtypes():
 def getMainMenu():
     list=[]
     list.append({'name':'Bangla Channels','url':mainurl+'/category/bangla-tv','mode':'BC'})
-    list.append({'name':'Islamic Channels','url':mainurl+'/category/islamic-channel','mode':'IC'})
+    list.append({'name':'Islamic Channels','url':mainurl+'/list/islamic.php','mode':'IC'})
+    
     list.append({'name':'Settings','url':'Settings','mode':'Settings'})
     return list;
 
@@ -76,28 +77,41 @@ def AddChannels(Fromurl,mode):
 def getChannelsEnteries(Fromurl,PageNumber,mode):
     link=getURL(Fromurl).result;
     #print 'getEnteriesList',link
-    match =re.findall('<li><a href="(.*?)" rel="bookmark" title="(.*?)"><img.*?src="(.*?)"', link)
+    if mode=='IC':
+        match =re.findall('<a.*?href="(.*?)".*?title="(.*?)".*?src="(.*?)"', link)
+    else:
+        match =re.findall('<li><a href="(.*?)" rel="bookmark" title="(.*?)"><img.*?src="(.*?)"', link)
     listToReturn=[]
     rmode='PlayC';
     #if mode=='ALLC':
     #    rmode='PlayLive'
+    listToReturn.append({'name':"Peacetv Bangla",'url':"http://www.peacetvbangla.com/live_peacetv.html",'mode':rmode,'iconimage':"http://www.peacetvbangla.com/images/top-1.jpg",'isFolder':False})
     for cname in match:
         imageurl=cname[2].replace(' ','%20');
         url=cname[0];
         
+        if imageurl.startswith('//'): imageurl="http:"+imageurl
         if not imageurl.startswith('http'): imageurl=mainurl+'/'+imageurl
         if not url.startswith('http'): url=mainurl+url
         #print imageurl    
         listToReturn.append({'name':cname[1],'url':url,'mode':rmode,'iconimage':imageurl,'isFolder':False})
     return listToReturn
 
-
+def getpeacetvbangla ( url ): 
+    link=getURL(url, mobile=False).result;
+    reg="file=(.*?)&.*streamer=(.*?)&"
+    fl,st=re.findall(reg,link)[0]
+    return {'url':'%s playpath=%s'%(st,fl)}
+    
 def getLiveUrl(url):
 
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
     progress.update( 10, "", "Finding links..", "" )
-
+    if 'peacetvbangla' in url:
+        u=getpeacetvbangla(url)
+        progress.close()
+        return u
     #print 'fetching url',url
     link=getURL(url, mobile=False).result;
     #print 'link',link
@@ -152,6 +166,7 @@ def getLiveUrl(url):
     
 
 #flashvars="src=(.*?)\.f
+
 
 def PlayLiveLink ( url,name ): 
     urlDic=getLiveUrl(url)
