@@ -31,12 +31,12 @@ def swapme(st, fromstr , tostr):
     st=st.replace("___", fromstr)
     return st
 
-    
+     
 def decode(encstring):
     encstring=tr(encstring ,114,65)
-    mc_from="0123456789WGXMHRUZID=NQVBL"
-    mc_to="bzaclmepsJxdftioYkngryTwuv"
-    if encstring.endswith("!"):
+    mc_from="MD7cXIZxt5B61RHbN8dovGzW3C"
+    mc_to="myilk4UpJfYLgn0u9eQwsVaT2="
+    if 1==2:#encstring.endswith("!"):
         encstring=encstring[:-1]
         mc_from="ngU08IuldVHosTmZz9kYL2bayE"
         mc_to="v7ec41D6GpBtXx3QJRiN5WwMf="
@@ -44,5 +44,6 @@ def decode(encstring):
     st=encstring
     for i in range(0,len(mc_from)):
         st=swapme(st, mc_from[i], mc_to[i])
+    print st
     return st.decode("base64")
     

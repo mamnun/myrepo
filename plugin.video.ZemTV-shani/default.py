@@ -624,6 +624,59 @@ def getutfoffset():
     utc_offset = total_seconds((   datetime.fromtimestamp(ts)-datetime.utcfromtimestamp(ts)))/60
               
     return int(utc_offset)
+
+def select365(url):
+    url=base64.b64decode(url)
+    retUtl=""
+    try:
+        links=[]
+        matchhtml=getUrl(url)        
+        reg=".open\('(.*?)'.*?>(.*?)<"
+        sourcelinks=re.findall(reg,matchhtml)
+        b6=False
+        if len(sourcelinks)==0:
+            reg="showPopUpCode\\('(.*?)'.*?\\.write.*?d64\\(\\\\\\'(.*?)\\\\\\'\\)"
+            sourcelinks=re.findall(reg,matchhtml)
+            #print sourcelinks
+            b6=True
+        if len(sourcelinks)==0:
+            reg="showPopUpCode\\('(.*?)'.*?\\.write.*?atob\\(\\\\\\'(.*?)\\\\\\'\\)"
+            sourcelinks=re.findall(reg,matchhtml)
+            #print sourcelinks
+            b6=True            
+        
+        if len(sourcelinks)==0:
+            print 'No links',matchhtml
+            #addDir(Colored("  -"+"No links available yet, Refresh 5 mins before start.",'') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+            return ""
+        else:
+            available_source=[]
+            for curl,cname in sourcelinks:
+                try:
+                    if b6:
+                        curl,cname=cname,curl
+                        #print b6,curl
+                        curl=base64.b64decode(curl)
+                        curl=re.findall('(http.*?)"',curl)[0]#+'/768/432'
+                    
+                    cname=cname.encode('ascii', 'ignore').decode('ascii')
+                    available_source.append(cname)
+                    links+=[[cname,curl]]
+                except:
+                    traceback.print_exc(file=sys.stdout)
+            if len(curl)==0:
+                return ""
+            if len(curl)==1:
+                return links[0][1]
+            dialog = xbmcgui.Dialog()
+            index = dialog.select('Choose your link', available_source)
+            if index > -1:
+                return links[index][1]    
+
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return retUtl
+
     
 def AddSports365Channels(url=None):
    # headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
@@ -658,47 +711,22 @@ def AddSports365Channels(url=None):
                 lng=lng.split('>')
                 qty=lng[-2].split('<')[0]
                 lng= lng[-1]
+            if len(lng)>0:
+                lng=Colored("[" +lng+"]","orange")
             if len(qty)>0:
                 qty=Colored("["+qty+"]","red")
-            addDir(Colored(cat.capitalize()+": "+tm+" : "+ qty+' ['+lng+']:'+nm  ,'ZM') ,"" ,0 ,"",isItFolder=False)
+                
+            
             if not lnk.startswith("http"):
                 lnk='http://www.sport365.live'+lnk
             if tp=="green":
-                matchhtml=getUrl(lnk)
+                lnk=base64.b64encode("Sports365:"+base64.b64encode(lnk))
+                addDir(Colored(cat.capitalize()+": "+tm+" : "+ qty+lng+nm  ,'ZM') ,lnk,11 ,"",isItFolder=False)
             else:
                 matchhtml=""
-##                <script>document.write("<iframe width="+w+" height="+h+" frameborder=0 marginheight=0 marginwidth=0 scrolling=no src=\'http://realstream.pw/en/player/56bee5aa62f11508442203/4/4/56bf38bb05d68/CzechRepublic-Russia/"+w+"/"+h+"\'><\/iframe>");</script>
-            reg=".open\('(.*?)'.*?>(.*?)<"
-            sourcelinks=re.findall(reg,matchhtml)
-            b6=False
-            if len(sourcelinks)==0:
-                reg="showPopUpCode\\('(.*?)'.*?\\.write.*?d64\\(\\\\\\'(.*?)\\\\\\'\\)"
-                sourcelinks=re.findall(reg,matchhtml)
-                #print sourcelinks
-                b6=True
-            
-            if len(sourcelinks)==0:
                 print 'No links',matchhtml
-                addDir(Colored("  -"+"No links available yet, Refresh 5 mins before start.",'') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
-            else:
-                for curl,cname in sourcelinks:
-                    try:
-                        if b6:
-                            curl,cname=cname,curl
-                            #print b6,curl
-                            curl=base64.b64decode(curl)
-                            curl=re.findall('(http.*?)"',curl)[0]#+'/768/432'
-                        
-                        cname=cname.encode('ascii', 'ignore').decode('ascii')
-                        mm=11
-                        
-                      
-                        curl="Sports365:"+curl
-                        #print repr(curl)
-                
-                       
-                        addDir(Colored("  -"+cname.capitalize(),'') ,base64.b64encode(curl) ,mm ,"", False, True,isItFolder=False)		#name,url,mode,icon
-                    except: pass
+                addDir("[N/A]"+Colored(cat.capitalize()+": "+tm+" : "+ qty+' ['+lng+']:'+nm  ,'blue') ,"",0 ,"",isItFolder=False)
+
         except: pass
     progress.close()
     return   
@@ -2852,7 +2880,10 @@ def PlayiptvLink(url):
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     #    print "playing stream name: " + str(name) 
         xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+
 def playSports365(url):
+    url=select365(url)
+    if url=="": return 
     import HTMLParser
     h = HTMLParser.HTMLParser()
 
@@ -2864,10 +2895,17 @@ def playSports365(url):
     reg='player_div", "st".*?file":"(.*?)"'
     enclink=re.findall(reg,enclinkhtml)[0]
     print 'enclink',enclink
-    sitekey="OgUl"#hardcoded
+    reg='player_div", "st":"(.*?)"'
+    encst=re.findall(reg,enclinkhtml)[0]
     import live365
+    decodedst=live365.decode(encst)
+    print encst
+    reg='"stkey":"(.*?)"'
+    sitekey=re.findall(reg,decodedst)[0]
+    #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
+
     
-    urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=http://cdn-b.streamshell.net/swf/uppod-hls.swf&amp;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"
+    urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"%linkurl
     
     print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -3583,7 +3621,6 @@ def ShowAllSources(url, loadedLink=None):
 			linkType=available_source[index].replace(' Source','').replace('Daily Motion','DM').upper()
 #			print 'linkType',linkType
 			PlayShowLink(url);
-
 
 def PlayDittoLive(url):
     progress = xbmcgui.DialogProgress()
