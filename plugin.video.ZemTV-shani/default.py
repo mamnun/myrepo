@@ -397,6 +397,7 @@ def AddSports(url):
     addDir('UniTV sports' ,'sss',53,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
+    addDir('UKTVNow','Live' ,57,'')
 #    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
@@ -729,6 +730,23 @@ def AddSports365Channels(url=None):
 
         except: pass
     progress.close()
+    return   
+
+def PlayUKTVNowChannels(url):
+    jsondata=getUKTVPage()
+    cc=[item for item in jsondata["msg"]["channels"]
+            if item["pk_id"]== url]
+    url=cc[0]["http_stream"]
+    PlayGen(base64.b64encode(url+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"))
+    return  
+    
+def AddUKTVNowChannels(url=None):
+    for cname,ctype,curl,imgurl in getUKTVChannels(['sports']):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        mm=11
+#        print repr(curl)
+       
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return   
     
 def AddIpBoxChannels(url=None):
@@ -1956,6 +1974,51 @@ def getUniTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret  
 
+def getUKTVPage():
+    fname='uktvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,15*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+
+    post = {'username':'hash'}
+    post = urllib.urlencode(post)
+    jsondata=getUrl("https://app.uktvnow.net/v1/get_all_channels",post=post)
+    jsondata=json.loads(jsondata)
+
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'uktv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
+    
+def getUKTVChannels(categories=[], channels=[]):
+    ret=[]
+    try:
+
+        jsondata=getUKTVPage()
+        for channel in jsondata["msg"]["channels"]:
+            print channel
+            if channel["cat_name"].strip().lower() in categories or channel["channel_name"].strip().lower() in categories  :
+                    cname=channel["channel_name"]
+                    curl='uktvnow:'+channel["pk_id"]
+                    cimage=channel["img"]
+                    if not cimage.startswith("http"):
+                        cimage='https://app.uktvnow.net/'+cimage
+                
+                    if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
+                        ret.append((cname +' uktv' ,'manual', curl ,cimage))  
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower() )                        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+
 def getptcchannels(categories, forSports=False):
     ret=[]
     try:
@@ -2040,7 +2103,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
     #isIpBoxff="true"
     isYPgenOff= selfAddon.getSetting( "isYPOff" )
-    
+    isUKTVOff=selfAddon.getSetting( "isUKTVOff" )
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
 #    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
@@ -2206,6 +2269,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     dittogen=None
     CFgen=None
     ipBoxGen=None
+    UKTVGenCat=[]
+    UKTVGenCH=[]
 
     if cctype==1:
         pg='pakistan'
@@ -2215,7 +2280,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         unitvgen=['News','Religious','Cooking','PAK&IND']
         CFgen="4"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
-        
+        UKTVGenCat=['news','religious']
+        UKTVGenCH=['ary zindagi']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
@@ -2224,7 +2290,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         CFgen="6"
         ipBoxGen=1
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL2hpbmRpLXR2Lmh0bWw=")
-        
+        UKTVGenCat=['music']
+        UKTVGenCH=['at the races']
     else:
         pg='punjabi'
         CFgen="1314"
@@ -2240,7 +2307,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isCFOff=='true': CFgen=None    
     if isIpBoxff=='true': ipBoxGen=None
     if isYPgenOff=='true': YPgen=None
-    
+    if isUKTVOff=='true': 
+        UKTVGenCat=[]
+        UKTVGenCH=[]
+
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -2300,6 +2370,15 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             
             progress.update( 82, "", "Loading CF Channels", "" )
             rematch=getCFChannels(CFgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)   
+    if len(UKTVGenCat)>0 or len(UKTVGenCH)>0:
+        try:
+            
+            progress.update( 82, "", "Loading uktv Channels", "" )
+            rematch=getUKTVChannels(UKTVGenCat,UKTVGenCH )
             if len(rematch)>0:
                 match+=rematch
         except:
@@ -2364,7 +2443,9 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 elif cname.lower().endswith(' cf'):
                     cc='blue'                
                 elif cname.lower().endswith(' yp'):
-                    cc='ffdc00cc'
+                    cc='ffdc00cc'                
+                elif cname.lower().endswith(' uktv'):
+                    cc='ffdc1111'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -2956,6 +3037,9 @@ def PlayOtherUrl ( url ):
         return
     if "CF:" in url:
         PlayCFLive(url.split('CF:')[1])
+        return    
+    if "uktvnow:" in url:
+        PlayUKTVNowChannels(url.split('uktvnow:')[1])
         return
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
@@ -3875,7 +3959,10 @@ try:
 		AddIpBoxChannels(url)     
 	elif mode==56 :
 		print "Play url is 56"+url
-		AddSports365Channels(url)     
+		AddSports365Channels(url) 
+	elif mode==57 :
+		print "Play url is 56"+url
+		AddUKTVNowChannels(url)     
 
 except:
 	print 'somethingwrong'
