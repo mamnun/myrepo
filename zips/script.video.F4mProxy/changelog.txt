@@ -91,4 +91,7 @@ renamed util folder due to clash
 Support for TSDownloader
 [B]Version 2.4.1[/B]
 slight change for TSDownloader
+[B]Version 2.4.2[/B]
+caching swf hash
+
 

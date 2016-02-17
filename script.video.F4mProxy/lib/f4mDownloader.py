@@ -24,8 +24,15 @@ import akhds
 
 #import youtube_dl
 #from youtube_dl.utils import *
-addon_id = 'script.video.F4mProxy'
-selfAddon = xbmcaddon.Addon(id=addon_id)
+
+try:
+    addon_id = 'plugin.video.f4mTester' # yes its a wrong one but due to settings getting reset
+    selfAddon = xbmcaddon.Addon(id=addon_id)
+except:
+    addon_id = 'script.video.F4mProxy' # yes its a wrong one but due to settings getting reset
+    selfAddon = xbmcaddon.Addon(id=addon_id)
+    
+    
 __addonname__   = selfAddon.getAddonInfo('name')
 __icon__        = selfAddon.getAddonInfo('icon')
 downloadPath   = xbmc.translatePath(selfAddon.getAddonInfo('profile'))#selfAddon["profile"])
@@ -1084,10 +1091,25 @@ class F4MDownloader():
             pvswf=""
 
         if pvswf.startswith('http'):
-            swf = self.getUrl(pvswf,False)
-            hash = hashlib.sha256()
-            hash.update(self.swfdecompress(swf))
-            hash = base64.b64encode(hash.digest()).decode("ascii")
+            import hashlib            
+            h=hashlib.md5()
+            h.update(pvswf)
+            hashkey=""+str(h.hexdigest())
+            existinghash=str(selfAddon.getSetting(hashkey))
+            #print 'existinghash',hashkey
+            #print 'existinghashval',existinghash
+            if len(existinghash)==0:
+                swf = self.getUrl(pvswf,False)
+                hash = hashlib.sha256()
+                hash.update(self.swfdecompress(swf))
+                hash = base64.b64encode(hash.digest()).decode("ascii")
+                #print hashkey,hash
+                selfAddon.setSetting(hashkey, str(hash))
+                #print 'getting back',str(selfAddon.getSetting(hashkey))
+            else:
+                hash=existinghash
+                
+            
         else:
             hash=pvswf # the incoming is the hash!
             
