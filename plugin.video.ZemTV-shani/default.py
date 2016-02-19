@@ -2280,8 +2280,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         unitvgen=['News','Religious','Cooking','PAK&IND']
         CFgen="4"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
-        UKTVGenCat=['news','religious']
-        UKTVGenCH=['ary zindagi']
+        UKTVGenCat,UKTVGenCH=['religious','news','food'], ['masala tv', 'ary digital', 'ary zindagi','hum tv','drama','express ent.']
+
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
@@ -2290,8 +2290,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         CFgen="6"
         ipBoxGen=1
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL2hpbmRpLXR2Lmh0bWw=")
-        UKTVGenCat=['music']
-        UKTVGenCH=['at the races']
+        UKTVGenCat,UKTVGenCH=['movies'],['zee tv','colors','sony tv hd', 'star plus hd', 'zee tv']
     else:
         pg='punjabi'
         CFgen="1314"
@@ -2714,6 +2713,7 @@ def getYPPage(url,progress):
     for l in links:
         ln+=1
         progress.update( int((ln*100)/len(links)), "", "Filtering YP links..%d of %d"%(ln, len(links) ))
+        if progress.iscanceled(): return []
         if not getYPUrl(l[0])==None:
             ret+=[l]
     links=ret
