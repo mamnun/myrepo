@@ -580,6 +580,11 @@ class TSDownloader():
                         else: 
                             #print 'found first packet', len(writebuf)
                             First=False
+                            if not writebuf[0]=='\x47': 
+                                #fileout.write(buf)
+                                #fileout.flush()
+                                fileout.close()
+                                return
                             starttime=time.time()
                         
                         if writebuf and len(writebuf)>0: 
