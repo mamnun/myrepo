@@ -1985,7 +1985,7 @@ def getUKTVPage():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-    post = {'username':'hash'}
+    post = {'username':'test'}
     post = urllib.urlencode(post)
     jsondata=getUrl("https://app.uktvnow.net/v1/get_all_channels",post=post)
     jsondata=json.loads(jsondata)
@@ -2657,6 +2657,11 @@ def clearCache():
     fname='pv2tvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]    
+    fname='uktvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]    
+    
+    
 
     for p in ['u','p','h']:
         fname='yptvpage_%s.json'%p
