@@ -2971,13 +2971,30 @@ def playSports365(url):
     #urlToPlay=base64.b64decode(url)
     html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')])
     reg="iframe frameborder=0.*?src=\"(.*?)\""
-    linkurl=re.findall(reg,html)[0]
+    linkurl=re.findall(reg,html)
+    if len(linkurl)==0:
+        reg="http://www.sport365.live.*?'\/(.*?)'\)"
+        linkurl=re.findall(reg,html)[0]
+        linkurl="http://www.sport365.live/en/player/f/"+linkurl
+        html=getUrl(h.unescape(linkurl))
+        reg="iframe frameborder=0.*?src=\"(.*?)\""
+        linkurl=re.findall(reg,html)[0]
+#        print linkurl
+    else:
+        linkurl=linkurl[0]
     enclinkhtml=getUrl(h.unescape(linkurl))
     reg='player_div", "st".*?file":"(.*?)"'
-    enclink=re.findall(reg,enclinkhtml)[0]
-    print 'enclink',enclink
-    reg='player_div", "st":"(.*?)"'
-    encst=re.findall(reg,enclinkhtml)[0]
+    enclink=re.findall(reg,enclinkhtml)
+    if len(enclink)==0:
+        reg='name="f" value="(.*?)"'
+        enclink=re.findall(reg,enclinkhtml)[0]  
+        reg='name="s" value="(.*?)"'
+        encst=re.findall(reg,enclinkhtml)[0]
+    else:
+        enclink=enclink[0]
+        print 'enclink',enclink
+        reg='player_div", "st":"(.*?)"'
+        encst=re.findall(reg,enclinkhtml)[0]
     import live365
     decodedst=live365.decode(encst)
     print encst
@@ -2986,7 +3003,7 @@ def playSports365(url):
     #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
 
     
-    urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"%linkurl
+    urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"%"http://h5.adshell.net/flash"
     
     print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
