@@ -1,3 +1,5 @@
+[B]Version 4.4.8[/B]
+    streams retry improved
 [B]Version 4.4.7[/B]
     uktv upate
 [B]Version 4.4.6[/B]

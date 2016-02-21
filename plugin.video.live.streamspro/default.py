@@ -1261,10 +1261,10 @@ def setKodiProxy(proxysettings=None):
         proxyType=ps[2]
         proxyUsername=None
         proxyPassword=None
-         
-        if len(ps)>3 and '@' in proxysettings:
-            proxyUsername=ps[3]
-            proxyPassword=proxysettings.split('@')[-1]
+        
+        if len(ps)>3 and '@' in ps[3]: #jairox ###proxysettings
+            proxyUsername=ps[3].split('@')[0] #jairox ###ps[3]
+            proxyPassword=ps[3].split('@')[1] #jairox ###proxysettings.split('@')[-1]
 
 #        print 'proxy set to', proxyType, proxyURL,proxyPort
         xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Settings.SetSettingValue", "params":{"setting":"network.usehttpproxy", "value":true}, "id":1}')
@@ -1296,7 +1296,7 @@ def getConfiguredProxy():
     else:
         return None
         
-def playmediawithproxy(media_url, name, iconImage,proxyip,port):
+def playmediawithproxy(media_url, name, iconImage,proxyip,port, proxyuser=None, proxypass=None): #jairox
 
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Playing with custom proxy')
@@ -1308,7 +1308,11 @@ def playmediawithproxy(media_url, name, iconImage,proxyip,port):
         existing_proxy=getConfiguredProxy()
 #        print 'existing_proxy',existing_proxy
         #read and set here
-        setKodiProxy( proxyip + ':' + port+':0')
+        #jairox
+        if not proxyuser == None:
+            setKodiProxy( proxyip + ':' + port + ':0:' + proxyuser + '@' + proxypass)
+        else:
+            setKodiProxy( proxyip + ':' + port + ':0')
 
 #        print 'proxy setting complete', getConfiguredProxy()
         proxyset=True
@@ -2820,8 +2824,19 @@ elif mode==17 or mode==117:
             if '$PLAYERPROXY$=' in url:
                 url,proxy=url.split('$PLAYERPROXY$=')
 #                print 'proxy',proxy
-                proxyip,port=proxy.split(':')
-                playmediawithproxy(url,name,iconimage,proxyip,port )
+                #Jairox mod for proxy auth
+                proxyuser = None
+                proxypass = None
+                if len(proxy) > 0 and '@' in proxy:
+                    proxy = proxy.split(':')
+                    proxyuser = proxy[0]
+                    proxypass = proxy[1].split('@')[0]
+                    proxyip = proxy[1].split('@')[1]
+                    port = proxy[2]
+                else:
+                    proxyip,port=proxy.split(':')
+
+                playmediawithproxy(url,name,iconimage,proxyip,port, proxyuser,proxypass) #jairox
             else:
                 playsetresolved(url,name,iconimage,setresolved)
         else:

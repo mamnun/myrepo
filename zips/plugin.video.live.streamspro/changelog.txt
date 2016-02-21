@@ -1,3 +1,5 @@
+Version 2.2.4
+    proxy username/pwd , thansks to jairox@tva
 Version 2.2.3
     aadecoder fix
 Version 2.2.2
