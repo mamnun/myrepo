@@ -2876,12 +2876,14 @@ def tryplay(url,listitem):
     start = time.time() 
     #xbmc.Player().play( liveLink,listitem)
     player.play( url, listitem)
-    xbmc.sleep(2000)
+    xbmc.sleep(1000)
     while player.is_active:
         xbmc.sleep(200)
         if player.urlplayed:
+            print 'yes played'
             return True
-    
+        xbmc.sleep(1000)
+    print 'not played',url
     return False
                 
 def PlayStreamSports(url):
@@ -2915,7 +2917,7 @@ def PlayStreamSports(url):
             #xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
             
             if tryplay(newurl,listitem):
-                break
+                return
             #print 'tryplay',tt
 
 def getiptvmac():
