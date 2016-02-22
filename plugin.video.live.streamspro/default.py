@@ -21,7 +21,7 @@ except:
 import SimpleDownloader as downloader
 import time
 tsdownloader=False
-resolve_url=['180upload.com', 'allmyvideos.net', 'bestreams.net', 'clicknupload.com', 'cloudzilla.to', 'movshare.net', 'novamov.com', 'nowvideo.sx', 'videoweed.es', 'daclips.in', 'datemule.com', 'fastvideo.in', 'faststream.in', 'filehoot.com', 'filenuke.com', 'sharesix.com', 'docs.google.com', 'plus.google.com', 'picasaweb.google.com', 'gorillavid.com', 'gorillavid.in', 'grifthost.com', 'hugefiles.net', 'ipithos.to', 'ishared.eu', 'kingfiles.net', 'mail.ru', 'my.mail.ru', 'videoapi.my.mail.ru', 'mightyupload.com', 'mooshare.biz', 'movdivx.com', 'movpod.net', 'movpod.in', 'movreel.com', 'mrfile.me', 'nosvideo.com', 'openload.io', 'played.to', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'primeshare.tv', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'sharerepo.com', 'stagevu.com', 'streamcloud.eu', 'streamin.to', 'thefile.me', 'thevideo.me', 'tusfiles.net', 'uploadc.com', 'zalaa.com', 'uploadrocket.net', 'uptobox.com', 'v-vids.com', 'veehd.com', 'vidbull.com', 'videomega.tv', 'vidplay.net', 'vidspot.net', 'vidto.me', 'vidzi.tv', 'vimeo.com', 'vk.com', 'vodlocker.com', 'xfileload.com', 'xvidstage.com', 'zettahost.tv']
+resolve_url=['180upload.com', 'allmyvideos.net', 'bestreams.net', 'clicknupload.com', 'cloudzilla.to', 'movshare.net', 'novamov.com', 'nowvideo.sx', 'videoweed.es', 'daclips.in', 'datemule.com', 'fastvideo.in', 'faststream.in', 'filehoot.com', 'filenuke.com', 'sharesix.com',  'plus.google.com', 'picasaweb.google.com', 'gorillavid.com', 'gorillavid.in', 'grifthost.com', 'hugefiles.net', 'ipithos.to', 'ishared.eu', 'kingfiles.net', 'mail.ru', 'my.mail.ru', 'videoapi.my.mail.ru', 'mightyupload.com', 'mooshare.biz', 'movdivx.com', 'movpod.net', 'movpod.in', 'movreel.com', 'mrfile.me', 'nosvideo.com', 'openload.io', 'played.to', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'primeshare.tv', 'bitshare.com', 'filefactory.com', 'k2s.cc', 'oboom.com', 'rapidgator.net', 'uploaded.net', 'sharerepo.com', 'stagevu.com', 'streamcloud.eu', 'streamin.to', 'thefile.me', 'thevideo.me', 'tusfiles.net', 'uploadc.com', 'zalaa.com', 'uploadrocket.net', 'uptobox.com', 'v-vids.com', 'veehd.com', 'vidbull.com', 'videomega.tv', 'vidplay.net', 'vidspot.net', 'vidto.me', 'vidzi.tv', 'vimeo.com', 'vk.com', 'vodlocker.com', 'xfileload.com', 'xvidstage.com', 'zettahost.tv']
 g_ignoreSetResolved=['plugin.video.dramasonline','plugin.video.f4mTester','plugin.video.shahidmbcnet','plugin.video.SportsDevil','plugin.stream.vaughnlive.tv','plugin.video.ZemTV-shani']
 
 class NoRedirection(urllib2.HTTPErrorProcessor):
@@ -647,6 +647,7 @@ def getItems(items,fanart,dontLink=False):
                             ftv = 'plugin://plugin.video.F.T.V/?name='+urllib.quote(name) +'&url=' +i.string +'&mode=125&ch_fanart=na'
                         url.append(ftv)
                 elif len(item('urlsolve')) >0:
+                    
                     for i in item('urlsolve'):
                         if not i.string == None:
                             resolver = i.string +'&mode=19'
@@ -722,6 +723,7 @@ def getItems(items,fanart,dontLink=False):
                 except:
                     pass
             try:
+                
                 if len(url) > 1:
                     alt = 0
                     playlist = []
@@ -741,6 +743,7 @@ def getItems(items,fanart,dontLink=False):
                     if len(playlist) > 1:
                         addLink('', name,thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
                 else:
+                    
                     if dontLink:
                         return name,url[0],regexs
                     if isXMLSource:
@@ -754,6 +757,7 @@ def getItems(items,fanart,dontLink=False):
                         addDir(name.encode('utf-8'),ext_url[0],53,thumbnail,fanart,desc,genre,date,None,'source')
                         #xbmc.executebuiltin("Container.SetViewMode(500)")
                     else:
+                        
                         addLink(url[0],name.encode('utf-8', 'ignore'),thumbnail,fanArt,desc,genre,date,True,None,regexs,total)
                     #print 'success'
             except:
@@ -1303,10 +1307,11 @@ def playmediawithproxy(media_url, name, iconImage,proxyip,port, proxyuser=None, 
     progress.update( 10, "", "setting proxy..", "" )
     proxyset=False
     existing_proxy=''
+    #print 'playmediawithproxy'
     try:
         
         existing_proxy=getConfiguredProxy()
-#        print 'existing_proxy',existing_proxy
+        print 'existing_proxy',existing_proxy
         #read and set here
         #jairox
         if not proxyuser == None:
@@ -1314,9 +1319,10 @@ def playmediawithproxy(media_url, name, iconImage,proxyip,port, proxyuser=None, 
         else:
             setKodiProxy( proxyip + ':' + port + ':0')
 
-#        print 'proxy setting complete', getConfiguredProxy()
+        #print 'proxy setting complete', getConfiguredProxy()
         proxyset=True
         progress.update( 80, "", "setting proxy complete, now playing", "" )
+        
         progress.close()
         progress=None
         import  CustomPlayer
@@ -2106,6 +2112,7 @@ def urlsolver(url):
             resolver = resolved
     else:
         xbmc.executebuiltin("XBMC.Notification(LiveStreamsPro,Urlresolver donot support this domain. - ,5000)")
+        resolver=url
     return resolver
 def play_playlist(name, mu_playlist,queueVideo=None):
         playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
@@ -2764,35 +2771,35 @@ elif mode==17 or mode==117:
                                                 if the_valuel is not None:
                                                     if isinstance(obj,tuple):
                                                         try:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']',escape( obj[i].decode('utf-8') ))
                                                         except: 
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] )
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i] ))
                                                     else:
                                                         try:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj.decode('utf-8') ))
                                                         except:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', obj)
+                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj))
                                         else:
                                             if isinstance(obj,tuple):
                                                 try:
-                                                     the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i].decode('utf-8') )
+                                                     the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i].decode('utf-8') ))
                                                 except:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj[i] )
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i] ))
                                             else:
                                                 try:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj.decode('utf-8') )
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']',escape( obj.decode('utf-8') ))
                                                 except:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', obj)
+                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj))
                     if isinstance(obj,tuple):
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i].decode('utf-8')) 
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj[i].decode('utf-8')) )
                         except:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj[i]) 
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj[i]) )
                     else:
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj.decode('utf-8'))
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj.decode('utf-8')))
                         except: 
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',obj)
+                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj))
 #                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
                 
@@ -2800,6 +2807,7 @@ elif mode==17 or mode==117:
     #            print 'new regex list', repr(newcopy), repr(listrepeatT)
     #            addLink(listlinkT,listtitleT.encode('utf-8', 'ignore'),listthumbnailT,'','','','',True,None,newcopy, len(ret))
                 regex_xml=''
+#                print 'newcopy',newcopy
                 if len(newcopy)>0:
                     regex_xml=d2x(newcopy,'lsproroot')
                     regex_xml=regex_xml.split('<lsproroot>')[1].split('</lsproroot')[0]
@@ -2813,7 +2821,7 @@ elif mode==17 or mode==117:
 #            print newcopy
                 
 #            ln+='</item>'
-        #print 'ln',repr(ln)
+        #print 'ln',ln
         addon_log(repr(ln))
         getData('','',ln)
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -2823,7 +2831,7 @@ elif mode==17 or mode==117:
         if url:
             if '$PLAYERPROXY$=' in url:
                 url,proxy=url.split('$PLAYERPROXY$=')
-#                print 'proxy',proxy
+                print 'proxy',proxy
                 #Jairox mod for proxy auth
                 proxyuser = None
                 proxypass = None
