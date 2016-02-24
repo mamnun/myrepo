@@ -1978,7 +1978,7 @@ def getUKTVPage():
     fname='uktvpage.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,15*60)
+        jsondata=getCacheData(fname,10*60)
         if not jsondata==None:
             return jsondata
     except:
@@ -1989,9 +1989,10 @@ def getUKTVPage():
     post = urllib.urlencode(post)
     jsondata=getUrl("https://app.uktvnow.net/v1/get_all_channels",post=post)
     jsondata=json.loads(jsondata)
-
+    
     try:
-        storeCacheData(jsondata,fname)
+        if len(jsondata["msg"]["channels"])>0:
+            storeCacheData(jsondata,fname)
     except:
         print 'uktv file saving error'
         traceback.print_exc(file=sys.stdout)
@@ -2933,6 +2934,7 @@ def getiptvmac():
 
 def playipbox(finalUrl):
     finalUrl='plugin://plugin.video.f4mTester/?name=%s&url=%s&streamtype=TSDOWNLOADER'%(name,urllib.quote_plus(finalUrl))
+    
 #    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(finalUrl))
     xbmc.executebuiltin('XBMC.RunPlugin('+finalUrl+')') 
     

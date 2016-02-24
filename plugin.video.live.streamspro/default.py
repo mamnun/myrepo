@@ -8,7 +8,7 @@ import xbmcgui
 import xbmcaddon
 import xbmcvfs
 import traceback
-import cookielib
+import cookielib,base64
 from BeautifulSoup import BeautifulStoneSoup, BeautifulSoup, BeautifulSOAP
 viewmode=None
 try:
@@ -278,11 +278,27 @@ def getSoup(url,data=None):
         global viewmode,tsdownloader
         tsdownloader=False
         if url.startswith('http://') or url.startswith('https://'):
-
+            enckey=False
             if '$$TSDOWNLOADER$$' in url:
                 tsdownloader=True
                 url=url.replace("$$TSDOWNLOADER$$","")
-            data = makeRequest(url)
+            if '$$LSProEncKey=' in url:
+                enckey=url.split('$$LSProEncKey=')[1].split('$$')[0]
+                rp='$$LSProEncKey=%s$$'%enckey
+                url=url.replace(rp,"")
+                
+            data =makeRequest(url)
+            if enckey:
+                    import pyaes
+                    enckey=enckey.encode("ascii")
+                    print enckey
+                    missingbytes=16-len(enckey)
+                    enckey=enckey+(chr(0)*(missingbytes))
+                    print repr(enckey)
+                    data=base64.b64decode(data)
+                    decryptor = pyaes.new(enckey , pyaes.MODE_ECB, IV=None)
+                    data=decryptor.decrypt(data).split('\0')[0]
+                    #print repr(data)
             if re.search("#EXTM3U",data) or 'm3u' in url:
 #                print 'found m3u data'
                 return data
