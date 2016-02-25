@@ -3541,20 +3541,23 @@ def PlayShowLink ( url ):
         line1 = "Playing DM Link"
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1,time  , __icon__))
     #		print link
-        playURL= match =re.findall('src="(http.*?(dailymotion.com).*?)"',link)
+        playURL= match =re.findall('src="((?:http)?.*?(dailymotion.com).*?)"',link)
         if len(playURL)==0:
             line1 = "Daily motion link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
             ShowAllSources(url,link)
             return 
         playURL=match[0][0]
-    #		print playURL
+        if playURL.startswith('//'):
+            playURL='http:'+playURL
+        print playURL
         playlist = xbmc.PlayList(1)
         playlist.clear()
         listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
         listitem.setInfo("Video", {"Title":name})
         listitem.setProperty('mimetype', 'video/x-msvideo')
         listitem.setProperty('IsPlayable', 'true')
+        print 'playURL',playURL
         stream_url = urlresolver.HostedMediaFile(playURL).resolve()
         print stream_url
         playlist.add(stream_url,listitem)
