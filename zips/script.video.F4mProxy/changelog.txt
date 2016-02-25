@@ -93,5 +93,7 @@ Support for TSDownloader
 slight change for TSDownloader
 [B]Version 2.4.3[/B]
 check if its TS
+[B]Version 2.4.4[/B]
+Play command
 
 

@@ -34,3 +34,5 @@
 - Updated the links as the site is accessible to international users
 [B]Version 1.7[/B]
 -Updated login
+[B]Version 1.8[/B]
+-Play Command

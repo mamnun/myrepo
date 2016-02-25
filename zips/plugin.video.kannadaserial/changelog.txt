@@ -15,3 +15,5 @@
 
 [B]Version 2.2.5[/B]
 - icon changed
+[B]Version 2.2.6[/B]
+- Play Command

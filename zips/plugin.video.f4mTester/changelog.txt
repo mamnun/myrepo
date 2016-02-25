@@ -46,5 +46,5 @@ Introduced settings for BBC birate
 
 [B]Version 2.2.3[/B]
 added swf parameter for hds
-
-
+[B]Version 2.2.4[/B]
+play command

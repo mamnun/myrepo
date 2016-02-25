@@ -1,3 +1,5 @@
+Version 2.2.8
+    play command
 Version 2.2.7
     double escape bug in listrepeat
 Version 2.2.6

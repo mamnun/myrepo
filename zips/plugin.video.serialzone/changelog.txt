@@ -14,3 +14,5 @@ Enable proxy play
 External non youtube links
 [B]Version 1.5[/B]
 updated regex for blank enteries in hindi section
+[B]Version 1.6[/B]
+play command
