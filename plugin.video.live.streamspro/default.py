@@ -2753,7 +2753,7 @@ elif mode==17 or mode==117:
     data=None
     if regexs and 'listrepeat' in urllib.unquote_plus(regexs):
         listrepeat,ret,m,regexs =getRegexParsed(regexs, url)
-        #print listrepeat,ret,m,regexs
+#        print listrepeat,ret,m,regexs
         d=''
 #        print 'm is' , m
 #        print 'regexs',regexs
@@ -2785,37 +2785,58 @@ elif mode==17 or mode==117:
                                         if type(the_value) is dict:
                                             for the_keyl, the_valuel in the_value.iteritems():
                                                 if the_valuel is not None:
-                                                    if isinstance(obj,tuple):
+                                                    val=None
+                                                    if isinstance(obj,tuple):                                                    
                                                         try:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']',escape( obj[i].decode('utf-8') ))
+                                                           val= obj[i].decode('utf-8') 
                                                         except: 
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i] ))
+                                                            val= obj[i] 
                                                     else:
                                                         try:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj.decode('utf-8') ))
+                                                            val= obj.decode('utf-8') 
                                                         except:
-                                                            the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj))
+                                                            val= obj
+                                                    
+                                                    if '[' + regexname+'.param'+str(i+1) + '][DE]' in the_valuel:
+                                                        the_valuel=the_valuel.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
+                                                    the_value[the_keyl]=the_valuel.replace('[' + regexname+'.param'+str(i+1) + ']', val)
+                                                    #print 'first sec',the_value[the_keyl]
+                                                    
                                         else:
+                                            val=None
                                             if isinstance(obj,tuple):
-                                                try:
-                                                     the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i].decode('utf-8') ))
-                                                except:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj[i] ))
-                                            else:
-                                                try:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']',escape( obj.decode('utf-8') ))
-                                                except:
-                                                    the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', escape(obj))
+                                                val=None
+                                                if isinstance(obj,tuple):
+                                                    try:
+                                                         val=obj[i].decode('utf-8') 
+                                                    except:
+                                                        val=obj[i] 
+                                                else:
+                                                    try:
+                                                        val= obj.decode('utf-8') 
+                                                    except:
+                                                        val= obj
+                                                if '[' + regexname+'.param'+str(i+1) + '][DE]' in the_value:
+                                                    #print 'found DE',the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
+                                                    the_value=the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
+
+                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', val)
+                                                #print 'second sec val',the_valueO[the_key]
+
+                    val=None
                     if isinstance(obj,tuple):
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj[i].decode('utf-8')) )
+                            val=obj[i].decode('utf-8')
                         except:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj[i]) )
+                            val=obj[i]
                     else:
                         try:
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj.decode('utf-8')))
+                            val=obj.decode('utf-8')
                         except: 
-                            listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(obj))
+                            val=obj
+                    if '[' + regexname+'.param'+str(i+1) + '][DE]' in listrepeatT:
+                        listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + '][DE]',val)
+                    listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(val))
 #                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
                 
