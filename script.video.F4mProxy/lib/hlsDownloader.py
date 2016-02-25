@@ -47,6 +47,7 @@ from crypto.cipher.base     import padWithPadLen
 from crypto.cipher.rijndael import Rijndael
 from crypto.cipher.aes_cbc import AES_CBC
 '''
+gproxy=None
 try:
     from Crypto.Cipher import AES
     USEDec=1 ## 1==crypto 2==local, local pycrypto
@@ -85,7 +86,7 @@ class HLSDownloader():
         self.init_done=False
 
     def init(self, out_stream, url, proxy=None,use_proxy_for_chunks=True,g_stopEvent=None, maxbitrate=0, auth=''):
-        global clientHeader
+        global clientHeader,gproxy
         try:
             self.init_done=False
             self.init_url=url
@@ -97,6 +98,7 @@ class HLSDownloader():
                 self.auth=''
             if self.proxy and len(self.proxy)==0:
                 self.proxy=None
+            gproxy=self.proxy
             self.use_proxy_for_chunks=use_proxy_for_chunks
             self.out_stream=out_stream
             self.g_stopEvent=g_stopEvent
@@ -141,6 +143,7 @@ def getUrl(url,timeout=20, returnres=False):
         #openner = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler)
         cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
         openner = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
+        
         #print cookieJar
 
         if post:
@@ -159,7 +162,8 @@ def getUrl(url,timeout=20, returnres=False):
             req.add_header('User-Agent','AppleCoreMedia/1.0.0.12B411 (iPhone; U; CPU OS 8_1 like Mac OS X; en_gb)')
         
         #req.add_header('X-Playback-Session-Id','9A1E596D-6AB6-435F-85D1-59BDD0E62D24')
-
+        if gproxy:
+            req.set_proxy(gproxy, 'http')
         response = openner.open(req)
         
         if returnres: return response
@@ -251,7 +255,7 @@ def gen_m3u(url, skip_comments=True):
     #print conn
     #url=re.compile(',RESOLUTION=512x2.*\s?(.*?)\s').findall(conn)[0]
     conn = getUrl(url,returnres=True )#urllib2.urlopen(url)
-    #print conn
+    print conn
     #conn=urllib2.urlopen(url)
     enc = validate_m3u(conn)
     #print conn
