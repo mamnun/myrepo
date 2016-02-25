@@ -565,7 +565,7 @@ def PlayLiveLink ( url ):
 		print "playing stream name: " + str(name) 
 		listitem.setInfo( type="video", infoLabels={ "Title": name, "Path" : strval } )
 		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Plot" : name, "TVShowTitle": name } )
-		xbmc.Player( xbmc.PLAYER_CORE_DVDPLAYER ).play( str(strval), listitem)
+		xbmc.Player(  ).play( str(strval), listitem)
 	else:
 		line1 = "Playing RTMP Stream"
 		xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))

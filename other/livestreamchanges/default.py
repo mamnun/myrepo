@@ -1500,7 +1500,7 @@ elif mode==12:
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, item)
         #xbmc.playlist(xbmc.playlist_video).clear()
         #xbmc.playlist(xbmc.playlist_video).add(url)
-        #xbmc.Player(xbmc.PLAYER_CORE_MPLAYER).play(item=url)
+        #xbmc.Player().play(item=url)
     else:
         print 'Not setting setResolvedUrl'
         xbmc.executebuiltin('XBMC.RunPlugin('+url+')')
