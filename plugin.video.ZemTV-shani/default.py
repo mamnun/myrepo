@@ -1984,8 +1984,9 @@ def getUKTVPage():
     except:
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
-
-    post = {'username':'test'}
+    usernames=['Sergio','Dash','Frazer','Zed','Alan','Dominic','Kent','Howard','Eric','Jen']
+    import random
+    post = {'username':random.choice(usernames)}
     post = urllib.urlencode(post)
     jsondata=getUrl("https://app.uktvnow.net/v1/get_all_channels",post=post)
     jsondata=json.loads(jsondata)
