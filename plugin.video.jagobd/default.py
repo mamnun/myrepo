@@ -188,7 +188,7 @@ def PlayLiveLink ( url,name ):
         print 'playfile', playfile
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
         print "playing stream name: " + str(name) 
-        xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+        xbmc.Player(  ).play( playfile, listitem)
     else:
           line1="Stream not found";
           time=2000

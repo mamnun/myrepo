@@ -529,7 +529,7 @@ def PlayShowLink ( url ):
 		listitem.setProperty('mimetype', 'video/x-msvideo')
 		listitem.setProperty('IsPlayable', 'true')
 		playlist.add(urlToPlay,listitem)
-		xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+		xbmcPlayer = xbmc.Player()
 		xbmcPlayer.play(playlist)
 	return 
 	
@@ -558,7 +558,7 @@ def PlayShowLink ( url ):
 		stream_url = urlresolver.HostedMediaFile(playURL).resolve()
 		print stream_url
 		playlist.add(stream_url,listitem)
-		xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+		xbmcPlayer = xbmc.Player()
 		xbmcPlayer.play(playlist)
 #src="(.*?(dailymotion).*?)"
 	elif  linkType=="LINK"  or (linkType=="" and defaultLinkType=="2"):
@@ -588,7 +588,7 @@ def PlayShowLink ( url ):
 		stream_url = urlresolver.HostedMediaFile(playURL).resolve()
 		print stream_url
 		playlist.add(stream_url,listitem)
-		xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+		xbmcPlayer = xbmc.Player()
 		xbmcPlayer.play(playlist)
 
 #src="(.*?(tune\.pk).*?)"
@@ -713,7 +713,7 @@ def PlayLiveLink ( url ):
 		print "playing stream name: " + str(name) 
 		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Path" : playfile } )
 		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Plot" : name, "TVShowTitle": name } )
-		xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+		xbmc.Player(  ).play( playfile, listitem)
 		#xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
 
 	return

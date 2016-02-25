@@ -230,7 +230,7 @@ def PlayFlashTv(url):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(video_url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
     
 def PlayCricFree(url):
@@ -292,7 +292,7 @@ def PlayCricFree(url):
         playlist.clear()
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
         playlist.add(urlToPlay,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist) 
     else:
         dialog = xbmcgui.Dialog()
@@ -471,7 +471,7 @@ def PlayCricHD(url):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
 
 ##not in use        
@@ -483,7 +483,7 @@ def PlayPopeLive(url):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
 
     
@@ -1230,7 +1230,7 @@ def PlaySSSEvent(url):
 #    playlist.clear()
 #    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    playlist.add(finalUrl,listitem)
-#    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+#    xbmcPlayer = xbmc.Player()
 #    xbmcPlayer.play(playlist) 
     xbmc.executebuiltin('XBMC.RunPlugin('+finalUrl+')') 
     
@@ -1316,7 +1316,7 @@ def PlayWillowMatch(url):
         playlist.clear()
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
         playlist.add(match_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist) 
 
 def AddWillowReplayParts(url):
@@ -1704,7 +1704,7 @@ def PlayWatchCric(url):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
 
 def getYPUrl(url):
@@ -1767,7 +1767,7 @@ def PlayGen(url,checkUrl=False):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
         
         
@@ -1776,7 +1776,7 @@ def PlaySmartCric(url):
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     playlist.add(url,listitem)
-    xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+    xbmcPlayer = xbmc.Player()
     xbmcPlayer.play(playlist) 
         
 def AddEnteries(name, type=None):
@@ -2916,7 +2916,7 @@ def PlayStreamSports(url):
                 newurl=base64.b64decode('cnRtcGU6Ly8lcy94bGl2ZSBwbGF5cGF0aD1yYXc6c2wlc18lcyBjb25uPVM6Y2xpZW50IGNvbm49UzozLjEuMC40IHN3ZlVybD1odHRwOi8vdmlkZW9zdHJlYW0uZG4udWEvdmlkZW9wYWdlL2ltYWdlcy9WaWRlb1BsYXllci5zd2Y/eCBwYWdlVXJsPWh0dHA6Ly92aWRlb3N0cmVhbS5kbi51YS92aWRlb3BhZ2UvdmlkZW9QYWdlLnBocD8gdGltZW91dD0xMA==')%(sr,str(s),urlToPlay)        
             listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
             print "playing stream name: " + str(name) 
-            #xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)    
+            #xbmc.Player(  ).play( urlToPlay, listitem)    
             
             if tryplay(newurl,listitem):
                 return
@@ -2970,7 +2970,7 @@ def PlayiptvLink(url):
     #    print 'urlToPlay',urlToPlay
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     #    print "playing stream name: " + str(name) 
-        xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+        xbmc.Player(  ).play( urlToPlay, listitem)  
 
 def playSports365(url):
     url=select365(url)
@@ -3018,7 +3018,7 @@ def playSports365(url):
     print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+    xbmc.Player(  ).play( urlToPlay, listitem)  
     
 def PlayPV2Link(url):
 
@@ -3038,7 +3038,7 @@ def PlayPV2Link(url):
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( urlToPlay, listitem)  
+    xbmc.Player(  ).play( urlToPlay, listitem)  
     
 def PlayOtherUrl ( url ):
     url=base64.b64decode(url)
@@ -3182,7 +3182,7 @@ def PlayOtherUrl ( url ):
 #    print final_url
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( final_url, listitem)    
+    xbmc.Player(  ).play( final_url, listitem)    
 
 def AddChannelsFromEbound():
     liveURL=base64.b64decode('aHR0cDovL2Vib3VuZHNlcnZpY2VzLmNvbS9pc3RyZWFtX2RlbW8ucGhw')
@@ -3500,7 +3500,7 @@ def PlayShowLink ( url ):
         stream_url = urlresolver.HostedMediaFile(playURL).resolve()
         print stream_url
         playlist.add(stream_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist)
         #xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)
         #src="(.*?(dailymotion).*?)"
@@ -3548,7 +3548,7 @@ def PlayShowLink ( url ):
         listitem.setProperty('mimetype', 'video/x-msvideo')
         listitem.setProperty('IsPlayable', 'true')
         playlist.add(stream_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist)
     elif  linkType.upper()=="VIDRAIL"  or (linkType=="" and defaultLinkType=="5"):
         line1 = "Playing Vidrail Link"
@@ -3579,7 +3579,7 @@ def PlayShowLink ( url ):
 #        stream_url = urlresolver.HostedMediaFile(playURL).resolve()' find here
     #		print stream_url
         playlist.add(stream_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist)
     elif  linkType.upper()=="LINK"  or (linkType=="" and defaultLinkType=="1"):
         line1 = "Playing Tune.pk Link"
@@ -3603,7 +3603,7 @@ def PlayShowLink ( url ):
         stream_url = urlresolver.HostedMediaFile(playURL).resolve()
     #		print stream_url
         playlist.add(stream_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist)
     elif  linkType.upper()=="PLAYWIRE"  or (linkType=="" and defaultLinkType=="2"):
         line1 = "Playing Playwire Link"
@@ -3660,7 +3660,7 @@ def PlayShowLink ( url ):
         stream_url = playURL#urlresolver.HostedMediaFile(playURL).resolve()
     #		print 'stream_url',stream_url
         playlist.add(stream_url,listitem)
-        xbmcPlayer = xbmc.Player(xbmc.PLAYER_CORE_AUTO)
+        xbmcPlayer = xbmc.Player()
         xbmcPlayer.play(playlist)
         #bmcplugin.setResolvedUrl(int(sys.argv[1]), True, listitem)#src="(.*?(tune\.pk).*?)"
     else:	#either its default or nothing selected
@@ -3751,7 +3751,7 @@ def PlayDittoLive(url):
 #    playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    xbmc.Player(  ).play( playfile, listitem)
     return      
 def PlayCFLive(url):
     progress = xbmcgui.DialogProgress()
@@ -3778,7 +3778,7 @@ def PlayCFLive(url):
 #    playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    xbmc.Player(  ).play( playfile, listitem)
     return  
 
 def PlayEboundFromIOS(url):
@@ -3797,7 +3797,7 @@ def PlayEboundFromIOS(url):
     playfile =url+'?wmsAuthSign='+link+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    xbmc.Player(  ).play( playfile, listitem)
     return
 
 def PlayLiveLink ( url ):
@@ -3832,7 +3832,7 @@ def PlayLiveLink ( url ):
     
     progress.update( 100, "", "Almost done..", "" )
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+    xbmc.Player(  ).play( playfile, listitem)
     return
 
 

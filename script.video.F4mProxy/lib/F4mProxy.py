@@ -387,7 +387,7 @@ class f4mProxyHelper():
             progress.close() 
             mplayer.play(url_to_play,listitem)
            
-            #xbmc.Player(xbmc.PLAYER_CORE_AUTO).play(url, listitem)
+            #xbmc.Player().play(url, listitem)
             firstTime=True
             played=False
             while True:

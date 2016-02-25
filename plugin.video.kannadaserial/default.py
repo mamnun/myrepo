@@ -311,7 +311,7 @@ def PlayLiveLink ( url ):
 		print "playing stream name: " + str(name) 
 		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Path" : playfile } )
 		#listitem.setInfo( type="video", infoLabels={ "Title": name, "Plot" : name, "TVShowTitle": name } )
-		xbmc.Player( xbmc.PLAYER_CORE_AUTO ).play( playfile, listitem)
+		xbmc.Player(  ).play( playfile, listitem)
 	
 	
 	return
