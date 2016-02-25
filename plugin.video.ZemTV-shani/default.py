@@ -398,6 +398,7 @@ def AddSports(url):
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('UKTVNow','Live' ,57,'')
+    addDir('Yupp Asia Cup','Live' ,60,'')
 #    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
@@ -739,6 +740,63 @@ def PlayUKTVNowChannels(url):
     url=cc[0]["http_stream"]
     PlayGen(base64.b64encode(url+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"))
     return  
+
+def getYuppSportsChannel(Live=True):
+    ret=[]
+    try:
+        url="http://asiacup.api.yuppcdn.net/yuppcache.svc/asiacupdetails"
+        post={'type':'2016'}
+        if Live:
+            post={'type':'live'}
+
+        headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'),
+                ('Referer','http://www.yupptv.com/cricket/asiacup.html')]
+
+        post = urllib.urlencode(post)
+        
+        jdata=getUrl(url, post=post, headers=headers)
+        jsondata=json.loads(jdata)
+        for channel in jsondata["VODS"]:
+            cname=channel["Description"]
+            curl='direct:'+channel["URLpath"]
+            cimage=channel["Imgpath"]
+            
+            ret.append((cname ,'manual', curl ,cimage))  
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+
+def AddYuppSports(url=None):
+    try:
+
+        addDir(Colored("Live Streams".capitalize(),'ZM') ,"" ,-1,"", False, True,isItFolder=False)		#name,url,mode,icon
+        channels=getYuppSportsChannel(Live=True)
+        if len(channels)>0:
+            for cname,ctype,curl,imgurl in channels:
+                cname=cname.encode('ascii', 'ignore').decode('ascii')
+                mm=11
+        #        print repr(curl)      
+                addDir(cname ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+        else:
+            addDir("-- No Live Streams Available" ,"" ,-1 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    except: pass
+    try:
+
+        addDir(Colored("Recorded/Highlights".capitalize(),'ZM') ,"" ,-1,"", False, True,isItFolder=False)		#name,url,mode,icon
+        channels=getYuppSportsChannel(Live=False)
+        if len(channels)>0:
+            for cname,ctype,curl,imgurl in channels:
+                cname=cname.encode('ascii', 'ignore').decode('ascii')
+                mm=11
+        #        print repr(curl)      
+                addDir(cname ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+        else:
+            addDir("-- No Recorded Streams Available" ,"" ,-1 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    except: pass
+                
+        
+        
+    return   
     
 def AddUKTVNowChannels(url=None):
     for cname,ctype,curl,imgurl in getUKTVChannels(['sports']):
@@ -3990,7 +4048,10 @@ try:
 	elif mode==57 :
 		print "Play url is 56"+url
 		AddUKTVNowChannels(url)     
-
+	elif mode==60 :
+		print "Play url is 60"+url
+		AddYuppSports(url)     
+        
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
