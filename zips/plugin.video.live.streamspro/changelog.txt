@@ -1,3 +1,5 @@
+Version 2.2.9
+    single dimension repeat bug
 Version 2.2.8
     play command
 Version 2.2.7

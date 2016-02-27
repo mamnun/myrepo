@@ -2805,23 +2805,21 @@ elif mode==17 or mode==117:
                                         else:
                                             val=None
                                             if isinstance(obj,tuple):
-                                                val=None
-                                                if isinstance(obj,tuple):
-                                                    try:
-                                                         val=obj[i].decode('utf-8') 
-                                                    except:
-                                                        val=obj[i] 
-                                                else:
-                                                    try:
-                                                        val= obj.decode('utf-8') 
-                                                    except:
-                                                        val= obj
-                                                if '[' + regexname+'.param'+str(i+1) + '][DE]' in the_value:
-                                                    #print 'found DE',the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
-                                                    the_value=the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
+                                                try:
+                                                     val=obj[i].decode('utf-8') 
+                                                except:
+                                                    val=obj[i] 
+                                            else:
+                                                try:
+                                                    val= obj.decode('utf-8') 
+                                                except:
+                                                    val= obj
+                                            if '[' + regexname+'.param'+str(i+1) + '][DE]' in the_value:
+                                                #print 'found DE',the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
+                                                the_value=the_value.replace('[' + regexname+'.param'+str(i+1) + '][DE]', unescape(val))
 
-                                                the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', val)
-                                                #print 'second sec val',the_valueO[the_key]
+                                            the_valueO[the_key]=the_value.replace('[' + regexname+'.param'+str(i+1) + ']', val)
+                                            #print 'second sec val',the_valueO[the_key]
 
                     val=None
                     if isinstance(obj,tuple):
