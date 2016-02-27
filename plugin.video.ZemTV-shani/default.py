@@ -102,7 +102,7 @@ def addDir(name,url,mode,iconimage,showContext=False,showLiveContext=False,isItF
 	
 	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isItFolder)
 	return ok
-	
+
 def PlayChannel ( channelName ): 
 #	print linkType
 	url = tabURL.replace('%s',channelName);
@@ -1568,6 +1568,10 @@ def AddSmartCric(url):
     try:
         match_sn =re.findall(patt_sn,link)[0]
         match_pk =re.findall(patt_pk,link)[0]
+        ref=[('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'),
+            ('Referer','http://smartcric.com/')]
+        lburl=re.findall('(http.*?loadbalancer)',link)[0]
+        fms=getUrl(lburl,headers=ref).split('=')[1]
         final_url=  match_url+   match_sn
         req = urllib2.Request(final_url)
         req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
@@ -1590,11 +1594,13 @@ def AddSmartCric(url):
 #                print source
                 curl=''
                 cname=source["caption"]
-                fms=source["fmsUrl"]
+                #fms=source["fmsUrl"]
 #                print curl
                 #if ctype<>'': cname+= '[' + ctype+']'
                 addDir(cname ,curl ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
-                fms=getUrl('http://publish.smartcric.com:1935/loadbalancer').split('=')[1]
+
+
+                
                 if 'streamsList' in source and source["streamsList"] and len(source["streamsList"])>0:
                     for s in source["streamsList"]:
                         cname=s["caption"]
@@ -2901,7 +2907,7 @@ def getPV2Url():
     second= str(TIME).split('.')[0]
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
     token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhNCZ0b2tlbj0lcw==')  %token)      
+    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRmcmVlMi42JnRva2VuPSVz')  %token)      
     req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83MTEuNC42IERhcndpbi8xNC4wLjA=")) 
 
@@ -2909,7 +2915,8 @@ def getPV2Url():
     link=response.read()
 
     try:
-        storeCacheData(base64.b64encode(link),fname)
+        if 'items' in link:
+            storeCacheData(base64.b64encode(link),fname)
     except:
         print 'unitv file saving error'
         traceback.print_exc(file=sys.stdout)
