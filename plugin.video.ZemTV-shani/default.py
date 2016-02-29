@@ -2037,7 +2037,27 @@ def getUniTVChannels(categories, forSports=False):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
+    
+    
 
+
+def local_time(zone='Asia/Karachi'):
+    from datetime import datetime
+    from pytz import timezone
+    other_zone = timezone(zone)
+    other_zone_time = datetime.now(other_zone)
+    return other_zone_time.strftime('%B-%d-%Y')
+    
+def getAPIToken( url,  username):
+    print url,username
+    from pytz import timezone
+    dt=local_time()
+    s = "uktvnow-token-"+ dt + "-"+ "_|_-" + url + "-" + username +"-" + "_|_"+ "-"+ base64.b64decode("MTIzNDU2IUAjJCVedWt0dm5vd14lJCNAITY1NDMyMQ==")
+    
+    print s
+    import hashlib
+    return hashlib.md5(s).hexdigest()
+    
 def getUKTVPage():
     fname='uktvpage.json'
     fname=os.path.join(profile_path, fname)
@@ -2050,11 +2070,13 @@ def getUKTVPage():
         traceback.print_exc(file=sys.stdout)
     usernames=eval(base64.b64decode("WydTZXJnaW8nLCdEYXNoJywnRnJhemVyJywnWmVkJywnQWxhbicsJ0RvbWluaWMnLCdLZW50JywnSG93YXJkJywnRXJpYycsJ0plbidd"))
     import random
-    post = {'username':random.choice(usernames)}
+    username = random.choice(usernames)
+    post = {'username':username}
     post = urllib.urlencode(post)
   
-    headers=eval(base64.b64decode("WygnVXNlci1BZ2VudCcsJ1VTRVItQUdFTlQtVUtUVk5PVy1BUFAtVjEnKSwoJ2FwcC10b2tlbicsJ2FmZjE2MTRiNTJhNTM3YmQ3YmEyZDMyODE0ODU1NmFmJyld"))
-    jsondata=getUrl(base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjEvZ2V0X2FsbF9jaGFubmVscw=="),post=post,headers=headers)
+    #headers=eval(base64.b64decode("WygnVXNlci1BZ2VudCcsJ1VTRVItQUdFTlQtVUtUVk5PVy1BUFAtVjEnKSwoJ2FwcC10b2tlbicsJ2FmZjE2MTRiNTJhNTM3YmQ3YmEyZDMyODE0ODU1NmFmJyld"))
+    headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V1'),('app-token',getAPIToken(base64.b64decode("aHR0cDovL2FwcC51a3R2bm93Lm5ldC92MS9nZXRfYWxsX2NoYW5uZWxz"),username))]
+    jsondata=getUrl(base64.b64decode("aHR0cDovL2FwcC51a3R2bm93Lm5ldC92MS9nZXRfYWxsX2NoYW5uZWxz"),post=post,headers=headers)
     jsondata=json.loads(jsondata)
     
     try:
@@ -2071,7 +2093,6 @@ def getUKTVChannels(categories=[], channels=[]):
 
         jsondata=getUKTVPage()
         for channel in jsondata["msg"]["channels"]:
-            print channel
             if channel["cat_name"].strip().lower() in categories or channel["channel_name"].strip().lower() in categories  :
                     cname=channel["channel_name"]
                     curl='uktvnow:'+channel["pk_id"]
