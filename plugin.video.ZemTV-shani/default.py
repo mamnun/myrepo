@@ -755,18 +755,19 @@ def get_unwise( str_eval):
 def get365Key(cookieJar):
     headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
     mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
-    kurl=re.findall("src=\"(http://cdn-a.streamshell.net/js/wrapper.js.*?)\"",mainhtml)[0]
+    kurl=re.findall("src=\"(http.*?/wrapper.js.*?)\"",mainhtml)[0]
     khtml=getUrl(kurl,headers=headers, cookieJar=cookieJar)
     kstr=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(khtml)[0]
     kunc=get_unwise(kstr)
 #    print kunc
-    kkey=re.findall('aes_key="(.*?)"',kunc)[0]
-    return kkey
+    kkey=re.findall('aes_key="(.*?)"',kunc)
+    return kkey[0]
     
 def AddSports365Channels(url=None):
     headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
     cookieJar = get365CookieJar()
     kkey=get365Key(cookieJar)
+
     #reg="updateDivContentIcon.*?'(\/en\/.*?)'\);"
     #liveurl=re.findall(reg,mainhtml)[0]
     #if not liveurl.startswith("http"):
@@ -774,9 +775,10 @@ def AddSports365Channels(url=None):
     liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
     linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
     #print linkshtml
-    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
-    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?,.?\"(.*?)\".*?\">(.*?)<"
+#    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
+    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?__showLinks.*?,.?\"(.*?)\".*?\">(.*?)<"
     sportslinks=re.findall(reg,linkshtml)
+    print 'got links',sportslinks
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Live Links')
 #    print sportslinks
