@@ -48,7 +48,8 @@ WTVCOOKIEFILE='WTVCookieFile.lwp'
 WTVCOOKIEFILE=os.path.join(profile_path, WTVCOOKIEFILE)
 ZEMCOOKIEFILE='ZemCookieFile.lwp'
 ZEMCOOKIEFILE=os.path.join(profile_path, ZEMCOOKIEFILE)
-
+S365COOKIEFILE='s365CookieFile.lwp'
+S365COOKIEFILE=os.path.join(profile_path, S365COOKIEFILE)
  
 mainurl=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20v')
 liveURL=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vbGl2ZS1wYWtpc3RhbmktbmV3cy1jaGFubmVscy8=')
@@ -636,17 +637,25 @@ def select365(url):
         reg=".open\('(.*?)'.*?>(.*?)<"
         sourcelinks=re.findall(reg,matchhtml)
         b6=False
-        if len(sourcelinks)==0:
+
+        enc=False
+        if 1==2 and len(sourcelinks)==0:
             reg="showPopUpCode\\('(.*?)'.*?\\.write.*?d64\\(\\\\\\'(.*?)\\\\\\'\\)"
             sourcelinks=re.findall(reg,matchhtml)
-            #print sourcelinks
+            print 'f',sourcelinks
             b6=True
-        if len(sourcelinks)==0:
+        if 1==2 and len(sourcelinks)==0:
             reg="showPopUpCode\\('(.*?)'.*?\\.write.*?atob\\(\\\\\\'(.*?)\\\\\\'\\)"
             sourcelinks=re.findall(reg,matchhtml)
-            #print sourcelinks
+            print 's',sourcelinks
             b6=True            
-        
+        if len(sourcelinks)==0:
+            reg="showWindow\\('(.*?)',.*?>(.*?)<"
+            sourcelinks=re.findall(reg,matchhtml)
+            #print sourcelinks
+            enc=True    
+            b6=False
+        kkey=get365Key(get365CookieJar())
         if len(sourcelinks)==0:
             print 'No links',matchhtml
             #addDir(Colored("  -"+"No links available yet, Refresh 5 mins before start.",'') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
@@ -660,6 +669,14 @@ def select365(url):
                         #print b6,curl
                         curl=base64.b64decode(curl)
                         curl=re.findall('(http.*?)"',curl)[0]#+'/768/432'
+                    if enc:
+                        #print curl
+                        curl=json.loads(curl.decode("base64"))
+                        import jscrypto
+                        #print curl["ct"],kkey,curl["s"]
+                        curl=jscrypto.decode(curl["ct"],kkey,curl["s"].decode("hex"))
+                        #print curl
+                        curl=curl.replace('\\/','/').replace('"',"")
                     
                     cname=cname.encode('ascii', 'ignore').decode('ascii')
                     available_source.append(cname)
@@ -679,24 +696,94 @@ def select365(url):
         traceback.print_exc(file=sys.stdout)
     return retUtl
 
+def unwise_func( w, i, s, e):
+    lIll = 0;
+    ll1I = 0;
+    Il1l = 0;
+    ll1l = [];
+    l1lI = [];
+    while True:
+        if (lIll < 5):
+            l1lI.append(w[lIll])
+        elif (lIll < len(w)):
+            ll1l.append(w[lIll]);
+        lIll+=1;
+        if (ll1I < 5):
+            l1lI.append(i[ll1I])
+        elif (ll1I < len(i)):
+            ll1l.append(i[ll1I])
+        ll1I+=1;
+        if (Il1l < 5):
+            l1lI.append(s[Il1l])
+        elif (Il1l < len(s)):
+            ll1l.append(s[Il1l]);
+        Il1l+=1;
+        if (len(w) + len(i) + len(s) + len(e) == len(ll1l) + len(l1lI) + len(e)):
+            break;
+
+    lI1l = ''.join(ll1l)#.join('');
+    I1lI = ''.join(l1lI)#.join('');
+    ll1I = 0;
+    l1ll = [];
+    for lIll in range(0,len(ll1l),2):
+        #print 'array i',lIll,len(ll1l)
+        ll11 = -1;
+        if ( ord(I1lI[ll1I]) % 2):
+            ll11 = 1;
+        #print 'val is ', lI1l[lIll: lIll+2]
+        l1ll.append(chr(    int(lI1l[lIll: lIll+2], 36) - ll11));
+        ll1I+=1;
+        if (ll1I >= len(l1lI)):
+            ll1I = 0;
+    ret=''.join(l1ll)
+    if 'eval(function(w,i,s,e)' in ret:
+#        print 'STILL GOing'
+        ret=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(ret)[0]
+        return get_unwise(ret)
+    else:
+#        print 'FINISHED'
+        return ret
+def get_unwise( str_eval):
+    page_value=""
+    try:
+        ss="w,i,s,e=("+str_eval+')'
+        exec (ss)
+        page_value=unwise_func(w,i,s,e)
+    except: traceback.print_exc(file=sys.stdout)
+    #print 'unpacked',page_value
+    return page_value    
+def get365Key(cookieJar):
+    headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
+    mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
+    kurl=re.findall("src=\"(http://cdn-a.streamshell.net/js/wrapper.js.*?)\"",mainhtml)[0]
+    khtml=getUrl(kurl,headers=headers, cookieJar=cookieJar)
+    kstr=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(khtml)[0]
+    kunc=get_unwise(kstr)
+#    print kunc
+    kkey=re.findall('aes_key="(.*?)"',kunc)[0]
+    return kkey
     
 def AddSports365Channels(url=None):
-   # headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
-    mainhtml=getUrl("http://www.sport365.live/en/main")#,headers=headers)
-    reg="updateDivContentIcon.*?'(\/en\/.*?)'\);"
-    liveurl=re.findall(reg,mainhtml)[0]
-    if not liveurl.startswith("http"):
-        liveurl='http://www.sport365.live'+liveurl
-    liveurl+='/'+str(getutfoffset())
-    linkshtml=getUrl(liveurl)
+    headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
+    cookieJar = get365CookieJar()
+    kkey=get365Key(cookieJar)
+    #reg="updateDivContentIcon.*?'(\/en\/.*?)'\);"
+    #liveurl=re.findall(reg,mainhtml)[0]
+    #if not liveurl.startswith("http"):
+    #    liveurl='http://www.sport365.live'+liveurl
+    liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
+    linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
     #print linkshtml
     reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?\"(\/en\/links.*?)\".*?\">(.*?)<"
+    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?showDivLink.*?,.?\"(.*?)\".*?\">(.*?)<"
     sportslinks=re.findall(reg,linkshtml)
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Live Links')
 #    print sportslinks
     c=0
     addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+    cookieJar.save (S365COOKIEFILE,ignore_discard=True)
+
     import HTMLParser
     h = HTMLParser.HTMLParser()
     for tp,tm,nm,lng,lnk,cat in sportslinks:
@@ -704,6 +791,12 @@ def AddSports365Channels(url=None):
         cat=cat.split("/")[0]
         progress.update( (c*100/len(sportslinks)), "", "fetting links for "+nm, "" )
         try:    
+            lnk=json.loads(lnk.decode("base64"))
+            import jscrypto
+            lnk=jscrypto.decode(lnk["ct"],kkey,lnk["s"].decode("hex"))
+            #print lnk
+            lnk=lnk.replace('\\/','/').replace('"',"")
+         
             qty=""
             cat=cat.replace('&nbsp;','')
             lng=lng.replace('&nbsp;','')
@@ -729,7 +822,7 @@ def AddSports365Channels(url=None):
                 print 'No links',matchhtml
                 addDir("[N/A]"+Colored(cat.capitalize()+": "+tm+" : "+ qty+' ['+lng+']:'+nm  ,'blue') ,"",0 ,"",isItFolder=False)
 
-        except: pass
+        except: traceback.print_exc(file=sys.stdout)
     progress.close()
     return   
 
@@ -958,7 +1051,20 @@ def AddWillSportsOldSeriesMatches(url):
 def useMyOwnUserNamePwd():
     willow_username=selfAddon.getSetting( "WillowUserName" ) 
     return not willow_username==""
+    
+def get365CookieJar(updatedUName=False):
+    cookieJar=None
+    try:
+        cookieJar = cookielib.LWPCookieJar()
+        if not updatedUName:
+            cookieJar.load(S365COOKIEFILE,ignore_discard=True)
+    except: 
+        cookieJar=None
 
+    if not cookieJar:
+        cookieJar = cookielib.LWPCookieJar()
+    return cookieJar
+    
 def getZemCookieJar(updatedUName=False):
     cookieJar=None
     try:
@@ -3067,20 +3173,21 @@ def playSports365(url):
     h = HTMLParser.HTMLParser()
 
     #urlToPlay=base64.b64decode(url)
-    html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')])
+    cookieJar=get365CookieJar()
+    html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')],cookieJar=cookieJar)
     reg="iframe frameborder=0.*?src=\"(.*?)\""
     linkurl=re.findall(reg,html)
     if len(linkurl)==0:
         reg="http://www.sport365.live.*?'\/(.*?)'\)"
         linkurl=re.findall(reg,html)[0]
         linkurl="http://www.sport365.live/en/player/f/"+linkurl
-        html=getUrl(h.unescape(linkurl))
+        html=getUrl(h.unescape(linkurl),cookieJar=cookieJar)
         reg="iframe frameborder=0.*?src=\"(.*?)\""
         linkurl=re.findall(reg,html)[0]
 #        print linkurl
     else:
         linkurl=linkurl[0]
-    enclinkhtml=getUrl(h.unescape(linkurl))
+    enclinkhtml=getUrl(h.unescape(linkurl),cookieJar=cookieJar)
     reg='player_div", "st".*?file":"(.*?)"'
     enclink=re.findall(reg,enclinkhtml)
     if len(enclink)==0:
