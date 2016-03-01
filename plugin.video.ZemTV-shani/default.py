@@ -629,8 +629,10 @@ def getutfoffset():
     return int(utc_offset)
 
 def select365(url):
+    #print 'select365',url
     url=base64.b64decode(url)
     retUtl=""
+    
     try:
         links=[]
         matchhtml=getUrl(url)        
@@ -655,6 +657,14 @@ def select365(url):
             #print sourcelinks
             enc=True    
             b6=False
+        if len(sourcelinks)==0:
+            reg="showPopUpCode\\(.*?,.?'(.*?)'.*?,.*?,(.*?)\\)"
+            sourcelinks=re.findall(reg,matchhtml)
+            #print sourcelinks
+            enc=True    
+            b6=False
+            
+        #print 'sourcelinks',sourcelinks
         kkey=get365Key(get365CookieJar())
         if len(sourcelinks)==0:
             print 'No links',matchhtml
@@ -662,7 +672,9 @@ def select365(url):
             return ""
         else:
             available_source=[]
+            ino=0
             for curl,cname in sourcelinks:
+                ino+=1
                 try:
                     if b6:
                         curl,cname=cname,curl
@@ -677,8 +689,20 @@ def select365(url):
                         curl=jscrypto.decode(curl["ct"],kkey,curl["s"].decode("hex"))
                         #print curl
                         curl=curl.replace('\\/','/').replace('"',"")
-                    
+                        #print 'fina;',curl
+                        if 'window.atob' in curl:
+                            reg="window\\.atob\\(\\\\\\\\\\'(.*?)'"
+                            #print 'in regex',reg,curl
+                            curl=re.findall(reg,curl)[0]
+                            curl=base64.b64decode(curl)
+                            curl=re.findall('(http.*?)"',curl)[0]#+'/768/432'
+                            if not curl.split('/')[-2].isdigit():
+                                curl+='/768/432'
+                                
+                    #print curl
                     cname=cname.encode('ascii', 'ignore').decode('ascii')
+                    #if not cname.startswith('link'):
+                    cname='source# '+str(ino)
                     available_source.append(cname)
                     links+=[[cname,curl]]
                 except:
@@ -3169,6 +3193,7 @@ def PlayiptvLink(url):
         xbmc.Player(  ).play( urlToPlay, listitem)  
 
 def playSports365(url):
+    #print ('playSports365')
     url=select365(url)
     if url=="": return 
     import HTMLParser
