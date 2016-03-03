@@ -1,3 +1,5 @@
+Version 2.3.1
+    unicode urls in image
 Version 2.3.0
     added livestreams script addons
 Version 2.2.9
