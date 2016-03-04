@@ -629,7 +629,7 @@ def getutfoffset():
     return int(utc_offset)
 
 def select365(url):
-    #print 'select365',url
+    print 'select365',url
     url=base64.b64decode(url)
     retUtl=""
     
@@ -689,7 +689,7 @@ def select365(url):
                         curl=jscrypto.decode(curl["ct"],kkey,curl["s"].decode("hex"))
                         #print curl
                         curl=curl.replace('\\/','/').replace('"',"")
-                        #print 'fina;',curl
+                        print 'fina;',curl
                         if 'window.atob' in curl:
                             reg="window\\.atob\\(\\\\\\\\\\'(.*?)'"
                             #print 'in regex',reg,curl
@@ -699,7 +699,7 @@ def select365(url):
                             if not curl.split('/')[-2].isdigit():
                                 curl+='/768/432'
                                 
-                    #print curl
+                    print curl
                     cname=cname.encode('ascii', 'ignore').decode('ascii')
                     #if not cname.startswith('link'):
                     cname='source# '+str(ino)
@@ -776,14 +776,18 @@ def get_unwise( str_eval):
     except: traceback.print_exc(file=sys.stdout)
     #print 'unpacked',page_value
     return page_value    
-def get365Key(cookieJar):
+def get365Key(cookieJar,url=None):
     headers=[('User-Agent','AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)')]
-    mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
-    kurl=re.findall("src=\"(http.*?/wrapper.js.*?)\"",mainhtml)[0]
+    if not url:
+        mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
+        kurl=re.findall("src=\"(http.*?/wrapper.js.*?)\"",mainhtml)[0]
+    else:
+        kurl=url
     khtml=getUrl(kurl,headers=headers, cookieJar=cookieJar)
     kstr=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(khtml)[0]
     kunc=get_unwise(kstr)
-#    print kunc
+    print kunc    
+    
     kkey=re.findall('aes_key="(.*?)"',kunc)
     return kkey[0]
     
@@ -857,7 +861,7 @@ def PlayUKTVNowChannels(url):
     cc=[item for item in jsondata["msg"]["channels"]
             if item["pk_id"]== url]
     url=cc[0]["http_stream"]
-    PlayGen(base64.b64encode(url+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"))
+    PlayGen(base64.b64encode(url))
     return  
 
 def getYuppSportsChannel(Live=True):
@@ -3202,6 +3206,7 @@ def playSports365(url):
     #urlToPlay=base64.b64decode(url)
     cookieJar=get365CookieJar()
     html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')],cookieJar=cookieJar)
+    #print html
     reg="iframe frameborder=0.*?src=\"(.*?)\""
     linkurl=re.findall(reg,html)
     if len(linkurl)==0:
@@ -3217,29 +3222,73 @@ def playSports365(url):
     enclinkhtml=getUrl(h.unescape(linkurl),cookieJar=cookieJar)
     reg='player_div", "st".*?file":"(.*?)"'
     enclink=re.findall(reg,enclinkhtml)
+    usediv=False
+    
     if len(enclink)==0:
         reg='name="f" value="(.*?)"'
         enclink=re.findall(reg,enclinkhtml)[0]  
         reg='name="s" value="(.*?)"'
         encst=re.findall(reg,enclinkhtml)[0]
+        reg="\('action', ['\"](.*?)['\"]"
+        postpage=re.findall(reg,enclinkhtml)
+        if len(postpage)>0:
+            
+            reg='player_div", "st".*?file":"(.*?)"'
+            post={'p':'http://cdn.adshell.net/swf/player.swf','s':encst,'f':enclink}
+            post = urllib.urlencode(post)
+            enclinkhtml2= getUrl(postpage[0],post=post, headers=[('Referer',linkurl),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')])
+            #enclink=re.findall(reg,enclinkhtml2)
+            if 'player_div' in enclinkhtml2>0:
+                usediv=True
+                #enclinkhtml=enclinkhtml2
+                #print 'usediv',usediv
+                reg="player_div\",.?\"(.*?)\",.?\"(.*?)\",(.*?)\)"
+                encst,enclink,isenc=re.findall(reg,enclinkhtml2)[0]
+                #print 'encst,enclink',encst,enclink,isenc
+                isenc=isenc.strip();
+                if isenc=="1":
+                    reg="src=\"(.*?\\/wrapper.js.*)\""
+                    wrapurl=re.findall(reg,enclinkhtml2)[0]
+                    kkey=get365Key(cookieJar,url=wrapurl)
+                    #print 'kkey',kkey
+                    enclink=json.loads(enclink.decode("base64"))
+                    import jscrypto
+                    lnk=jscrypto.decode(enclink["ct"],kkey,enclink["s"].decode("hex"))
+                    
+                    #print lnk
+                    enclink=lnk
+                #enclink=enclink[0]
+                #print 'enclink',enclink
+                #reg='player_div", "st":"(.*?)"'
+                #encst=re.findall(reg,enclinkhtml)[0]
+        
     else:
+        usediv=True
+        #print 'usediv',usediv
         enclink=enclink[0]
-        print 'enclink',enclink
+        #print 'enclink',enclink
         reg='player_div", "st":"(.*?)"'
         encst=re.findall(reg,enclinkhtml)[0]
+    #if usediv:
+    #    print 'usediv',usediv
+    #    enclink=enclink[0]
+    #    print 'enclink',enclink
+    #    reg='player_div", "st":"(.*?)"'
+    #    encst=re.findall(reg,enclinkhtml)[0]
+        
     import live365
     decodedst=live365.decode(encst)
-    print encst
+
+    #print encst, decodedst
     reg='"stkey":"(.*?)"'
     sitekey=re.findall(reg,decodedst)[0]
     #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
 
-    
     urlToPlay= live365.decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"%"http://h5.adshell.net/flash"
     
-    print 'urlToPlay',urlToPlay
+    #print 'urlToPlay',repr(urlToPlay)
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-#    print "playing stream name: " + str(name) 
+#    print   "playing stream name: " + str(name) 
     xbmc.Player(  ).play( urlToPlay, listitem)  
     
 def PlayPV2Link(url):
