@@ -860,8 +860,19 @@ def PlayUKTVNowChannels(url):
     jsondata=getUKTVPage()
     cc=[item for item in jsondata["msg"]["channels"]
             if item["pk_id"]== url]
-    url=cc[0]["http_stream"]
-    PlayGen(base64.b64encode(url.replace(' ','')))
+            
+    
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+    played=False
+    try: 
+        url=cc[0]["http_stream"].replace(' ','')
+        played=tryplay(url,listitem)
+    except: pass
+    #print "playing stream name: " + str(name) 
+    #xbmc.Player(  ).play( urlToPlay, listitem)    
+    url=cc[0]["rtmp_stream"].replace(' ','')
+    PlayGen(base64.b64encode(url))
+    
     return  
 
 def getYuppSportsChannel(Live=True):
@@ -2235,7 +2246,7 @@ def getUKTVChannels(categories=[], channels=[]):
                     cimage=channel["img"]
                     if not cimage.startswith("http"):
                         cimage='https://app.uktvnow.net/'+cimage
-                
+                    if cname==None: cname=curl
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
                         ret.append((cname +' uktv' ,'manual', curl ,cimage))  
         if len(ret)>0:
