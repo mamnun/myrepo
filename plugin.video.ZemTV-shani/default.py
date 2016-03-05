@@ -44,6 +44,10 @@ profile_path =  xbmc.translatePath(selfAddon.getAddonInfo('profile'))
 willowCommonUrl=''# this is where the common url will stay
 #willowCommonUrl=''
 
+addonPath = xbmcaddon.Addon().getAddonInfo("path")
+addonversion =xbmcaddon.Addon().getAddonInfo("version")
+
+
 WTVCOOKIEFILE='WTVCookieFile.lwp'
 WTVCOOKIEFILE=os.path.join(profile_path, WTVCOOKIEFILE)
 ZEMCOOKIEFILE='ZemCookieFile.lwp'
@@ -855,6 +859,58 @@ def AddSports365Channels(url=None):
         except: traceback.print_exc(file=sys.stdout)
     progress.close()
     return   
+    
+def RefreshResources(resources):
+#	print Fromurl
+    pDialog = xbmcgui.DialogProgress()
+    ret = pDialog.create('XBMC', 'checking Updates...')
+    totalFile=len(resources)
+    fileno=0
+    import hashlib
+    for rfile in resources:
+        if pDialog.iscanceled(): return
+        progr = (fileno*80)/totalFile
+        fname = rfile[0]
+        fileToDownload = rfile[1]
+        fileHash=hashlib.md5(fileToDownload+addonversion).hexdigest()
+        lastFileTime=selfAddon.getSetting( "Etagid"+fileHash)  
+        if lastFileTime=="": lastFileTime=None
+        resCode=200
+        #print fileToDownload
+        eTag=None        
+        try:
+            req = urllib2.Request(fileToDownload)
+            req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+
+            if lastFileTime:
+                req.add_header('If-None-Match',lastFileTime)
+            response = urllib2.urlopen(req)
+            resCode=response.getcode()
+            if resCode<>304:
+                try:
+                    eTag=response.info().getheader('Etag')
+                except: pass
+                data=response.read()
+        except Exception as e: 
+            s = str(e)
+            if 'Not Modified'.lower() in s.lower(): resCode=304
+            data=''
+        if ('Exec format error: exec' in data or 'A file permissions error has occurred' in data) and 'xbmcplugin' not in data:
+            data=''
+
+        if len(data)>0:
+            with open(os.path.join(addonPath, fname), "wb") as filewriter:
+                filewriter.write(data)
+                if eTag:
+                    selfAddon.setSetting( id="Etagid"+fileHash ,value=eTag)    
+            pDialog.update(20+progr, 'imported ...'+fname)
+        elif resCode==304:
+            pDialog.update(20+progr, 'No Change.. skipping.'+fname)
+        else:            
+            pDialog.update(20+progr, 'Failed..zero byte.'+fname)
+        fileno+=1
+    pDialog.close()
+
 
 def PlayUKTVNowChannels(url):
     jsondata=getUKTVPage()
@@ -865,16 +921,14 @@ def PlayUKTVNowChannels(url):
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     played=False
     ##DO YOU WANT ME TO STOP? lol
-    try: 
-        url=cc[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
-        played=tryplay(url,listitem)
+    try:
+        import uktvplayer
+        played=uktvplayer.play(listitem,cc)
+            
     except: pass
-    #print "playing stream name: " + str(name) 
-    #xbmc.Player(  ).play( urlToPlay, listitem)    
-    url=cc[0]["rtmp_stream"].replace(' ','')
     if not played:
-        PlayGen(base64.b64encode(url))
-    
+        RefreshResources([('uktvplayer.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/uktvplayer.py')])
+        print 'loaded files'
     return  
 
 def getYuppSportsChannel(Live=True):
