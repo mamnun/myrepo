@@ -861,7 +861,7 @@ def PlayUKTVNowChannels(url):
     cc=[item for item in jsondata["msg"]["channels"]
             if item["pk_id"]== url]
     url=cc[0]["http_stream"]
-    PlayGen(base64.b64encode(url))
+    PlayGen(base64.b64encode(url.replace(' ','')))
     return  
 
 def getYuppSportsChannel(Live=True):
@@ -1810,7 +1810,7 @@ def PlayWatchCric(url):
 
     elif 'www.mipsplayer.com' in link:
         c='ignore'#gaolVanusPobeleVoKosata
-        ccommand='%s;FALSE;FALSE;' #stop sending and waiting
+        ccommand=""#'%s;FALSE;FALSE;' #stop sending and waiting
         
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5taXBzcGxheWVyLmNvbS9jb250ZW50L3NjcmlwdHMvZnBsYXllci5zd2Y=')
         sitename='www.mipsplayer.com'
@@ -1821,7 +1821,7 @@ def PlayWatchCric(url):
     elif 'www.streamifyplayer.com' in link:
         c='keGoVidishStambolSoseBardovci'
         ccommand='%s;TRUE;TRUE;'
-        ccommand='%s;FALSE;FALSE;' #stop sending and waiting
+        ccommand=""#'%s;FALSE;FALSE;' #stop sending and waiting
         swfUrl=base64.b64decode('aHR0cDovL3d3dy5zdHJlYW1pZnlwbGF5ZXIuY29tL3Jlc291cmNlcy9zY3JpcHRzL2VwbGF5ZXIuc3dm')
         sitename='www.streamifyplayer.com'
         loadbalanacername='www.streamifypublisher.com'
