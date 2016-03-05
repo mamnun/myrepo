@@ -864,14 +864,16 @@ def PlayUKTVNowChannels(url):
     
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     played=False
+    ##DO YOU WANT ME TO STOP? lol
     try: 
-        url=cc[0]["http_stream"].replace(' ','')
+        url=cc[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
         played=tryplay(url,listitem)
     except: pass
     #print "playing stream name: " + str(name) 
     #xbmc.Player(  ).play( urlToPlay, listitem)    
     url=cc[0]["rtmp_stream"].replace(' ','')
-    PlayGen(base64.b64encode(url))
+    if not played:
+        PlayGen(base64.b64encode(url))
     
     return  
 
