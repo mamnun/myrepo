@@ -1,3 +1,6 @@
+[B]Version 4.6.2[/B]
+   uktvnow now dynamically updates
+
 [B]Version 4.6.1[/B]
    uktvnow another small fix lols
 [B]Version 4.6.0[/B]
