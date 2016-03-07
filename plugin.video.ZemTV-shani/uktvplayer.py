@@ -11,8 +11,11 @@ from time import time
 import base64
 
 def getUserAgent():
+    ua="Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) "+("MX Player/%s.%s.%s"%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3]))
+    import random
     
-    return 'Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus %s Build/%s) MXPlayer/%s'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
+    return random.sample(set(ua.split(' ')), 3)
+
 def tryplay(url,listitem):    
     import  CustomPlayer,time
 
