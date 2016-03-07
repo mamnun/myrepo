@@ -9,6 +9,10 @@ import base64,os,  binascii
 import CustomPlayer,uuid
 from time import time
 import base64
+
+def getUserAgent():
+    
+    return 'Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus %s Build/%s) MXPlayer/%s'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
 def tryplay(url,listitem):    
     import  CustomPlayer,time
 
@@ -32,7 +36,7 @@ def play(listitem, item):
             if '|' in item[0]["http_stream"]:
                 url=item[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
             else:
-                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"
+                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=%s"%getUserAgent()
             played=tryplay(url,listitem)
             
         except: pass
@@ -40,7 +44,7 @@ def play(listitem, item):
         #xbmc.Player(  ).play( urlToPlay, listitem)    
         url=item[0]["rtmp_stream"].replace(' ','')
         if '|' not in url:
-            url=url+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"
+            url=url+"|User-Agent=%s"%getUserAgent()
 
         if not played:
             played=tryplay(url,listitem)
