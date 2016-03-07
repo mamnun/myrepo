@@ -409,7 +409,7 @@ def select365(url):
                         curl=curl.replace('\\/','/').replace('"',"")
                         print 'fina;',curl
                         if 'window.atob' in curl:
-                            reg="window\\.atob\\(\\\\\\\\\\'(.*?)'"
+                            reg="window\\.atob\(\\\\(.*?)\\\\\\)"
                             #print 'in regex',reg,curl
                             curl=re.findall(reg,curl)[0]
                             curl=base64.b64decode(curl)
