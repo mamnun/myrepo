@@ -29,13 +29,19 @@ def play(listitem, item):
     played=False
     try:
         try:
-            url=item[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
+            if '|' in item[0]["http_stream"]:
+                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
+            else:
+                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"
             played=tryplay(url,listitem)
             
         except: pass
         #print "playing stream name: " + str(name) 
         #xbmc.Player(  ).play( urlToPlay, listitem)    
         url=item[0]["rtmp_stream"].replace(' ','')
+        if '|' not in url:
+            url=url+"|User-Agent=Mozilla/5.0 (Linux; Android 5.1; en-US; Nexus 6 Build/LMY47Z) MXPlayer/1.7.39"
+
         if not played:
             played=tryplay(url,listitem)
     except: pass
