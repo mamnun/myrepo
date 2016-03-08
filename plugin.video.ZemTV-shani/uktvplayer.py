@@ -36,7 +36,7 @@ def play(listitem, item):
     played=False
     try:
         try:
-            if '|' in item[0]["http_stream"]:
+            if '|' in item[0]["http_stream"] and 1==2:
                 url=item[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
             else:
                 url=item[0]["http_stream"].split('|')[0]+"|User-Agent=%s"%getUserAgent()
