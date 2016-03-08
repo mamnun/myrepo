@@ -1,3 +1,5 @@
+[B]Version 4.6.4[/B]
+   SS disabled/removed
 [B]Version 4.6.3[/B]
    sports365 now dynamically updates
 [B]Version 4.6.2[/B]
