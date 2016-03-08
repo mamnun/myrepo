@@ -36,19 +36,25 @@ def play(listitem, item):
     played=False
     try:
         try:
-            if '|' in item[0]["http_stream"] and 1==2:
-                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
-            else:
-                url=item[0]["http_stream"].split('|')[0]+"|User-Agent=%s"%getUserAgent()
+            url=item[0]["http_stream"]
+            if '|' in url:# and 1==2:
+                url=url#.split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
+            elif url.startswith('http') :
+                url=url.split('|')[0]+"|User-Agent=%s"%getUserAgent()
+
+            if url.startswith('rtmp'):
+                url+=' timeout=10'
+            print 'first',url
             played=tryplay(url,listitem)
             
         except: pass
         #print "playing stream name: " + str(name) 
         #xbmc.Player(  ).play( urlToPlay, listitem)    
         url=item[0]["rtmp_stream"].replace(' ','')
-        if '|' not in url:
+        if '|' not in url and url.startswith('http'):
             url=url+"|User-Agent=%s"%getUserAgent()
-
+        if url.startswith('rtmp'):
+            url+=' timeout=10'
         if not played:
             played=tryplay(url,listitem)
     except: pass
