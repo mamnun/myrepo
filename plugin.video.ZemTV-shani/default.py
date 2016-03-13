@@ -403,16 +403,17 @@ def AddSports(url):
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('UKTVNow','Live' ,57,'')
-    addDir('Yupp Asia Cup','Live' ,60,'')
 #    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
+    addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
+    #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
+    addDir('PV2 Sports' ,'sports',36,'')
+    #addDir('Yupp Asia Cup','Live' ,60,'')
+
+    addDir('cricfree.sx' ,'sss',41,'')
     addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
     addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
-    addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
-    addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
-    addDir('PV2 Sports' ,'sports',36,'')
     addDir('Streams' ,'sss',39,'')
-    addDir('cricfree.sx' ,'sss',41,'')
 
     
     
@@ -1321,7 +1322,7 @@ def PlaySSSEvent(url):
         print 'dec',finalUrl
        
 #    print 'aaaaaaaaaaaaaaaaaaaa',name.strip()
-    sts=["bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57165e0f3f9b4099ba0f648d8742acefbc0c57d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
+    sts=["118c8a71c0dee1a743fbf8808e440397f26c2cea1c9bf351fb0b3c5417a8af9e07a2d8150dcf66b67f1690b03fa2885d7777a6f0253453dd1738fb7693d13f2aec8c86933e00edbfded41d5017a35b87",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf571652ffd197868c8ba23f74f8c6ed24d02157d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf5716dff663f438bc70808e422cef4c665cd357d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57164b74e2107bd1b84b155d86c84b10113057d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
@@ -1338,9 +1339,9 @@ def PlaySSSEvent(url):
         finalUrl=blitz
         
     finalUrl=getdecSSMatchUrl(finalUrl,'LIVE')
-
+    print finalUrl
     #SS2_1@27052#
-    if 'manifest.f4m' in finalUrl:
+    if '.f4m' in finalUrl:
         maxbitrate='0'
         maxbitrate_settings=selfAddon.getSetting('defualtSSSBitRate')
         if (not maxbitrate_settings=='') and 'Max' not in maxbitrate_settings:
@@ -2991,9 +2992,10 @@ def getPV2Url():
     second= str(TIME).split('.')[0]
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
     token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRmcmVlMi42JnRva2VuPSVz')  %token)      
+    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)      
+
     req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83MTEuNC42IERhcndpbi8xNC4wLjA=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
 
     response = urllib2.urlopen(req)
     link=response.read()
@@ -3014,10 +3016,10 @@ def getPV2Auth():
     second= str(TIME).split('.')[0]
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
     token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
- 
-    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYWN0aXZhdGUucGhwP3Rva2VuPQ==')+token)
+
+    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvcGFraW5kaWFoZC5waHA/dG9rZW49')+token)
     req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
     response = urllib2.urlopen(req)
     link=response.read()
     return link
