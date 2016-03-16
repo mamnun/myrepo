@@ -857,14 +857,27 @@ def AddUKTVNowChannels(url=None):
        
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return   
+
+def AddIpBoxSources(url=None):
+    for cname,curl in getIpBoxSources():
+        try:
+            #print cname
+            cname=cname#cname.encode('ascii', 'ignore').decode('ascii')
+           
+            addDir(Colored(cname.capitalize(),'ZM') ,curl ,61 ,"", False, True,isItFolder=True)		#name,url,mode,icon
+        except: traceback.print_exc(file=sys.stdout) 
+    return
     
 def AddIpBoxChannels(url=None):
-    for cname,ctype,curl,imgurl in getIpBoxChannels(True):
-        cname=cname.encode('ascii', 'ignore').decode('ascii')
-        mm=11
-#        print repr(curl)
-       
-        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    for cname,ctype,curl,imgurl in getIpBoxChannels([url],True):
+        try:
+            #print cname
+            cname=cname#cname.encode('ascii', 'ignore').decode('ascii')
+            mm=11
+    #        print repr(curl)
+           
+            addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+        except: traceback.print_exc(file=sys.stdout) 
     return     
     
 def AddUniTVSports(url=None):
@@ -2017,7 +2030,7 @@ def getDittoChannels(categories, forSports=False):
             if 1==1:#source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 ss=source
                 cname=ss["name"]
-                curl=base64.b64decode("ZGl0dG86aHR0cDovL3d3dy5kaXR0b3R2LmNvbS9pbmRleC5waHA/cj1saXZlLXR2L2xpbmsmbmFtZT0lcw==")%urllib.quote_plus(cname)
+                curl=base64.b64decode("ZGl0dG86aHR0cDovL3d3dy5kaXR0b3R2LmNvbS9saXZldHYvbGluaz9uYW1lPSVz")%urllib.quote_plus(cname)
                 try:
                     cname+=" "+ss["manual"]
                 except: pass
@@ -2033,7 +2046,7 @@ def getDittoChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret    
     
-def getIpBoxChannels(forSports=False):
+def getIpBoxSources():
     ret=[]
     try:
 
@@ -2049,29 +2062,39 @@ def getIpBoxChannels(forSports=False):
                     print ln
                     servername,surl=ln.split('$')
                     
-                    html=getUrl(surl)
+                    ret.append((servername, surl ))   
+                except: traceback.print_exc(file=sys.stdout)
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
 
-            #        print xmldata
-                    if forSports:
-                        reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
-                    else:
-                        reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
-                    xmldata=re.findall(reg,html,re.IGNORECASE)
-                    
-                    for source in xmldata:#Cricket#
-                        ss=source
-                        cname=ss[0] if forSports else ss[1] 
-                        if '.ts' in ss[2]:
-                            #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
-                            #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
-                            #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
-                            curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                            ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                            #print 'iptv',curl
-                            ret.append((cname +' '+servername+' Ipbox' ,'manual', curl ,''))   
-                except: pass
-        if len(ret)>0:
-            ret=sorted(ret,key=lambda s: s[0].lower()   )
+def getIpBoxChannels(url,forSports=False):
+    ret=[]
+    try:
+        for u in url:
+            try:
+                html=getUrl(u)
+        #        print xmldata
+                if forSports:
+                    reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+                else:
+                    reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
+                xmldata=re.findall(reg,html,re.IGNORECASE)
+                
+                for source in xmldata:#Cricket#
+                    ss=source
+                    cname=ss[0] if forSports else ss[1] 
+                    if '.ts' in ss[2]:
+                        #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
+                        #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+                        #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
+                        curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                        ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                        #print 'iptv',curl
+                        ret.append((cname +' Ipbox' ,'manual', curl ,''))   
+            except: pass
+            if len(ret)>0:
+                ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
@@ -2551,9 +2574,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         try:
             
             progress.update( 90, "", "Loading IpBox Channels", "" )
-            rematch=getIpBoxChannels(False)
-            if len(rematch)>0:
-                match+=rematch
+            for nm,url in getIpBoxSources():
+                rematch=getIpBoxChannels([url])
+                if len(rematch)>0:
+                    match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)
 
@@ -2605,6 +2629,7 @@ def addiptvSports(url):
 
     match=getiptvchannels('sports')
     match=sorted(match,key=lambda s: s[0].lower()   )
+    
     for cname,ctype,curl,imgurl in match:
         mm=45
         cname=cname.encode('ascii', 'ignore').decode('ascii')
@@ -4105,6 +4130,9 @@ try:
 		print "Play url is "+url
 		clearCache()
 	elif mode==55 :
+		print "Play url is "+url
+		AddIpBoxSources(url)     
+	elif mode==61 :
 		print "Play url is "+url
 		AddIpBoxChannels(url)     
 	elif mode==56 :
