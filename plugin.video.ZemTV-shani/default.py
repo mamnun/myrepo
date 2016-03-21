@@ -599,7 +599,7 @@ def AddPv2Sports(url):
         addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
             
 def AddPakTVSports(url=None):
-    for cname,ctype,curl,imgurl in getPakTVChannels(['PSL','Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
+    for cname,ctype,curl,imgurl in getPakTVChannels(['CTG Stadium','T20 World Cup','Live Cricket','Ptv Sports','PSL','Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -611,7 +611,7 @@ def AddPakTVSports(url=None):
     return    
                    
 def AddPTCSports(url=None):
-    for cname,ctype,curl,imgurl in getptcchannels(['PSL','Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
+    for cname,ctype,curl,imgurl in getptcchannels(['PSL','PSL','Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -888,7 +888,7 @@ def AddIpBoxChannels(url=None):
     return     
     
 def AddUniTVSports(url=None):
-    for cname,ctype,curl,imgurl in getUniTVChannels(['Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs'],True):
+    for cname,ctype,curl,imgurl in getUniTVChannels(['Extra Time','TSN','Cth Stadium','','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -1967,7 +1967,7 @@ def getPakTVChannels(categories, forSports=False):
     try:
         xmldata=getPakTVPage()
         for source in xmldata:
-            if source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"] in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 ss=source
                 cname=ss["channelName"]
                 if 'ebound.tv' in ss["channelLink"]:
@@ -2201,7 +2201,7 @@ def getptcchannels(categories, forSports=False):
         import iptv
         xmldata=getPTCUrl()
         for source in xmldata["channelsCategories"]:
-            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 for ss in source["channels"]:
                     cname=ss["name"]
                     if 'ebound.tv' in ss["url"]:
