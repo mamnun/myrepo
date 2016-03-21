@@ -410,13 +410,13 @@ def AddSports(url):
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('UKTVNow','Live' ,57,'')
-#    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
+    
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
     addDir('PV2 Sports' ,'sports',36,'')
     #addDir('Yupp Asia Cup','Live' ,60,'')
-
+    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
     addDir('cricfree.sx' ,'sss',41,'')
     addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
     addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
@@ -425,33 +425,46 @@ def AddSports(url):
     
     
     
-def PlayCricHD(url):
+def PlayCricHD(pageurl):
 
-    req = urllib2.Request(url)
+    req = urllib2.Request(pageurl)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
     response = urllib2.urlopen(req)
     videoPage =  response.read()
     response.close()
-    pat='<iframe frameborder="0".*?src="(.*?)" name="iframe_a"'
+    pat='<a style="text-decoration: none" href="(.*?)"'
     matc=re.findall(pat,videoPage)
     newurl=matc[0]
     if len(matc)>1:
         newurl=matc[1]
     
     
-    req = urllib2.Request(newurl)
+    pat='var locations.*?"(.*?)"'
+    print 'gett',newurl
+    temppage=getUrl(newurl,headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.87 Safari/537.36'),('Referer',pageurl)])
+    newurl2=re.findall(pat,temppage)[0]
+    req = urllib2.Request(newurl2)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
+    req.add_header('Referer',newurl)
     response = urllib2.urlopen(req)
     videoPage =  response.read()
     response.close()
     if 'scripts/p3g.js' in videoPage:
         PlayWatchCric(newurl)
         return 
-    
-    pat='fid="(.*?)".*width=([0-9]*).*?height=([0-9]*)'
-    fid,wid,ht=re.findall(pat,videoPage)[0]
-
-    req = urllib2.Request('http://www.yocast.tv/embed.js')
+    try:
+        pat="fid=['\"](.*?)['\"].*width=([0-9]*).*?height=([0-9]*).*?src=['\"](.*?)['\"]"
+        fid,wid,ht, jsurl=re.findall(pat,videoPage)[0]
+    except:
+        traceback.print_exc(file=sys.stdout)
+        pat='IFRAME.*?SRC="(.*?)"'
+        newurl=re.findall(pat,videoPage)[0]
+        #PlayWatchCric(newurl)
+        pat="fid=['\"](.*?)['\"].*width=([0-9]*).*?height=([0-9]*).*?src=['\"](.*?)['\"]"
+        videoPage=getUrl(newurl)
+        fid,wid,ht, jsurl=re.findall(pat,videoPage)[0]
+         
+    req = urllib2.Request(jsurl)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
     response = urllib2.urlopen(req)
     jspage =  response.read()
@@ -469,18 +482,64 @@ def PlayCricHD(url):
     response = urllib2.urlopen(req)
     videoPage =  response.read()
     response.close()
-    fpat='file:.?.?"(.*?)"'
-    spat='streamer:.?.?"(.*?)"'
-    
-    fi=re.findall(fpat,videoPage)[0]
-    streamer=re.findall(spat,videoPage)[0]
-    
+    if '"r","t","m"' in videoPage:
+      print videoPage
+      pat='\((\["r".*?\]).*?\+ (.*?)\..*?getElementById\("(.*?)"'  
+      pat2='var %s =.*?(\[.*?\])'
+      pat3="file: .*?\+ '\/' \+(.*?)\(\)"
+      pat4='function.*?%s.*?\{\s.*?\((\[.*?\])'
+      pat_sk='securetoken: (.*?)\s'
+      mainrtmp, firstarray,docelem=re.findall(pat,videoPage)[0]
+      pat2=pat2%firstarray
+      firstarray=re.findall(pat2,videoPage)[0]
+      docElem='%s>(.*?)<'%docelem
+      print docElem
+      docElem=re.findall(docElem,videoPage)[0]
+      print 'pat3',pat3
+      hashname=re.findall(pat3,videoPage)[0]
+      hashname=pat4%hashname
+      print 'hashname',hashname
+      hashcode=re.findall(hashname,videoPage)[0]
+      print mainrtmp, firstarray ,docElem, hashcode
+      url=''.join(eval(mainrtmp)).replace('\/','/')+''.join(eval(firstarray)) +docElem+'/'
+      hashcode=''.join(eval(hashcode))
+      sk=re.findall(pat_sk,videoPage)[0]
+      sk_pat='var %s = "(.*?)"'%sk
+      jspat='src="(.*jwplayer\.js.*?)"'
+      jsurl=re.findall(jspat,videoPage)[0]
+      skjs=getUrl(jsurl)
+      print sk_pat,skjs
+      sk=re.findall(sk_pat,skjs)[0]
+      url+=' token=%s playpath=%s live=true timeout=20'%(sk,hashcode) +' swfUrl=http://www.hdcast.info/myplayer/jwplayer.flash.swf flashver=WIN\2021,0,0,182'+' pageUrl='+newurl2
+      
+      print url
+      
+    else:
+        #NOT FUNCtional need to call existing functions
+        fpat='file:.?.?"(.*?)"'
+        spat='streamer:.?.?"(.*?)"'
+        pat_sk='securetoken:.?.?"(.*?)"'
+        fi=re.findall(fpat,videoPage)[0]
+        streamer=re.findall(spat,videoPage)
+        if len(streamer)>0: 
+            streamer=' playpath='+streamer[0] 
+        else:
+            streamer=''            
+        
+        pat_sk=re.findall(pat_sk,videoPage)
+        if len(pat_sk)>0: 
+            pat_sk=' token='+pat_sk[0] 
+        else:
+            pat_sk=''            
+            
+            
+        url='%s%s%s pageUrl=%s swfUrl=http://p.jwpcdn.com/6/12/jwplayer.flash.swf'%(fi.split('.flv')[0],streamer,pat_sk,newurl2)+' live=true timeout=20'
 
     
 
     playlist = xbmc.PlayList(1)
     #url='rtmp://rtmp.popeoftheplayers.pw:1935/redirect playpath='+url+base64.b64decode('IHN3ZlZmeT10cnVlIHN3ZlVybD1odHRwOi8vcG9wZW9mdGhlcGxheWVycy5wdy9hdGRlZGVhZC5zd2YgZmxhc2hWZXI9V0lOXDIwMTYsMCwwLDIzNSBwYWdlVXJsPWh0dHA6Ly9wb3Blb2Z0aGVwbGF5ZXJzLnB3L2F0ZGVkZWFkLnN3ZiBsaXZlPXRydWUgdGltZW91dD0yMCB0b2tlbj0jYXRkJSMkWkg=')
-    url='%s playpath=%s pageUrl=%s'%(streamer,fi.split('.flv')[0],newurl2)+' live=true timeout=20'
+    
 
     playlist.clear()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -920,28 +979,28 @@ def AddStreamSports(url=None):
             
 def AddCricHD(url):
     try:
-        url="http://www.crichd.tv/"
+        url="http://www.hdcric.com/other-sports-live-streaming"
         req = urllib2.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
         response = urllib2.urlopen(req)
         videoPage =  response.read()
         response.close()
-        pat='<a class="menuitem" href="(.*?)".*?img src="(.*?)".*?alt="(.*?)"'
-        channels=re.findall(pat,videoPage)
-        for channel in channels:
-#            print channel
-            cname=channel[2]
-            cid=channel[0]
-            cimg=channel[1]
-            
-            if not cid.startswith('http'):cid=url+cid
-            if not cimg.startswith('http'):cimg=url+cimg
+        #pat='<li class="has-sub"><a href="(.*?)".*icon (.*?)"'
+        #channels=re.findall(pat,videoPage)
+        #for channel in channels:
+#       #     print channel
+        #    cname=channel[2]
+        #    cid=channel[0]
+        #    cimg=channel[1]
+        #    
+        #    if not cid.startswith('http'):cid=url+cid
+        #    if not cimg.startswith('http'):cimg=url+cimg###
 
 #            addDir(cname ,'a',27,'', False, True,isItFolder=False)
 #            print 'adding'
-            addDir(cname ,cid,27,cimg, False, True,isItFolder=False)
+#            addDir(cname ,cid,27,cimg, False, True,isItFolder=False)
 
-        pat='<b><a class="menuitem" href="(.*?)"><font size="4">(.*?)<'
+        pat='<li class="has-sub"><a href="(.*?)".*icon (.*?)"'
         channels=re.findall(pat,videoPage)
         for channel in channels:
 #            print channel
@@ -954,7 +1013,7 @@ def AddCricHD(url):
 
 #            addDir(cname ,'a',27,'', False, True,isItFolder=False)
 #            print 'adding'
-            addDir(cname ,cid,27,cimg, False, True,isItFolder=False)
+            addDir(cname.capitalize() ,cid,27,cimg, False, True,isItFolder=False)
             
 
 
