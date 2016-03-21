@@ -155,7 +155,14 @@ def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None):
             req.add_header(h,hv)
 
     response = opener.open(req,post,timeout=timeout)
-    link=response.read()
+    if response.info().get('Content-Encoding') == 'gzip':
+            from StringIO import StringIO
+            import gzip
+            buf = StringIO( response.read())
+            f = gzip.GzipFile(fileobj=buf)
+            link = f.read()
+    else:
+        link=response.read()
     response.close()
     return link;
 
@@ -405,7 +412,7 @@ def AddSports(url):
     addDir('UKTVNow','Live' ,57,'')
 #    addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
-    addDir('Willow.Tv (login required)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
+    addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
     addDir('PV2 Sports' ,'sports',36,'')
     #addDir('Yupp Asia Cup','Live' ,60,'')
@@ -1071,13 +1078,15 @@ def performWillowLogin():
         willow_lasstusername=selfAddon.getSetting( "lastSuccessLogin" ) 
         cookieJar=getWTVCookieJar(willow_username!=willow_lasstusername)
         mainpage = getUrl(url,cookieJar=cookieJar)
-
+        
 
         if 'Login/Register' in mainpage:
+            print 'LOGIN NOW'
             url=base64.b64decode('aHR0cHM6Ly93d3cud2lsbG93LnR2L0V2ZW50TWdtdC9Vc2VyTWdtdC9Mb2dpbi5hc3A=')
+            headers=[('Referer',"https://www.willow.tv/EventMgmt/UserMgmt/Login.asp"),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'),('Origin','https://www.willow.tv')]                      
             post = {'Email':willow_username,'Password':willow_pwd,'LoginFormSubmit':'true'}
             post = urllib.urlencode(post)
-            mainpage = getUrl(url,cookieJar=cookieJar,post=post)
+            mainpage = getUrl(url,cookieJar=cookieJar,post=post,headers=headers )
             cookieJar.save (WTVCOOKIEFILE,ignore_discard=True)
             selfAddon.setSetting( id="lastSuccessLogin" ,value=willow_username)
         
@@ -1534,33 +1543,27 @@ def AddWillowCric(url):
         response = urllib2.urlopen(req)
         link=response.read()
         response.close()
-        patt='json_matchbox = (.*?);'
-        match_url =re.findall(patt,link)[0]
-        #print match_url
+        #patt='json_matchbox = (.*?);'
+        #match_url =re.findall(patt,link)[0]
+        #print 'match_url',match_url
+
+        match_url=getUrl("http://willowfeeds.willow.tv/mobileHome.json",headers=[('User-Agent','willow/1.1 CFNetwork/711.4.6 Darwin/14.0.0')])
+        #print repr(match_url)
         matches=json.loads(match_url)
         
         #print matches
-        matchid=matches["result"]["past"][0]["MatchId"]
-        if 1==2:
-            addDir(Colored('Live Channel (Experimental)','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
-            addDir('  Source 1' ,'%s:1'%str(matchid),21,'', False, True,isItFolder=False)		#name,url,mode,icon
-            addDir('  Source 2' ,'%s:2'%str(matchid),21,'', False, True,isItFolder=False)		#name,url,mode,icon
-            addDir('  Source 3' ,'%s:3'%str(matchid),21,'', False, True,isItFolder=False)		#name,url,mode,icon
-            addDir('  Source 4' ,'%s:4'%str(matchid),21,'', False, True,isItFolder=False)		#name,url,mode,icon
 
         addDir(Colored('Live Games','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
 #        print 'matches',matches
-        if matches["result"]["live"]:
-            live_games=matches["result"]["live"]
-            for game in live_games:
-                match_name=game["MatchName"]
-                match_id=game["MatchId"]
-                MatchStartDate=game["MatchStartDate"]
+        loginworked,cookieJar= performWillowLogin();
+        for game in matches["result"]:
+            if game["islive"]==1:
+                match_name=game["mname"]
+                match_id=game["mid"]
+                MatchStartDate=game["date"]
                 entry_name=MatchStartDate+' - '+match_name
-                #if useMyOwnUserNamePwd():
-                #    addDir(entry_name ,match_id,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
-                #else:
-                loginworked,cookieJar= performWillowLogin();
+
+
                 if loginworked:
                     st='LiveMatch'
                     url=base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYvRXZlbnRNZ210LyVzVVJMLmFzcD9taWQ9JXM=')%(st,match_id)
@@ -1570,23 +1573,20 @@ def AddWillowCric(url):
                     if "roku" in videos:
                         for video in videos["roku"]["URL"]:
                             addDir(Colored('Source %s %s '%(str(video["priority"]), video["player"]),'ZM',True) +entry_name ,match_id+':'+str(video["priority"]),21,'', False, True,isItFolder=False)		#name,url,mode,icon
-#                else:
-#                    addDir(entry_name ,match_id,21,'', False, True,isItFolder=False)		#name,url,mode,icon           
-        else:
-            addDir('  No Games at the moment' ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
 
-            
-            
-        addDir(Colored('Recent Games','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
-        past_games=matches["result"]["past"]
-        for game in past_games:
-            match_name=game["MatchName"]
-            match_id=game["MatchId"]
-#            print 'match_id',match_id
-            MatchStartDate=game["MatchStartDate"]
-            entry_name=MatchStartDate+' - '+match_name
-#            addDir(entry_name ,match_id,23,'', False, True,isItFolder=True)		#name,url,mode,icon
-            addDir(entry_name ,match_id,23,'')            
+                
+                
+        addDir(Colored('Recently Finished Games','EB',True) ,'' ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon
+
+        for game in matches["result"]:
+            if game["islive"]==0:
+                match_name=game["mname"]
+                match_id=game["mid"]
+                MatchStartDate=game["date"]
+                entry_name=MatchStartDate+' - '+match_name
+                    
+    #            addDir(entry_name ,match_id,23,'', False, True,isItFolder=True)		#name,url,mode,icon
+                addDir(entry_name ,match_id,23,'')            
     except: traceback.print_exc(file=sys.stdout)
          
     addDir(Colored('All Recorded Series >>Click to load','ZM',True) ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYvRXZlbnRNZ210L3Jlc3VsdHMuYXNw' ),20,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
@@ -2837,8 +2837,11 @@ def clearCache():
     files+=[fname]    
     fname='uktvpage.json'
     fname=os.path.join(profile_path, fname)
-    files+=[fname]    
+    files+=[fname]   
     
+    fname='WTVCookieFile.lwp'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]       
     
 
     for p in ['u','p','h']:
