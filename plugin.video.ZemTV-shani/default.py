@@ -2969,6 +2969,10 @@ def clearCache():
     
     fname='WTVCookieFile.lwp'
     fname=os.path.join(profile_path, fname)
+    files+=[fname]  
+    
+    fname='wtvpage.json'
+    fname=os.path.join(profile_path, fname)
     files+=[fname]       
     
 
