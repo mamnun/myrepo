@@ -427,6 +427,9 @@ def AddSports(url):
     
     
 def PlayCricHD(pageurl):
+    progress = xbmcgui.DialogProgress()
+    progress.create('Progress', 'finding links')
+    progress.update( 10, "", "Getting Urls..")
 
     req = urllib2.Request(pageurl)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
@@ -464,7 +467,7 @@ def PlayCricHD(pageurl):
         pat="fid=['\"](.*?)['\"].*width=([0-9]*).*?height=([0-9]*).*?src=['\"](.*?)['\"]"
         videoPage=getUrl(newurl)
         fid,wid,ht, jsurl=re.findall(pat,videoPage)[0]
-         
+    progress.update( 40, "", "Translating..")     
     req = urllib2.Request(jsurl)
     req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
     response = urllib2.urlopen(req)
@@ -485,6 +488,7 @@ def PlayCricHD(pageurl):
     response.close()
     if '"r","t","m"' in videoPage:
       print videoPage
+      progress.update( 60, "", "decoding Urls..")
       pat='\((\["r".*?\]).*?\+ (.*?)\..*?getElementById\("(.*?)"'  
       pat2='var %s =.*?(\[.*?\])'
       pat3="file: .*?\+ '\/' \+(.*?)\(\)"
@@ -512,7 +516,7 @@ def PlayCricHD(pageurl):
       print sk_pat,skjs
       sk=re.findall(sk_pat,skjs)[0]
       url+=' token=%s playpath=%s live=true timeout=20'%(sk,hashcode) +' swfUrl=http://www.hdcast.info/myplayer/jwplayer.flash.swf flashver=WIN\2021,0,0,182'+' pageUrl='+newurl2
-      
+      progress.update( 90, "", "almost done..")
       print url
       
     else:
