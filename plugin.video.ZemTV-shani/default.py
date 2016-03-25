@@ -408,6 +408,7 @@ def AddSports(url):
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
+    addDir('WTV sports' ,'sss',62,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('UKTVNow','Live' ,57,'')
@@ -951,8 +952,19 @@ def AddIpBoxChannels(url=None):
         except: traceback.print_exc(file=sys.stdout) 
     return     
     
+def AddWTVSports(url=None):
+    for cname,ctype,curl,imgurl in getWTVChannels(['Extra Time Football','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time'],True):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return          
 def AddUniTVSports(url=None):
-    for cname,ctype,curl,imgurl in getUniTVChannels(['Extra Time','TSN','Cth Stadium','','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs'],True):
+    for cname,ctype,curl,imgurl in getUniTVChannels(['Extra Time','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Sports','Golf','Boxing & Wrestling','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time'],True):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -2171,6 +2183,34 @@ def getIpBoxChannels(url,forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret  
     
+def getWTVChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getWTVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+
+                ss=source
+                cname=ss["channelName"]
+                #print cname
+                if 'ebound.tv' in ss["channelLink"]:
+                    curl='ebound2:'+ss["channelLink"].replace(':1935','')
+                else:
+                    curl='direct2:'+ss["channelLink"]
+                    if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
+
+                cimage=ss["categoryImageLink"]
+                
+                if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
+                    #print cname
+                    ret.append((cname +' v9' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
 def getUniTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -2186,6 +2226,7 @@ def getUniTVChannels(categories, forSports=False):
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
                     curl='direct2:'+ss["channelLink"]
+                    if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
                 cimage=ss["categoryImageLink"]
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
@@ -2346,6 +2387,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isv7Off=selfAddon.getSetting( "isv7Off" )
     isv7Off="true"
     isv8Off=selfAddon.getSetting( "isv8Off" )
+    isv9Off=selfAddon.getSetting( "isv9Off" )
+    if isv9Off=="":isv9Off="true"#bydefault off
     isdittoOff=selfAddon.getSetting( "isdittoOff" )
     isCFOff=selfAddon.getSetting( "isCFOff" )  
     isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
@@ -2514,6 +2557,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     ptcgen=None
     paktvgen=None
     unitvgen=None
+    wtvgen=None
     dittogen=None
     CFgen=None
     ipBoxGen=None
@@ -2526,6 +2570,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         ptcgen=['News','Entertainment','Islamic','Cooking']
         paktvgen=['News','Islamic','Cooking']
         unitvgen=['News','Religious','Cooking','PAK&IND']
+        wtvgen=['News','Religious','Cooking','Asian News','Entertainment']
         CFgen="4"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
         UKTVGenCat,UKTVGenCH=['religious','news','food'], ['masala tv', 'ary digital', 'ary zindagi','hum tv','drama','express ent.']
@@ -2550,6 +2595,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isv6Off=='true': ptcgen=None
     if isv7Off=='true': paktvgen=None
     if isv8Off=='true': unitvgen=None
+    if isv9Off=='true': wtvgen=None
     if isdittoOff=='true': dittogen=None
     if isCFOff=='true': CFgen=None    
     if isIpBoxff=='true': ipBoxGen=None
@@ -2602,7 +2648,17 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             if len(rematch)>0:
                 match+=rematch
         except:
-            traceback.print_exc(file=sys.stdout)                
+            traceback.print_exc(file=sys.stdout)   
+
+    if wtvgen:
+        try:
+            progress.update( 80, "", "Loading v9 Channels", "" )
+            rematch=getWTVChannels(wtvgen)
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)   
+            
     if dittogen:
         try:
             
@@ -3072,6 +3128,46 @@ def getUniTVPage():
         storeCacheData(jsondata,fname)
     except:
         print 'unitv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
+
+def getWTVPage():
+    fname='wtvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,4*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
+    req = urllib2.Request( base64.b64decode('aHR0cDovL2lwbGlvc2FwcC5kZG5zLm5ldC9QVFYtU3BvcnRzL2Ntcy9YVmVyL0lQTC0yMDE1L2dldENvbnR0VjEtMC5waHA=') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("SW5kb1Bhay8xLjIgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYzNBd2NuUWtRa0J1WnpwVGREUnlVM0F3VW5Ra056ZzI=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    import rc
+    cryptor=rc.RNCryptor()
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("UEBuZ0FCQXoxUEBzc3dvcmQzMjE="))
+    decrypted_data=json.loads(decrypted_data)
+    dataUrl=decrypted_data[0]["LiveLink"]
+
+    req = urllib2.Request( dataUrl)      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("SW5kb1Bhay8xLjIgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYzNBd2NuUWtRa0J1WnpwVGREUnlVM0F3VW5Ra056ZzI=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("UEBuZ0FCQXoxUEBzc3dvcmQzMjE="))
+    #print decrypted_data
+    jsondata=json.loads(decrypted_data)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'wtv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
     
@@ -4200,7 +4296,7 @@ try:
 		AddPakTVSports(url) 
 	elif mode==53 :
 		print "Play url is "+url
-		AddUniTVSports(url)         
+		AddUniTVSports(url)       
 	elif mode==54 :
 		print "Play url is "+url
 		clearCache()
@@ -4219,7 +4315,9 @@ try:
 	elif mode==60 :
 		print "Play url is 60"+url
 		AddYuppSports(url)     
-        
+	elif mode==62 :
+		print "Play url is "+url
+		AddWTVSports(url)             
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
