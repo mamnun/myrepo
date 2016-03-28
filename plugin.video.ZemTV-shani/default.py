@@ -1631,7 +1631,7 @@ def AddWillowCric(url):
         #match_url =re.findall(patt,link)[0]
         #print 'match_url',match_url
 
-        match_url=getUrl("http://willowfeeds.willow.tv/mobileHome.json",headers=[('User-Agent','willow/1.1 CFNetwork/711.4.6 Darwin/14.0.0')])
+        match_url=getUrl("https://appfeeds.willow.tv/mobileHome_v1.json",headers=[('User-Agent','Willow/3.2.4 CFNetwork/711.4.6 Darwin/14.0.0')])
         #print repr(match_url)
         matches=json.loads(match_url)
         
