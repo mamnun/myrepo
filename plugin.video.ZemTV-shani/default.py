@@ -215,7 +215,7 @@ def Addtypes():
 	addDir('Pakistani Live Channels' ,'PakLive' ,2,'')
 	addDir('Indian Live Channels' ,'IndianLive' ,2,'')
 	addDir('Punjabi Live Channels' ,'PunjabiLive' ,2,'')
-	addDir('Movies' ,'movies',36,'')
+	addDir('Movies' ,'zemmovies',36,'')
 	addDir('Sports' ,'Live' ,13,'')
 	addDir('Settings' ,'Live' ,6,'',isItFolder=False)
 	addDir('Clear Cache' ,'Live' ,54,'',isItFolder=False)
@@ -411,12 +411,12 @@ def AddSports(url):
     addDir('WTV sports' ,'sss',62,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
-    addDir('UKTVNow','Live' ,57,'')
+    addDir('UKTVNow','sss' ,57,'')
     
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
-    addDir('PV2 Sports' ,'sports',36,'')
+    addDir('PV2 Sports' ,'zemsports',36,'')
     #addDir('Yupp Asia Cup','Live' ,60,'')
     addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
     addDir('cricfree.sx' ,'sss',41,'')
@@ -623,22 +623,42 @@ def GetSSSEvents(url):
         except: traceback.print_exc(file=sys.stdout)
         
     except: traceback.print_exc(file=sys.stdout)
-def AddPv2Sports(url):
+ 
 
+def getPV2Cats():
+    ret=[]
+    try:
+        xmldata=getPV2Url()
+        sources=etree.fromstring(xmldata)
+        #print xmldata
+        for source in sources.findall('items'):#Cricket#
+            if not source.findtext('programCategory') in ret :
+                    ret.append(source.findtext('programCategory'))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+
+    
+def AddPv2Sports(url):
     xmldata=getPV2Url()
     sources=etree.fromstring(xmldata)
     ret=[]
     isMovies=False
     colors=['blue']
-    if 'movies'== url:
+    if 'zemmovies'== url:
         url='latest movies,indian movies,english movies'.split(',')
         colors=['blue','red','green']
         isMovies=True
+    elif 'zemsports'== url:
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"pv2",66 ,'', False, True,isItFolder=True)
+        url=['sports']
     else:
         url=[url]
     res=[]
     for source in sources.findall('items'):
-        if source.findtext('programCategory').lower() in url:
+        if source.findtext('programCategory').lower() in url or source.findtext('programCategory') in url:
             cname=source.findtext('programTitle')
             cid=source.findtext('programURL')
             cimage=source.findtext('programImage')
@@ -664,7 +684,16 @@ def AddPv2Sports(url):
         addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
             
 def AddPakTVSports(url=None):
-    for cname,ctype,curl,imgurl in getPakTVChannels(['CTG Stadium','T20 World Cup','Live Cricket','Ptv Sports','PSL','Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League'],True):
+
+    if url=="sss":
+        cats=['CTG Stadium','T20 World Cup','Live Cricket','Ptv Sports','PSL','Pak VS NZ','IND VS AUS','ENG VS SA','India Sports','World Sports','Football Clubs','Pak Sports','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League']
+        isSports=True
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"paktv",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+        
+    for cname,ctype,curl,imgurl in getPakTVChannels(cats,isSports):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -922,7 +951,14 @@ def AddYuppSports(url=None):
     return   
     
 def AddUKTVNowChannels(url=None):
-    for cname,ctype,curl,imgurl in getUKTVChannels(['sports']):
+    cats=[]
+    if url=="sss":
+        cats=['sports']
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"uktv",66 ,'', False, True,isItFolder=True)
+
+    else:
+        cats=[url]
+    for cname,ctype,curl,imgurl in getUKTVChannels(cats):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         mm=11
 #        print repr(curl)
@@ -941,6 +977,9 @@ def AddIpBoxSources(url=None):
     return
     
 def AddIpBoxChannels(url=None):
+    if not mode==67:
+        addDir(Colored('>>Click Here for All Channels<<'.capitalize(),'red') ,url ,67 ,"", False, True,isItFolder=True)		#name,url,mode,icon
+
     for cname,ctype,curl,imgurl in getIpBoxChannels([url],True):
         try:
             #print cname
@@ -953,7 +992,16 @@ def AddIpBoxChannels(url=None):
     return     
     
 def AddWTVSports(url=None):
-    for cname,ctype,curl,imgurl in getWTVChannels(['Extra Time Football','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time'],True):
+
+    if url=="sss":
+        cats=['Extra Time Football','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time']
+        isSports=True
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"wtv",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+
+    for cname,ctype,curl,imgurl in getWTVChannels(cats,isSports):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -962,9 +1010,18 @@ def AddWTVSports(url=None):
         else:
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
-    return          
-def AddUniTVSports(url=None):
-    for cname,ctype,curl,imgurl in getUniTVChannels(['Extra Time','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Sports','Golf','Boxing & Wrestling','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time'],True):
+    return      
+    
+def AddUniTVSports(url=None):   
+
+    if url=="sss":
+        cats=['Extra Time','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Sports','Golf','Boxing & Wrestling','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time']
+        isSports=True
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"unitv",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+    for cname,ctype,curl,imgurl in getUniTVChannels(cats,isSports):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -974,7 +1031,28 @@ def AddUniTVSports(url=None):
             mm=11
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return        
-
+    
+def ShowAllCategories(url):
+    cats=[]
+    cmode=0
+    if url=="unitv":
+        cats=getUniTVCats()
+        cmode=53
+    elif url=="wtv":
+        cats=getWTVCats()
+        cmode=62
+    elif url=="paktv":
+        cats=getPakTVCats()
+        cmode=52    
+    elif url=="uktv":
+        cats=getUKTVCats()
+        cmode=57    
+    elif url=="pv2":
+        cats=getPV2Cats()
+        cmode=36
+    for cname in cats:
+        addDir(Colored(cname.capitalize(),'red') ,cname,cmode,'', False, True,isItFolder=True)
+        
 
     
 def AddStreamSports(url=None):
@@ -2045,7 +2123,19 @@ def AddEnteries(name, type=None):
         progress.close()
     return
 
-
+def getPakTVCats():
+    ret=[]
+    try:
+        xmldata=getPakTVPage()
+        for source in xmldata:
+            if not source["categoryName"] in ret :
+                ret.append(source["categoryName"])
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+            
 def getPakTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -2143,7 +2233,7 @@ def getIpBoxSources():
             if not ln.startswith("##") and len(ln)>0:
                 try:
                     ##serial:mac:time:text
-                    print ln
+                    #print ln
                     servername,surl=ln.split('$')
                     
                     ret.append((servername, surl ))   
@@ -2158,27 +2248,50 @@ def getIpBoxChannels(url,forSports=False):
         for u in url:
             try:
                 html=getUrl(u)
-        #        print xmldata
-                if forSports:
-                    reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+                #print 'mmmmmmmmmmname',name
+                #print xmldata
+                if mode==67:
+                    #print 'aaaaaaaaaaaaaaaaaaaaaa'
+                    reg='#EXTINF:-1,(.*?(.).*)\s(.*)\s?'
+                    forSports=True
                 else:
-                    reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
+                    if forSports:
+                        reg='#EXTINF:-1,(.*?(sport|epl|Willow|CTH).*)\s(.*)\s?'
+                    else:
+                        reg='#EXTINF:-1,(Yupp|in):(.*)\s(.*)'
                 xmldata=re.findall(reg,html,re.IGNORECASE)
-                
+                #print xmldata
                 for source in xmldata:#Cricket#
-                    ss=source
-                    cname=ss[0] if forSports else ss[1] 
-                    if '.ts' in ss[2]:
-                        #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
-                        #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
-                        #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
-                        curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                        ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
-                        #print 'iptv',curl
-                        ret.append((cname +' Ipbox' ,'manual', curl ,''))   
+                    try:
+                        ss=source
+                        cname=ss[0] if forSports else ss[1] 
+                        #print repr(cname), repr(ss)
+                        if '.ts' in ss[2]:
+                            #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
+                            #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
+                            #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
+                            curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                            ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                            #print 'iptv',curl
+                            ret.append((cname +' Ipbox' ,'manual', curl ,''))   
+                    except: pass
             except: pass
             if len(ret)>0:
                 ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
+def getWTVCats():
+    ret=[]
+    try:
+        xmldata=getWTVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if not source["categoryName"] in ret :
+                    ret.append(source["categoryName"])   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
@@ -2210,7 +2323,21 @@ def getWTVChannels(categories, forSports=False):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
-    
+
+def getUniTVCats():
+    ret=[]
+    try:
+        xmldata=getUniTVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if not source["categoryName"] in ret :
+                    ret.append(source["categoryName"])   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+        
 def getUniTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -2286,14 +2413,26 @@ def getUKTVPage():
         print 'uktv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
-    
+
+def getUKTVCats():
+    ret=[]
+    try:
+        jsondata=getUKTVPage()
+        for channel in jsondata["msg"]["channels"]:
+            if channel["cat_name"] not in ret:
+                ret.append(channel["cat_name"])
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower() )                        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
 def getUKTVChannels(categories=[], channels=[]):
     ret=[]
     try:
 
         jsondata=getUKTVPage()
         for channel in jsondata["msg"]["channels"]:
-            if channel["cat_name"].strip().lower() in categories or channel["channel_name"].strip().lower() in categories  :
+            if channel["cat_name"].strip().lower() in categories or  channel["cat_name"] in categories  or channel["channel_name"].strip().lower() in categories  :
                     cname=channel["channel_name"]
                     curl='uktvnow:'+channel["pk_id"]
                     cimage=channel["img"]
@@ -3099,7 +3238,7 @@ def getUniTVPage():
     fname='unitvpage.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,4*60*60)
+        jsondata=getCacheData(fname,1*60*60)
         if not jsondata==None:
             return jsondata
     except:
@@ -3139,7 +3278,7 @@ def getWTVPage():
     fname='wtvpage.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,4*60*60)
+        jsondata=getCacheData(fname,1*60*60)
         if not jsondata==None:
             return jsondata
     except:
@@ -4307,21 +4446,24 @@ try:
 	elif mode==55 :
 		print "Play url is "+url
 		AddIpBoxSources(url)     
-	elif mode==61 :
+	elif mode==61 or mode==67:
 		print "Play url is "+url
 		AddIpBoxChannels(url)     
 	elif mode==56 :
 		print "Play url is 56"+url
 		AddSports365Channels(url) 
 	elif mode==57 :
-		print "Play url is 56"+url
+		print "Play url is 57"+url
 		AddUKTVNowChannels(url)     
 	elif mode==60 :
 		print "Play url is 60"+url
 		AddYuppSports(url)     
 	elif mode==62 :
 		print "Play url is "+url
-		AddWTVSports(url)             
+		AddWTVSports(url)
+	elif mode==66 :
+		print "Play url is "+url
+		ShowAllCategories(url)           
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
