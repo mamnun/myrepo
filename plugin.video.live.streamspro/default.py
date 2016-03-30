@@ -987,6 +987,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
 
                 link=''
                 if m['page'] and m['page'] in cachedPages and not 'ignorecache' in m and forCookieJarOnly==False :
+                    #print 'using cache page',m['page']
                     link = cachedPages[m['page']]
                 else:
                     if m['page'] and  not m['page']=='' and  m['page'].startswith('http'):
@@ -1014,7 +1015,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         current_proxies=urllib2.ProxyHandler(urllib2.getproxies())
         
         
-                        
+                        #print 'getting pageUrl',pageUrl
                         req = urllib2.Request(pageUrl)
                         if 'proxy' in m:
                             proxytouse= m['proxy']
@@ -1113,12 +1114,20 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             #       post=post.replace('$LiveStreamRecaptcha','&manual_recaptcha_challenge_field='+captcha_challenge+'&recaptcha_response_field='+catpcha_word+'&id='+idfield)
                         link=''
                         try:
+                            
                             if post:
                                 response = urllib2.urlopen(req,post)
                             else:
                                 response = urllib2.urlopen(req)
-
-                            link = response.read()
+                            if response.info().get('Content-Encoding') == 'gzip':
+                                from StringIO import StringIO
+                                import gzip
+                                buf = StringIO( response.read())
+                                f = gzip.GzipFile(fileobj=buf)
+                                link = f.read()
+                            else:
+                                link=response.read()
+                            
                         
                         
                             if 'proxy' in m and not current_proxies is None:
