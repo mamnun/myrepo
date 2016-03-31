@@ -325,7 +325,7 @@ def AddP3gSports(url):
 
     
     for i in channels:
-        addDir('%s P3G.Tv (requires new rtmp)'%(i.replace('_','')) ,'http://c247.tv/live.php?ch=%s'%i,17,'', False, True,isItFolder=False)
+        addDir('%s P3G.Tv'%(i.replace('_','')) ,'http://c247.tv/live.php?ch=%s'%i,17,'', False, True,isItFolder=False)
 
 
         
@@ -419,10 +419,10 @@ def AddSports(url):
     addDir('PV2 Sports' ,'zemsports',36,'')
     #addDir('Yupp Asia Cup','Live' ,60,'')
     addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
-    addDir('cricfree.sx' ,'sss',41,'')
-    addDir('WatchCric.com (requires new rtmp)-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
-    addDir('c247.tv-P3G.Tv (requires new rtmp)' ,'P3G'  ,30,'')
-    addDir('Streams' ,'sss',39,'')
+    #addDir('cricfree.sx' ,'sss',41,'')
+    addDir('WatchCric.com-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
+    addDir('c247.tv-P3G.Tv' ,'P3G'  ,30,'')
+    #addDir('Streams' ,'sss',39,'')
 
     
     
@@ -1498,7 +1498,7 @@ def PlaySSSEvent(url):
         print 'dec',finalUrl
        
 #    print 'aaaaaaaaaaaaaaaaaaaa',name.strip()
-    sts=["118c8a71c0dee1a743fbf8808e440397f26c2cea1c9bf351fb0b3c5417a8af9e07a2d8150dcf66b67f1690b03fa2885d7777a6f0253453dd1738fb7693d13f2aec8c86933e00edbfded41d5017a35b87",
+    sts=["118c8a71c0dee1a743fbf8808e440397f26c2cea1c9bf351fb0b3c5417a8af9e3c4b500ca59bfd9700394a92123657f83dd5cac8b64521887e5b4a671b6f94adc52cf32eda276fbccc15ba49f2b6db96",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf571652ffd197868c8ba23f74f8c6ed24d02157d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf5716dff663f438bc70808e422cef4c665cd357d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57164b74e2107bd1b84b155d86c84b10113057d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
@@ -1699,7 +1699,7 @@ def getUrlFromUS(urltoget):
 def AddWillowCric(url):
     try:
     
-        addDir(Colored('24x7 channel (US only, others use proxy so SLOW)','blue',True) ,'999999' ,21,'', False, True,isItFolder=False)		#name,url,mode,icon    
+        #addDir(Colored('24x7 channel (US only, others use proxy so SLOW)','blue',True) ,'999999' ,21,'', False, True,isItFolder=False)		#name,url,mode,icon    
         req = urllib2.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.93 Safari/537.36')
         response = urllib2.urlopen(req)
@@ -1709,7 +1709,7 @@ def AddWillowCric(url):
         #match_url =re.findall(patt,link)[0]
         #print 'match_url',match_url
 
-        match_url=getUrl("https://appfeeds.willow.tv/mobileHome_v1.json",headers=[('User-Agent','Willow/3.2.4 CFNetwork/711.4.6 Darwin/14.0.0')])
+        match_url=getUrl(base64.b64decode("aHR0cDovL2FwcGZlZWRzLndpbGxvdy50di9tb2JpbGVIb21lX3YxLmpzb24="),headers=[('User-Agent','Willow/3.2.4 CFNetwork/711.4.6 Darwin/14.0.0')])
         #print repr(match_url)
         matches=json.loads(match_url)
         

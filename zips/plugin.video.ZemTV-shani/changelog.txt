@@ -1,3 +1,5 @@
+[B]Version 4.7.4[/B]
+   removed few non working folders and updated willow
 [B]Version 4.7.3[/B]
    Enable Categories in saveral sports directories
 [B]Version 4.7.2[/B]
