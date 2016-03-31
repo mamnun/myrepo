@@ -1,0 +1,36 @@
+<channels>
+    <channel>
+        <name>Action</name>
+        <thumbnail>http://www.xxxxxxxxxxxxxx.jpg</thumbnail>
+        <fanart>http://www.xxxxxxxxxxxxxxxxx.jpg</fanart>
+        <items>
+            <item>
+                <title>A1 movie</title>
+                <link>ignore</link>
+                <thumbnail>http://xxxxxxxxxxxxxx.jpg</thumbnail>
+            </item>
+                        <item>
+                <title>A2 movie</title>
+                <link>ignore</link>
+                <thumbnail>http://xxxxxxxxxxxxxx.jpg</thumbnail>
+            </item>
+        </items>
+    </channel>
+    <channel>
+        <name>Romance</name>
+        <thumbnail>http://www.xxxxxxxxxxxxxx.jpg</thumbnail>
+        <fanart>http://www.xxxxxxxxxxxxxxxxx.jpg</fanart>
+        <items>
+            <item>
+                <title>R1 movie</title>
+                <link>ignore</link>
+                <thumbnail>http://xxxxxxxxxxxxxx.jpg</thumbnail>
+            </item>
+            <item>
+                <title>r2 movie</title>
+                <link>ignore</link>
+                <thumbnail>http://xxxxxxxxxxxxxx.jpg</thumbnail>
+            </item>
+        </items>
+    </channel>
+</channels>
