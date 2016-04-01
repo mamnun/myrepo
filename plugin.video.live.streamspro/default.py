@@ -962,7 +962,10 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
 #                        print 'complete_path',complete_path
                         saveCookieJar(cookieJar,cookie_jar_file)
                 if  m['page'] and '$doregex' in m['page']:
-                    m['page']=getRegexParsed(regexs, m['page'],cookieJar,recursiveCall=True,cachedPages=cachedPages)
+                    pg=getRegexParsed(regexs, m['page'],cookieJar,recursiveCall=True,cachedPages=cachedPages)
+                    if len(pg)==0:
+                        pg='http://regexfailed'
+                    m['page']=pg
 
                 if 'setcookie' in m and m['setcookie'] and '$doregex' in m['setcookie']:
                     m['setcookie']=getRegexParsed(regexs, m['setcookie'],cookieJar,recursiveCall=True,cachedPages=cachedPages)
@@ -1147,7 +1150,8 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             addon_log(cookieJar )
 
                             response.close()
-                        except: pass
+                        except: 
+                            pass
                         cachedPages[m['page']] = link
                         #print link
                         #print 'store link for',m['page'],forCookieJarOnly
@@ -1176,6 +1180,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
 
                     elif m['expres'].startswith('$pyFunction:') or '#$pyFunction' in m['expres']:
                         #print 'expeeeeeeeeeeeeeeeeeee',m['expres']
+                        val=''
                         if m['expres'].startswith('$pyFunction:'):
                             val=doEval(m['expres'].split('$pyFunction:')[1],link,cookieJar,m)
                         else:
@@ -1193,15 +1198,15 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             ret=re.findall(m['expres'],link)
                             return listrepeat,ret, m,regexs
                              
+                        val=''
                         if not link=='':
                             #print 'link',link
-                            reg = re.compile(m['expres']).search(link)
-                            val=''
+                            reg = re.compile(m['expres']).search(link)                            
                             try:
                                 val=reg.group(1).strip()
                             except: traceback.print_exc()
-                        else:
-                            val=m['expres']
+                            if m['page']=='':
+                                val=m['expres']
                             
                         if rawPost:
 #                            print 'rawpost'
@@ -1213,6 +1218,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         try:
                             url = url.replace("$doregex[" + k + "]", val)
                         except: url = url.replace("$doregex[" + k + "]", val.decode("utf-8"))
+                        #print 'ur',url
                         #return val
                 else:
                     url = url.replace("$doregex[" + k + "]",'')
@@ -1768,6 +1774,7 @@ def getCookieJar(COOKIEFILE):
 
 def doEval(fun_call,page_data,Cookie_Jar,m):
     ret_val=''
+    #print fun_call
     if functions_dir not in sys.path:
         sys.path.append(functions_dir)
 
