@@ -409,6 +409,7 @@ def AddSports(url):
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
     addDir('WTV sports' ,'sss',62,'')
+    addDir('Mona' ,'sss',68,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
     addDir('UKTVNow','sss' ,57,'')
@@ -949,6 +950,22 @@ def AddYuppSports(url=None):
         
         
     return   
+def AddMonaChannels(url=None):
+    cats=[]
+    if url=="sss":
+        cats='14'
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"mona",66 ,'', False, True,isItFolder=True)
+
+    else:
+        cats=url
+    for cname,ctype,curl,imgurl in getMonaChannels(cats):
+        #cname=cname.encode('ascii', 'ignore').decode('ascii')
+        mm=11
+#        print repr(curl)
+       
+        #addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(cname.encode("utf-8") ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return   
     
 def AddUKTVNowChannels(url=None):
     cats=[]
@@ -1050,8 +1067,17 @@ def ShowAllCategories(url):
     elif url=="pv2":
         cats=getPV2Cats()
         cmode=36
+    elif url=="mona":
+        cats=getMonaCats()
+        cmode=68
     for cname in cats:
-        addDir(Colored(cname.capitalize(),'red') ,cname,cmode,'', False, True,isItFolder=True)
+        print cname
+        if type(cname).__name__ == 'tuple':
+            cid,cname=cname
+            cname=cname.encode("utf-8")
+        else:
+            cid=cname
+        addDir(Colored(cname.capitalize(),'red') ,cid,cmode,'', False, True,isItFolder=True)
         
 
     
@@ -2384,6 +2410,38 @@ def getAPIToken( url,  username):
     print s
     import hashlib
     return hashlib.md5(s).hexdigest()
+
+def getMonaKey():
+    s=getUrl(base64.b64decode("aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9hcGkucGhwP2FwaV9rZXk="),headers=[('User-Agent','Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-G920F Build/LMY47X')])
+    return json.loads(s)["LIVETV"][0]["key"]
+    
+def getMonaPage(cat):
+    fname='monapage_%s.json'%cat
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+    
+    if cat=="":
+        url=base64.b64decode('aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9hcGkucGhwP2tleT0lcw==')%(getMonaKey())
+    else:
+        url=base64.b64decode('aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9hcGkucGhwP2NhdF9pZD0lcyZrZXk9JXM=')%(cat,getMonaKey())
+    print url
+    headers=[('User-Agent','Dalvik/2.1.0 (Linux; U; Android 5.1.1; SM-G920F Build/LMY47X)')]
+    jsondata=getUrl(url,headers=headers)
+    jsondata=json.loads(jsondata)
+    
+    try:
+        if len(jsondata["LIVETV"])>0:
+            storeCacheData(jsondata,fname)
+    except:
+        print 'uktv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
     
 def getUKTVPage():
     fname='uktvpage.json'
@@ -2426,6 +2484,43 @@ def getUKTVCats():
     except:
         traceback.print_exc(file=sys.stdout)
     return ret    
+    
+def getMonaCats():
+    ret=[]
+    try:
+        jsondata=getMonaPage('')
+        for channel in jsondata["LIVETV"]:
+            ret.append((channel["cid"],channel["category_name"]))
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower() )                        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
+
+
+    
+def getMonaChannels(cat):
+    ret=[]
+    try:
+
+        jsondata=getMonaPage(cat)
+        for channel in jsondata["LIVETV"]:
+            cname=channel["channel_title"]#.encode("utf-8")
+            #print cname.encode("utf-8")
+            #print cname
+            curl='direct:'+channel["channel_url"]+'|User-Agent=Mozilla/5.0 (Linux; Android 5.1.1; en-GB; SM-G920F Build/LMY47X.G920FXXS3COK5) MXPlayer/1.7.40'
+            cimage=channel["category_image"]
+            if not cimage.startswith("http"):
+                cimage=base64.b64decode('aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9pbWFnZXMv')+cimage
+            if cname==None: cname=curl
+            if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
+                ret.append((cname ,'manual', curl ,cimage))  
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower() )                        
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+
 def getUKTVChannels(categories=[], channels=[]):
     ret=[]
     try:
@@ -3113,6 +3208,16 @@ def clearCache():
     fname='wtvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]       
+    try:
+        for cat in getMonaCats():
+            fname='monapage_%s.json'%cat[0]
+            fname=os.path.join(profile_path, fname)
+            files+=[fname]    
+    except: pass
+    
+    fname='monapage_.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]    
     
 
     for p in ['u','p','h']:
@@ -4463,7 +4568,10 @@ try:
 		AddWTVSports(url)
 	elif mode==66 :
 		print "Play url is "+url
-		ShowAllCategories(url)           
+		ShowAllCategories(url)    
+	elif mode==68 :
+		print "Play url is "+url
+		AddMonaChannels(url)            
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
