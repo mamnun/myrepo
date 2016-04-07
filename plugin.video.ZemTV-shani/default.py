@@ -1524,7 +1524,7 @@ def PlaySSSEvent(url):
         print 'dec',finalUrl
        
 #    print 'aaaaaaaaaaaaaaaaaaaa',name.strip()
-    sts=["118c8a71c0dee1a743fbf8808e440397f26c2cea1c9bf351fb0b3c5417a8af9e3c4b500ca59bfd9700394a92123657f83dd5cac8b64521887e5b4a671b6f94adc52cf32eda276fbccc15ba49f2b6db96",
+    sts=["118c8a71c0dee1a743fbf8808e440397f26c2cea1c9bf351fb0b3c5417a8af9e07a2d8150dcf66b67f1690b03fa2885d7777a6f0253453dd1738fb7693d13f2a80f3c268fdcb5d69230f24f74af7bbbe",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf571652ffd197868c8ba23f74f8c6ed24d02157d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf5716dff663f438bc70808e422cef4c665cd357d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
         "bcb10ea0b620b447dc8ed8afe9bea186c54bf0a31ad3e7f46e3436c08dbf57164b74e2107bd1b84b155d86c84b10113057d191e247457bc3c0697b5dd40f028f4e003da617fa4e6c3ddbe0d17ff981db",
@@ -2171,6 +2171,7 @@ def getPakTVChannels(categories, forSports=False):
                 ss=source
                 cname=ss["channelName"]
                 if 'ebound.tv' in ss["channelLink"]:
+                    #print ss["channelLink"]
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
                     curl='direct2:'+ss["channelLink"]+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
@@ -2377,6 +2378,7 @@ def getUniTVChannels(categories, forSports=False):
                 #print cname
                 if 'ebound.tv' in ss["channelLink"]:
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
+                    #print curl
                 else:
                     curl='direct2:'+ss["channelLink"]
                     if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
@@ -2508,7 +2510,15 @@ def getMonaChannels(cat):
             cname=channel["channel_title"]#.encode("utf-8")
             #print cname.encode("utf-8")
             #print cname
-            curl='direct:'+channel["channel_url"]+'|User-Agent=Mozilla/5.0 (Linux; Android 5.1.1; en-GB; SM-G920F Build/LMY47X.G920FXXS3COK5) MXPlayer/1.7.40'
+            #print channel
+            #print channel
+            curl='direct:'+channel["channel_url"]
+            #print curl
+            ua='Mozilla/5.0 (Linux; Android 5.1.1; en-GB; SM-G920F Build/LMY47X.G920FXXS3COK5) MXPlayer/1.7.40'
+            if 'wiseplay' in cname.lower():
+                ua='Lavf/57.25.100'
+            if  channel["channel_url"].startswith("http"):
+                curl+='|User-Agent='+ua
             cimage=channel["category_image"]
             if not cimage.startswith("http"):
                 cimage=base64.b64decode('aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9pbWFnZXMv')+cimage
@@ -2552,6 +2562,7 @@ def getptcchannels(categories, forSports=False):
                 for ss in source["channels"]:
                     cname=ss["name"]
                     if 'ebound.tv' in ss["url"]:
+                        
                         curl='ebound2:'+ss["url"].replace(':1935','')
                     else:
                         curl='direct2:'+ss["url"]
@@ -4349,6 +4360,8 @@ def PlayCFLive(url):
     return  
 
 def PlayEboundFromIOS(url):
+    if not url.startswith('http'):
+        url='http://cdn.ebound.tv/tv/%s/playlist.m3u8'%url
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
     progress.update( 10, "", "Finding links..", "" )
@@ -4368,6 +4381,8 @@ def PlayEboundFromIOS(url):
     return
 
 def PlayLiveLink ( url ):
+    PlayEboundFromIOS(url)
+    return
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
     progress.update( 10, "", "Finding links..", "" )
