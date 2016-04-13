@@ -1,3 +1,5 @@
+[B]Version 4.7.7[/B]
+   Fixed PTC sports and category filtering
 [B]Version 4.7.6[/B]
    Fixed yellow channels and wiseplay urls
 [B]Version 4.7.5[/B]

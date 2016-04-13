@@ -706,7 +706,14 @@ def AddPakTVSports(url=None):
     return    
                    
 def AddPTCSports(url=None):
-    for cname,ctype,curl,imgurl in getptcchannels(['PSL','PSL','Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports'],True):
+    if url=="sss":
+        isSports=True
+        cats=['PSL','IPL','Ptv Sports','Star Sports','Sports','BPL T20','Live Cricket','Live Footbal','Ten Sports','BT Sports','Euro Sports']
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"ptc",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+    for cname,ctype,curl,imgurl in getptcchannels(cats,isSports):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -1070,6 +1077,9 @@ def ShowAllCategories(url):
     elif url=="mona":
         cats=getMonaCats()
         cmode=68
+    elif url=="ptc":
+        cats=getPTCCats()
+        cmode=51   
     for cname in cats:
         print cname
         if type(cname).__name__ == 'tuple':
@@ -2148,7 +2158,20 @@ def AddEnteries(name, type=None):
             traceback.print_exc(file=sys.stdout)
         progress.close()
     return
-
+    
+def getPTCCats():
+    ret=[]
+    try:
+        xmldata=getPTCUrl()
+        for source in xmldata["channelsCategories"]:
+            if not source["categoryName"] in ret :
+                ret.append(source["categoryName"])
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+    
 def getPakTVCats():
     ret=[]
     try:
@@ -2329,7 +2352,7 @@ def getWTVChannels(categories, forSports=False):
         xmldata=getWTVPage()
         #print xmldata
         for source in xmldata:#Cricket#
-            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
 
                 ss=source
                 cname=ss["channelName"]
@@ -2367,11 +2390,12 @@ def getUniTVCats():
         
 def getUniTVChannels(categories, forSports=False):
     ret=[]
+  
     try:
         xmldata=getUniTVPage()
         #print xmldata
         for source in xmldata:#Cricket#
-            if source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
 
                 ss=source
                 cname=ss["channelName"]
@@ -2558,14 +2582,14 @@ def getptcchannels(categories, forSports=False):
         import iptv
         xmldata=getPTCUrl()
         for source in xmldata["channelsCategories"]:
-            if source["categoryName"].strip() in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 for ss in source["channels"]:
                     cname=ss["name"]
                     if 'ebound.tv' in ss["url"]:
                         
                         curl='ebound2:'+ss["url"].replace(':1935','')
                     else:
-                        curl='direct2:'+ss["url"]
+                        curl='ptc:'+ss["url"]
                     cimage=ss["imgurl"]
                     
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
@@ -3143,10 +3167,16 @@ def get_dag_url(page_data):
 
     return final_url
 
+def getPTCAuth():
+    req = urllib2.Request( base64.b64decode("aHR0cDovL3N0cmVhbWZsYXJlLmNvbS9pb3MvaWFwcC5waHA="))
+    req.add_header('Authorization', "Basic %s"%base64.b64decode('WVhWMGFIVnpaWEk2ZW1OVFpUSjNaWEk9')) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYlMjBDb25uZWN0aWZ5LzQuMyBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    return link
+
+
 def getPTCUrl():
-
-    
-
     fname='ptcpage.json'
     fname=os.path.join(profile_path, fname)
     try:
@@ -3157,32 +3187,37 @@ def getPTCUrl():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-    req = urllib2.Request( base64.b64decode('aHR0cDovL3N0cmVhbWlmeWZhZ2FpbmMuYXBwc3BvdC5jb20vaW9zL3Bha3R2L3Bha3R2Lmpzb24=') )      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("Y29tLm1hYWlkcGsuUGFrVHZDb25uZWN0aWZ5LzQuMiBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    req = urllib2.Request( base64.b64decode('aHR0cDovL2NsdW9kYmFja2VuZGFwaS5hcHBzcG90LmNvbS9pb3MvcGFrdHYvcGFrdHYuanNvbg==') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYlMjBDb25uZWN0aWZ5LzQuMyBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
     response = urllib2.urlopen(req)
     link=response.read()
     maindata=json.loads(link)
+    print maindata
     decodeddata=maindata["Secret"]
     #decodeddata='ew0KDQogI'.join(decodeddata.split('ew0KDQogI')[:-1])
     #data=base64.b64decode(decodeddata)[:-1]
     decodeddata=decodeddata.replace('nbUioPLk6nbviOP0kjgfreWEur','')
     decodeddata=decodeddata+'='*(len(decodeddata) % 4)
-    data=base64.b64decode(decodeddata)
-#    if '"categoryName": "appsetting"' in data:
-#        data=data.split('"categoryName": "appsetting"')[0]
-#        print 'xxxxxxxxxxxxxxxxx',data[-100:]
-#        print 'xxxxxxxxxxxxxxxxx end'
-#        pos = data.rfind(',')
-#        data=data[:pos]
-#        pos = data.rfind(',')
-#        data=data[:pos]
-#        data+=']}'
-#    else:
-#        pos = data.rfind(',')
-#        data=data[:pos]
-#        data+=']}]}'
+    try:
+        data=base64.b64decode(decodeddata)
+        jsondata= json.loads(data)
+    except:
+        if '"categoryName":"appsetting"' in data:
+            data=data.split('"categoryName":"appsetting"')[0]
+            print 'xxxxxxxxxxxxxxxxx',data[-100:]
+            print 'xxxxxxxxxxxxxxxxx end'
+            pos = data.rfind(',')
+            data=data[:pos]
+            pos = data.rfind(',')
+            data=data[:pos]
+            data+=']}'
+        else:
+            pos = data.rfind(',')
+            data=data[:pos]
+            data+=']}]}'
+        jsondata= json.loads(data)
     #print data 
-    jsondata= json.loads(data)
+    
     print jsondata
     try:
         storeCacheData(jsondata,fname)
@@ -3617,6 +3652,7 @@ def PlayPV2Link(url):
     
 def PlayOtherUrl ( url ):
     url=base64.b64decode(url)
+
     if url.startswith('cid:'): url=base64.b64decode('aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwLzJfNS9neG1sL3BsYXkvJXM=')%url.replace('cid:','')
     progress = xbmcgui.DialogProgress()
     progress.create('Progress', 'Fetching Streaming Info')
@@ -3655,6 +3691,9 @@ def PlayOtherUrl ( url ):
     if "direct2:" in url:
         PlayGen(base64.b64encode(url.split('direct2:')[1]),True)
         return
+    if "ptc:" in url:
+        PlayGen(base64.b64encode(url.split('ptc:')[1]+getPTCAuth()))
+        return    
     if "pv2:" in url:
         PlayPV2Link(url.split('pv2:')[1])
         return    
