@@ -2501,11 +2501,14 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
         return ok
 
         
-def playsetresolved(url,name,iconimage,setresolved=True):
+def playsetresolved(url,name,iconimage,setresolved=True,reg=None):
+    print url
     if setresolved:
         setres=True
         if '$$LSDirect$$' in url:
             url=url.replace('$$LSDirect$$','')
+            setres=False
+        if reg and 'notplayable' in reg:
             setres=False
 
         liz = xbmcgui.ListItem(name, iconImage=iconimage)
@@ -2903,7 +2906,7 @@ elif mode==17 or mode==117:
 
                 playmediawithproxy(url,name,iconimage,proxyip,port, proxyuser,proxypass) #jairox
             else:
-                playsetresolved(url,name,iconimage,setresolved)
+                playsetresolved(url,name,iconimage,setresolved,regexs)
         else:
             xbmc.executebuiltin("XBMC.Notification(LiveStreamsPro,Failed to extract regex. - "+"this"+",4000,"+icon+")")
 elif mode==18:
