@@ -1,3 +1,5 @@
+[B]Version 4.7.8[/B]
+   fix noor tv but not all CF channels going to work.
 [B]Version 4.7.7[/B]
    Fixed PTC sports and category filtering
 [B]Version 4.7.6[/B]
