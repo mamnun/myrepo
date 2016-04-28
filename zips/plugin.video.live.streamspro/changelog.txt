@@ -1,3 +1,5 @@
+Version 2.3.6
+    small error in blank page
 Version 2.3.5
     aa decoder, little fix and notplayable to use for not showing the dialogue
 Version 2.3.4

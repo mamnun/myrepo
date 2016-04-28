@@ -1171,6 +1171,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                     setresolved=False
                 if  '$doregex' in m['expres']:
                     m['expres']=getRegexParsed(regexs, m['expres'],cookieJar,recursiveCall=True,cachedPages=cachedPages)
+                  
                 if not m['expres']=='':
                     #print 'doing it ',m['expres']
                     if '$LiveStreamCaptcha' in m['expres']:
@@ -1205,8 +1206,8 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             try:
                                 val=reg.group(1).strip()
                             except: traceback.print_exc()
-                            if m['page']=='':
-                                val=m['expres']
+                        elif m['page']=='' or m['page']==None:
+                            val=m['expres']
                             
                         if rawPost:
 #                            print 'rawpost'
@@ -2778,7 +2779,7 @@ elif mode==17 or mode==117:
     data=None
     if regexs and 'listrepeat' in urllib.unquote_plus(regexs):
         listrepeat,ret,m,regexs =getRegexParsed(regexs, url)
-#        print listrepeat,ret,m,regexs
+        #print listrepeat,ret,m,regexs
         d=''
 #        print 'm is' , m
 #        print 'regexs',regexs
