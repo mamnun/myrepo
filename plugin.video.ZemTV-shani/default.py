@@ -4029,7 +4029,7 @@ def AddShows(Fromurl):
         tname=cname[2]
         tname=re.sub(r'[\x80-\xFF]+', convert,tname )
         #tname=repr(tname)
-        addDir(tname,cname[0] ,3,cname[1], True,isItFolder=False)
+        addDir(tname,cname[0] ,3,cname[1]+'|Cookie=%s'%getCookiesString(CookieJar)+'&User-Agent=Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10', True,isItFolder=False)
         
 
     match =re.findall('<a class="nextpostslink" rel="next" href="(.*?)">', link, re.IGNORECASE)
@@ -4040,7 +4040,14 @@ def AddShows(Fromurl):
 
     return
 
-
+def getCookiesString(cookieJar):
+    try:
+        cookieString=""
+        for index, cookie in enumerate(cookieJar):
+            cookieString+=cookie.name + "=" + cookie.value +";"
+    except: pass
+    #print 'cookieString',cookieString
+    return cookieString
 def AddChannels():
 	req = urllib2.Request(liveURL)
 	req.add_header('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
