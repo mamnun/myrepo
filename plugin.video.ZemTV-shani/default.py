@@ -409,6 +409,7 @@ def AddSports(url):
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
     addDir('WTV sports' ,'sss',62,'')
+    addDir('GTV sports' ,'sss',70,'')
     addDir('Mona' ,'sss',68,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
@@ -1036,6 +1037,27 @@ def AddWTVSports(url=None):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return      
     
+def AddGTVSports(url=None):
+
+    if url=="sss":
+        cats=['Asto Sports','TSN Sports','OSN Sports','Sports Time TV','T20 World Cup','Horse Racing','Cricket Matches','Footbal','Golf','Boxing & Fight','T20 Big Bash League','NFL Live','Footbal Clubs','Sports HD','Sports Full HD','Global Sports']
+        isSports=True
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"gtv",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+
+    for cname,ctype,curl,imgurl in getGTVChannels(cats,isSports):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return      
+    
 def AddUniTVSports(url=None):   
 
     if url=="sss":
@@ -1080,6 +1102,9 @@ def ShowAllCategories(url):
     elif url=="ptc":
         cats=getPTCCats()
         cmode=51   
+    elif url=="gtv":
+        cats=getGTVCats()
+        cmode=70
     for cname in cats:
         print cname
         if type(cname).__name__ == 'tuple':
@@ -2345,6 +2370,21 @@ def getWTVCats():
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
+
+def getGTVCats():
+    ret=[]
+    try:
+        xmldata=getGTVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if not source["categoryName"] in ret :
+                    ret.append(source["categoryName"])   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
     
 def getWTVChannels(categories, forSports=False):
     ret=[]
@@ -2374,6 +2414,34 @@ def getWTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret  
 
+def getGTVChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getGTVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+
+                ss=source
+                cname=ss["channelName"]
+                #print cname
+                if 'ebound.tv' in ss["channelLink"]:
+                    curl='ebound2:'+ss["channelLink"].replace(':1935','')
+                else:
+                    curl='direct2:'+ss["channelLink"]
+                    if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
+
+                cimage=ss["categoryImageLink"]
+                
+                if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
+                    #print cname
+                    ret.append((cname ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
 def getUniTVCats():
     ret=[]
     try:
@@ -3264,7 +3332,10 @@ def clearCache():
     fname='monapage_.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]    
-    
+ 
+    fname='gtvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]     
 
     for p in ['u','p','h']:
         fname='yptvpage_%s.json'%p
@@ -3456,6 +3527,46 @@ def getWTVPage():
 
     d=base64.b64decode(link)    
     decrypted_data = cryptor.decrypt(d, base64.b64decode("UEBuZ0FCQXoxUEBzc3dvcmQzMjE="))
+    #print decrypted_data
+    jsondata=json.loads(decrypted_data)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'wtv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
+    
+def getGTVPage():
+    fname='gtvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,1*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3d3dy5zb2Z0bWFnbmF0ZS5jb20vQ01TLVNlcnZlci1TcG9ydHMtVFYvWFZlci9nZXRDb250dFYxLTAucGhw') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("U3BvcnRzVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgVFRCcU1FdEFhMEU2Y0VGd2NIVkFOamczUUVReFkzUXhiMjVCY25rPQ==")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    import rc
+    cryptor=rc.RNCryptor()
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANjg3QGQwbGw="))
+    decrypted_data=json.loads(decrypted_data)
+    dataUrl=decrypted_data[0]["LiveLink"]
+
+    req = urllib2.Request( dataUrl)      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("U3BvcnRzVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgVFRCcU1FdEFhMEU2Y0VGd2NIVkFOamczUUVReFkzUXhiMjVCY25rPQ==")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANjg3QGQwbGw="))
     #print decrypted_data
     jsondata=json.loads(decrypted_data)
     try:
@@ -4634,6 +4745,9 @@ try:
 	elif mode==68 :
 		print "Play url is "+url
 		AddMonaChannels(url)            
+	elif mode==70:
+		print "Play url is "+url
+		AddGTVSports(url)  
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
