@@ -410,6 +410,7 @@ def AddSports(url):
     addDir('UniTV sports' ,'sss',53,'')
     addDir('WTV sports' ,'sss',62,'')
     addDir('GTV sports' ,'sss',70,'')
+    addDir('Pi sports' ,'sss',71,'')
     addDir('Mona' ,'sss',68,'')
     addDir('Sport365.live' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
@@ -1058,6 +1059,27 @@ def AddGTVSports(url=None):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return      
     
+def AddPITVSports(url=None):
+
+    if url=="sss":
+        cats=['Barclays Premier League', 'CTH Stadium', 'Football', 'Football Clubs', 'Golf', 'Geo Super', 'Indian Premier League 9', 'Live Cricket', 'Netball Super League', 'National Badminton League',  'Pakistan Cup', 'PTV Sports', 'Premier League Darts', 'Racing', 'Rugby Union & League', 'World Sports', 'Wrestling & Boxing', 'World Seniors Snooker']
+        isSports=True
+        addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"pitv",66 ,'', False, True,isItFolder=True)
+    else:
+        cats=[url]
+        isSports=False
+
+    for cname,ctype,curl,imgurl in getPITVChannels(cats,isSports):
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        if ctype=='manual2':
+            mm=37
+        elif ctype=='manual3':
+            mm=45
+        else:
+            mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return  
+    
 def AddUniTVSports(url=None):   
 
     if url=="sss":
@@ -1105,6 +1127,9 @@ def ShowAllCategories(url):
     elif url=="gtv":
         cats=getGTVCats()
         cmode=70
+    elif url=="pitv":
+        cats=getPITVCats()
+        cmode=71
     for cname in cats:
         print cname
         if type(cname).__name__ == 'tuple':
@@ -2385,6 +2410,20 @@ def getGTVCats():
         traceback.print_exc(file=sys.stdout)
     return ret  
     
+def getPITVCats():
+    ret=[]
+    try:
+        xmldata=getPITVPage()
+        #print xmldata
+        for source in xmldata:#Cricket#
+            if not source["categoryName"] in ret :
+                    ret.append(source["categoryName"])   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    print ret
+    return ret  
     
 def getWTVChannels(categories, forSports=False):
     ret=[]
@@ -2414,6 +2453,37 @@ def getWTVChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret  
 
+def getPITVChannels(categories, forSports=False):
+    ret=[]
+    try:
+        xmldata=getPITVPage()
+        #print xmldata
+        
+        
+        for source in xmldata:#Cricket#
+            
+            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+
+                ss=source
+                cname=ss["channelName"]
+                #print cname
+                if 'ebound.tv' in ss["channelLink"]:
+                    curl='ebound2:'+ss["channelLink"].replace(':1935','')
+                else:
+                    curl='direct2:'+ss["channelLink"]
+                    if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
+
+                cimage=ss["categoryLogo"]
+                
+                if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
+                    #print cname
+                    ret.append((cname ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret  
+    
 def getGTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -2441,6 +2511,7 @@ def getGTVChannels(categories, forSports=False):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret  
+    
     
 def getUniTVCats():
     ret=[]
@@ -3336,7 +3407,10 @@ def clearCache():
     fname='gtvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]     
-
+ 
+    fname='pitvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]  
     for p in ['u','p','h']:
         fname='yptvpage_%s.json'%p
         fname=os.path.join(profile_path, fname)
@@ -3573,6 +3647,47 @@ def getGTVPage():
         storeCacheData(jsondata,fname)
     except:
         print 'wtv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
+    
+def getPITVPage():
+    fname='pitvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,1*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3NtYXJ0ZXJsb2dpeC5jb20vTmV3QXBwcy9QYWtJbmRpYVNwb3J0c0hEL1YxLTAvbWFpbkNvbnRlbnQucGhw') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwSW5kaWElMjBTcG9ydHMlMjBIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+    import rc
+    cryptor=rc.RNCryptor()
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("YkFuZ3I0bDF0dGwzNTY3"))
+    
+    decrypted_data=json.loads(decrypted_data)
+    dataUrl=decrypted_data[0]["dataUrl"]
+
+    req = urllib2.Request( dataUrl)      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwSW5kaWElMjBTcG9ydHMlMjBIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWtGM1lURXdjenAwZHpGdWEyd3pRbUZ1UVc1Qk5qZzM=")) 
+    response = urllib2.urlopen(req)
+    link=response.read()
+
+    d=base64.b64decode(link)    
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("YkFuZ3I0bDF0dGwzNTY3"))
+    
+    jsondata=json.loads(decrypted_data)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'pitv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
     
@@ -4748,6 +4863,9 @@ try:
 	elif mode==70:
 		print "Play url is "+url
 		AddGTVSports(url)  
+	elif mode==71:
+		print "Play url is "+url
+		AddPITVSports(url)  
 except:
 	print 'somethingwrong'
 	traceback.print_exc(file=sys.stdout)
