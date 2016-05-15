@@ -1,0 +1,60 @@
+  
+<item>
+<title>openloadtest</title>
+<link>$doregex[url]|User-Agent=iPhone</link>
+<regex>
+<name>url</name>
+<expres><![CDATA[#$pyFunction
+import re
+from AADecoder import AADecoder
+def baseN(num,b,numerals="0123456789abcdefghijklmnopqrstuvwxyz"):
+    return ((num == 0) and numerals[0]) or (baseN(num // b, b, numerals).lstrip(numerals[0]) + numerals[num % b])
+
+def conv(s,addfactor=None):
+    #print s
+    if 'function()' in s:
+        addfactor=s.split('b.toString(')[1].split(')')[0]
+        fname=re.findall('function\(\)\{function (.*?)\(',s)[0]
+        s=s.replace(fname,'myfunc')
+        s=''.join(s.split('}')[1:])
+    if '+' not in s:
+        if '.0.toString' in s:
+            ival,b=s.split('.0.toString(')
+            b=b.replace(')','')
+            #print  ival, b
+            return baseN(int(ival),int(eval(b)))
+        elif 'myfunc' in s:
+            b,ival=s.split('myfunc(')[1].split(',')
+            ival=ival.replace(')','').replace('(','').replace(';','')
+            b=b.replace(')','').replace('(','').replace(';','')
+            b=eval(addfactor.replace('a',b))
+            #print  ival, b
+            return baseN(int(ival),int(b))
+        else:
+            #print s
+            return eval(s)
+    r=''
+    for ss in s.split('+'):
+        r+=conv(ss,addfactor)
+    return r
+    
+def GetLSProData(page_data,Cookie_Jar,m):
+ #print page_data
+ tt=re.findall('id="olvideo".*?<script type="text\/javascript">(.*?)<',page_data,re.DOTALL)[0] 
+ #print "AA DATA",tt
+ aa=AADecoder(tt)
+ dtext= aa.decode()
+ print "aa decode",dtext
+ dtext1=re.findall('window.*?=(.*?);',dtext)
+ if len(dtext1)==0:
+    dtext1=re.findall('.*attr\(\"href\",\((.*)',dtext)
+ print dtext1[0]
+ dtext=conv(dtext1[0])
+ return dtext.replace("https","http") 
+ 
+]]></expres>
+<page>https://openload.co/embed/Gu-VXlyFtKo|User-Agent=iPhone</page>
+<cookieJar></cookieJar>
+</regex>
+<thumbnail></thumbnail>
+</item>
