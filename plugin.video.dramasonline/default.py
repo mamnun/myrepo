@@ -103,6 +103,7 @@ def Addtypes():
     addDir('SeeTV Shows', baseLink % '/pakistani-dramas-see-tv-latest-dramas-episodes-online/' ,2,'http://i.imgur.com/BkJ1440.png')
     addDir('Teleplays' ,'http://www.dramaonline.com/?cat=255' ,3,'http://i.imgur.com/FhL5Yas.png')# these are is links
     addDir('All Time Hits' ,'http://dramaonline.com/watch-evergreen-famous-pakistani-dramas-of-all-time/' ,2,'http://i.imgur.com/aFWO9Y7.png') # top 
+    addDir('Popular Dramas' ,'http://dramaonline.com//' ,5,'http://i.imgur.com/aFWO9Y7.png') # top 
     addDir('Live Channels' ,'http://www.dramaonline.com/category/live-channels/' ,6,'') ##
     addDir('Settings' ,'http://www.dramaonline.com/category/live-channels/' ,8,'',isItFolder=False) ##
 
@@ -168,7 +169,7 @@ def TopRatedDramas(Fromurl):
 #	match =re.findall('onclick="playChannel\(\'(.*?)\'\);".?>(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
 #	match =re.findall('<div class=\"post-title\"><a href=\"(.*?)\".*<b>(.*)<\/b><\/a>', link, re.IGNORECASE)
 #	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
-	regstring='<li><a href="(.*?)".*?>(.*?)<\/a><\/li>'
+	regstring='<li class="popular.*?>\s*?<a href="(.*?)" title="(.*?)"'
 	match =re.findall(regstring, link, re.M|re.DOTALL)
 	#match=re.compile('<a href="(.*?)"targe.*?<img.*?alt="(.*?)" src="(.*?)"').findall(link)
 #	print Fromurl
