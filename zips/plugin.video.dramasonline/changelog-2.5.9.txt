@@ -1,0 +1,99 @@
+[B]Version 2.5.8[/B]
+   play command
+[B]Version 2.5.7[/B]
+   tune.pk regex
+[B]Version 2.5.6[/B]
+- vidrail and tunepk fixed. 
+-Fixed playwire urls playing next episodes hilights instead of full current episode (thanks to kashif)
+
+[B]Version 2.5.5[/B]
+- support for vidrail sources
+
+[B]Version 2.5.4[/B]
+- fixed hum links, thanks to Kashif
+
+[B]Version 2.5.3[/B]
+- added new links, thanks to Kashif
+
+[B]Version 2.5.2[/B]
+- implement ajax call for latest episodes
+
+[B]Version 2.5.1[/B]
+- site updated, so regex updated again
+
+[B]Version 2.5.0[/B]
+- site updated, so regex updated again
+
+[B]Version 2.4.9[/B]
+- site updated, so regex updated again
+
+[B]Version 2.4.8[/B]
+- site updated, so regex updated
+
+[B]Version 2.4.7[/B]
+- some code improvement and fix . thanks to  Kashiif@github
+
+[B]Version 2.4.6[/B]
+- fix arydigital 
+
+[B]Version 2.4.5[/B]
+- icon change
+
+[B]Version 2.4.4[/B]
+- fix for playwire url finding
+
+[B]Version 2.4.3[/B]
+- fix website changes, more tv channels and their streams ,plus retry and switching to different sources,many thanks to Kashiif@github
+
+
+[B]Version 1.0[/B]
+- First version 1
+
+[B]Version 1.2[/B]
+- Some bug fixes and beta support for live channels
+[B]Version 1.5.0[/B]
+- Fixed some bugs about folder names and zip files
+[B]Version 1.6.0[/B]
+- Updated live channels, seems better now
+[B]Version 2.0.0[/B]
+- Implemented RTMP streaming now.
+- Option to select which steam to play as well as the default select
+
+[B]Version 2.1.0[/B]
+- Support for Gotham
+
+[B]Version 2.2.0[/B]
+- Reading streams from the source-eboundservices
+[B]Version 2.2.1[/B]
+- Fixed dependencies
+[B]Version 2.2.2[/B]
+- Progress bars etc while streaming
+[B]Version 2.2.3[/B]
+- house cleaning
+[B]Version 2.2.4[/B]
+- Timeout specified while live streaming
+[B]Version 2.2.5[/B]
+- Now trying to find dailymotion full links
+[B]Version 2.2.6[/B]
+- Fixed Favourite bug, now you can add links to favourites and run it
+[B]Version 2.2.7[/B]
+- Fixed the recent in the streaming site change done by you know who!
+[B]Version 2.2.8[/B]
+- bug in previours release
+[B]Version 2.2.9[/B]
+- change on the website reflected in the addon
+[B]Version 2.3.0[/B]
+- Gotham dependencies
+[B]Version 2.3.1[/B]
+- little tweak for pyaray..ary
+[B]Version 2.3.2[/B]
+- added ARY Digital and news in eb section
+[B]Version 2.3.3[/B]
+- Removed common
+[B]Version 2.4.0[/B]
+- Shows the list if the prefered video source is not available
+[B]Version 2.4.1[/B]
+- fix website changes, thanks to Kashiif@github
+[B]Version 2.4.2[/B]
+- fix website changes, all episodes and tune.pk url fix, thanks to Kashiif@github
+reversed order see at the top

@@ -87,23 +87,24 @@ def get_params():
 
 
 def Addtypes():
-	baseLink = 'http://www.dramasonline.com/%s-latest-dramas-episodes-online/'
-	#2 is series=3 are links
-	addDir('All Recent Episodes' ,'http://dramaonline.com/wp-admin/admin-ajax.php$page$=1' ,3,'http://i.imgur.com/qSzxay9.png') #links
-	addDir('HumTv Shows', 'http://www.dramasonline.com/hum-tv-new-dramas-episodes-online/' ,2,'http://i.imgur.com/SPbcdsI.png')
-	addDir('GeoTv Shows', baseLink % 'geo-tv' ,2,'http://i.imgur.com/YELzFHv.png')
-	addDir('PTV Home Shows', baseLink % 'ptv-home' ,2,'http://i.imgur.com/vJPo6xO.png')
-	addDir('AryDigital Shows', baseLink % 'ary-digital-tv' ,2,'http://i.imgur.com/Qpvx9N4.png')
-	addDir('Hum Sitaray Shows', baseLink % 'hum-sitaray' ,2,'http://i.imgur.com/GtoMqkd.png')
-	addDir('Express Shows', baseLink % 'express-entertainment' ,2,'http://i.imgur.com/RBlvLwp.png')
-	addDir('APlus Shows', baseLink % 'aplus-entertainment' ,2,'http://i.imgur.com/wynK0iI.png')
-	addDir('Urdu1 Shows', baseLink % 'urdu-1' ,2,'http://i.imgur.com/9i396WG.jpg')
-	addDir('Ary Zindagi Shows', baseLink % 'ary-zindagi' ,2,'http://i.imgur.com/a1PH1wk.png')
-	addDir('SeeTV Shows', 'http://dramaonline.com/pakistani-dramas-see-tv-latest-dramas-episodes-online/' ,2,'http://i.imgur.com/BkJ1440.png')
-	addDir('Teleplays' ,'http://www.dramasonline.com/?cat=255' ,3,'http://i.imgur.com/FhL5Yas.png')# these are is links
-	addDir('Top Rated Dramas' ,'http://www.dramasonline.com/' ,5,'http://i.imgur.com/aFWO9Y7.png') # top 
-	addDir('Live Channels' ,'http://www.dramasonline.com/category/live-channels/' ,6,'') ##
-	addDir('Settings' ,'http://www.dramasonline.com/category/live-channels/' ,8,'',isItFolder=False) ##
+    baseLink = 'http://dramaonline.com/%s-latest-dramas-episodes-online/'
+    #2 is series=3 are links
+    addDir('All Recent Episodes' ,'http://dramaonline.com/wp-admin/admin-ajax.php$page$=1' ,3,'http://i.imgur.com/qSzxay9.png') #links
+    addDir('HumTv Shows', 'http://www.dramaonline.com/hum-tv-new-dramas-episodes-online/' ,2,'http://i.imgur.com/SPbcdsI.png')
+    addDir('GeoTv Shows', baseLink % 'geo-tv' ,2,'http://i.imgur.com/YELzFHv.png')
+    addDir('PTV Home Shows', baseLink % 'ptv-home' ,2,'http://i.imgur.com/vJPo6xO.png')
+    addDir('AryDigital Shows', baseLink % 'ary-digital-tv' ,2,'http://i.imgur.com/Qpvx9N4.png')
+    addDir('Hum Sitaray Shows', baseLink % 'hum-sitaray' ,2,'http://i.imgur.com/GtoMqkd.png')
+    addDir('Express Shows', baseLink % 'express-entertainment' ,2,'http://i.imgur.com/RBlvLwp.png')
+    addDir('APlus Shows', baseLink % 'aplus-entertainment' ,2,'http://i.imgur.com/wynK0iI.png')
+    addDir('Urdu1 Shows', baseLink % 'urdu-1' ,2,'http://i.imgur.com/9i396WG.jpg')
+    addDir('Ary Zindagi Shows', baseLink % 'ary-zindagi' ,2,'http://i.imgur.com/a1PH1wk.png')
+    addDir('TVOne Shows','http://dramaonline.com/pakistani-dramas-tvone-latest-dramas-episodes-online//' ,2,'http://dramaonline.com/wp-content/themes/mts_newspaper/images/tvone.jpeg')
+    addDir('SeeTV Shows', baseLink % '/pakistani-dramas-see-tv-latest-dramas-episodes-online/' ,2,'http://i.imgur.com/BkJ1440.png')
+    addDir('Teleplays' ,'http://www.dramaonline.com/?cat=255' ,3,'http://i.imgur.com/FhL5Yas.png')# these are is links
+    addDir('All Time Hits' ,'http://dramaonline.com/watch-evergreen-famous-pakistani-dramas-of-all-time/' ,2,'http://i.imgur.com/aFWO9Y7.png') # top 
+    addDir('Live Channels' ,'http://www.dramaonline.com/category/live-channels/' ,6,'') ##
+    addDir('Settings' ,'http://www.dramaonline.com/category/live-channels/' ,8,'',isItFolder=False) ##
 
 def ShowSettings(Fromurl):
 	selfAddon.openSettings()
@@ -772,7 +773,7 @@ try:
 		TopRatedDramas(url)
 	elif mode==6:
 		print "Play url is "+url
-		addDir(Colored('DramasOnline Channels','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon
+		addDir(Colored('dramaonline Channels','ZM',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon
 		AddChannels(url)
 		addDir(Colored('EboundServices Channels','EB',True) ,'ZEMTV' ,10,'', False, True,isItFolder=False)		#name,url,mode,icon		
 		AddChannelsFromEbound()
