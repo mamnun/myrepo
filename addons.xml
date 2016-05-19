@@ -76,7 +76,7 @@
 
 <addon id="plugin.video.live.streamspro"
        name="LiveStreamsPro"
-       version="2.3.6"
+       version="2.3.7"
        provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -90,6 +90,7 @@
     <import addon="script.module.urlresolver" optional="true"/>
     <import addon="script.module.simplejson" />
      <import addon="script.module.livestreamer" optional="true"/>
+     <import addon="script.module.pyamf" optional="true"/>
   </requires>
   <extension point="xbmc.python.pluginsource" library="default.py">
     <provides>video</provides>
