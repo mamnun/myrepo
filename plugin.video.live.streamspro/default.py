@@ -764,13 +764,13 @@ def getItems(items,fanart,dontLink=False):
                         return name,url[0],regexs
                     if isXMLSource:
                             if not regexs == None: #<externallink> and <regex>
-                                addDir(name.encode('utf-8'),ext_url[0].encode('utf-8'),1,thumbnail,fanart,desc,genre,date,None,'!!update',regexs,url[0].encode('utf-8'))
+                                addDir(name.encode('utf-8'),ext_url[0].encode('utf-8'),1,thumbnail,fanArt,desc,genre,date,None,'!!update',regexs,url[0].encode('utf-8'))
                                 #addLink(url[0],name.encode('utf-8', 'ignore')+  '[COLOR yellow]build XML[/COLOR]',thumbnail,fanArt,desc,genre,date,True,None,regexs,total)
                             else:
-                                addDir(name.encode('utf-8'),ext_url[0].encode('utf-8'),1,thumbnail,fanart,desc,genre,date,None,'source',None,None)
+                                addDir(name.encode('utf-8'),ext_url[0].encode('utf-8'),1,thumbnail,fanArt,desc,genre,date,None,'source',None,None)
                                 #addDir(name.encode('utf-8'),url[0].encode('utf-8'),1,thumbnail,fanart,desc,genre,date,None,'source')
                     elif isJsonrpc:
-                        addDir(name.encode('utf-8'),ext_url[0],53,thumbnail,fanart,desc,genre,date,None,'source')
+                        addDir(name.encode('utf-8'),ext_url[0],53,thumbnail,fanArt,desc,genre,date,None,'source')
                         #xbmc.executebuiltin("Container.SetViewMode(500)")
                     else:
                         
