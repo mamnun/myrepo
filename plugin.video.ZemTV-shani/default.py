@@ -2675,12 +2675,16 @@ def getMonaChannels(cat):
             #print cname
             #print channel
             #print channel
-            curl='direct:'+channel["channel_url"]
-            #print curl
+            curl=channel["channel_url"]
             ua='Mozilla/5.0 (Linux; Android 5.1.1; en-GB; SM-G920F Build/LMY47X.G920FXXS3COK5) MXPlayer/1.7.40'
+            if curl.startswith('vlc://'):
+                curl=curl.split('vlc://')[1]
+                #ua=""
+            curl='direct:'+curl
+            #print curl
             if 'wiseplay' in cname.lower():
                 ua='Lavf/57.25.100'
-            if  channel["channel_url"].startswith("http"):
+            if  curl.startswith("direct:http"):
                 curl+='|User-Agent='+ua
             cimage=channel["category_image"]
             if not cimage.startswith("http"):
