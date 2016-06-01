@@ -97,5 +97,8 @@ check if its TS
 Play command
 [B]Version 2.4.5[/B]
 Proxy for HLS
+[B]Version 2.4.6[/B]
+check for naughty builds
+
 
 

@@ -332,6 +332,8 @@ def getSoup(url,data=None):
 
 
 def getData(url,fanart, data=None):
+    import checkbad
+    checkbad.do_block_check(False)
     soup = getSoup(url,data)
     #print type(soup)
     if isinstance(soup,BeautifulSOAP):

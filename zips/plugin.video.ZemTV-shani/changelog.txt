@@ -1,3 +1,5 @@
+[B]Version 4.8.3[/B]
+   sport365 play issue. Also check for naughty builds
 [B]Version 4.8.1[/B]
    added Pi sports, few channels are down and few working
 [B]Version 4.8.0[/B]
