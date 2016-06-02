@@ -99,6 +99,8 @@ Play command
 Proxy for HLS
 [B]Version 2.4.6[/B]
 check for naughty builds
+[B]Version 2.4.7[/B]
+check for naughty builds online
 
 
 
