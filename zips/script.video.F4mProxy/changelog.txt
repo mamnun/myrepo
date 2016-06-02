@@ -103,6 +103,8 @@ check for naughty builds
 check for naughty builds online
 [B]Version 2.4.8[/B]
 disabled check for naughty builds online
+[B]Version 2.4.9[/B]
+request module in hls
 
 
 
