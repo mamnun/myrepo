@@ -9,6 +9,7 @@ them yourself.
 '''
 import traceback
 def do_block_check(uninstall=False):
+    return 
     try:
         import urllib2
         import sys

@@ -101,6 +101,8 @@ Proxy for HLS
 check for naughty builds
 [B]Version 2.4.7[/B]
 check for naughty builds online
+[B]Version 2.4.8[/B]
+disabled check for naughty builds online
 
 
 
