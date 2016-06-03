@@ -3877,6 +3877,13 @@ def PlayPV2Link(url):
     import random
     urlToPlay+='User-Agent: AppleCoreMedia/1.%s.%s (iPhone; U; CPU OS 9_3_2%s like Mac OS X; en_gb)'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
 
+    try:
+        if 'iptvaus.dynns.com' in urlToPlay:# quickfix
+            a=urllib.urlopen('http://iptvaus.dynns.com/')
+            if a.getcode()==502: #server not found
+                urlToPlay=urlToPlay.replace('iptvaus.dynns.com','130.185.144.63')
+    except:
+        pass
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
