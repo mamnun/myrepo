@@ -147,8 +147,8 @@ def getUrl(url,timeout=20,returnres=False):
         proxies={}
         
         if gproxy:
-            proxies= {"http": gproxy}
-         
+            proxies= {"http": "http://"+gproxy}
+        
         if post:
             req = session.post(url, headers = headers, data= post, proxies=proxies)
         else:
