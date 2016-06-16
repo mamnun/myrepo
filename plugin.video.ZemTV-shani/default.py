@@ -211,7 +211,8 @@ def DisplayChannelNames(url):
 
 
 def Addtypes():
-	addDir('Latest Shows' ,'Shows' ,2,'')
+	addDir('Latest Shows (ZemTv)' ,'Shows' ,2,'')
+	addDir('Latest Shows (Siasat.pk)' ,'http://www.siasat.pk/forum/forumdisplay.php?29-Daily-Talk-Shows' ,2,'')
 	addDir('All Programs and Talk Shows' ,'ProgTalkShows' ,2,'')
 	addDir('Pakistani Live Channels' ,'PakLive' ,2,'')
 	addDir('Indian Live Channels' ,'IndianLive' ,2,'')
@@ -2173,6 +2174,8 @@ def AddEnteries(name, type=None):
 #	print "addenT"
     if type=='Shows':
         AddShows(mainurl)
+    elif '(Siasat.pk)' in name:
+        AddShowsFromSiasat(url)
     elif type=='ProgTalkShows':
         AddProgramsAndShows(mainurl)
     elif name=='Next Page' or mode==43:
@@ -3713,15 +3716,18 @@ def getPV2Url():
     second= str(TIME).split('.')[0]
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
     token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-    #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0MyZ0b2tlbj0lcw==')  %token)      
-    #req = urllib2.Request( base64.b64decode('https://app.dynns.com/app_panelnew/output.php/playlist?type=xml&deviceSn=pakindiahdpaid2.6&token=%s')  %token)      
-    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)      
-
+    #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)      
+    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
     req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
-
     response = urllib2.urlopen(req)
     link=response.read()
+    if 'Sky sports' not in link:
+        req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)    
+        req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
+        req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
+        response = urllib2.urlopen(req)
+        link=response.read()
 
     try:
         if 'items' in link:
@@ -4268,7 +4274,10 @@ def AddShows(Fromurl):
     
     for cname in match:
         tname=cname[2]
-        tname=re.sub(r'[\x80-\xFF]+', convert,tname )
+        try:
+            tname=h.unescape(tname).encode("utf-8")
+        except:
+            tname=re.sub(r'[\x80-\xFF]+', convert,tname )
         #tname=repr(tname)
         addDir(tname,cname[0] ,3,cname[1]+'|Cookie=%s'%getCookiesString(CookieJar)+'&User-Agent=Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10', True,isItFolder=False)
         
@@ -4277,6 +4286,51 @@ def AddShows(Fromurl):
 
     if len(match)==1:
         addDir('Next Page' ,match[0] ,2,'',isItFolder=True)
+    #       print match
+
+    return
+    
+def AddShowsFromSiasat(Fromurl):
+
+    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')]       
+    link=getUrl(Fromurl, headers=headers)
+    match =re.findall('href="(.*?)".*id="thread_title.*?>(.*?)<', link)
+    #if len(match)==0:
+    #    match =re.findall('<div class="thumbnail">\s*<a href="(.*?)".*\s*<img.*?.*?src="(.*?)".* alt="(.*?)"', link, re.UNICODE)
+
+        
+    #	print link
+    #	print match
+
+    #	print match
+    h = HTMLParser.HTMLParser()
+
+    #print match
+    for cname in match:
+        tname=cname[1]
+        url=cname[0]
+        try:
+            tname=h.unescape(tname).encode("utf-8")
+        except:
+            tname=re.sub(r'[\x80-\xFF]+', convert,tname )
+            
+        if not url.startswith('http'):
+            url='http://www.siasat.pk/forum/'+url
+        
+        #tname=repr(tname)
+        addDir(tname,url,3,'', True,isItFolder=False)
+        
+
+    match =re.findall('title="Results.*?<a href="(.*?)" title', link, re.IGNORECASE)
+
+    if len(match)>0:
+        pageurl=match[0]
+        pg=''
+        try:
+            if '/page' in pageurl:
+                pg=pageurl.split('/page')[1].split('&')[0].split('/')[0]
+        except: pass
+        addDir('Next Page %s (Siasat.pk)' %pg,'http://www.siasat.pk/forum/'+pageurl ,2,'',isItFolder=True)
     #       print match
 
     return
@@ -4315,7 +4369,7 @@ def AddChannels():
 	
 	
 
-def PlayShowLink ( url ): 
+def PlayShowLink ( url, redirect=True ): 
     global linkType
     #	url = tabURL.replace('%s',channelName);
 #    req = urllib2.Request(url)
@@ -4323,9 +4377,15 @@ def PlayShowLink ( url ):
 #    response = urllib2.urlopen(req)
 #    link=response.read()
 #    response.close()
+    
     headers=[('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')]
-    CookieJar=getZemCookieJar()
-    link=getUrl(url,cookieJar=CookieJar, headers=headers)
+    if 'zemtv.' in url:
+        CookieJar=getZemCookieJar()
+        link=getUrl(url,cookieJar=CookieJar, headers=headers)
+    else:
+    
+        headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')]
+        link=getUrl(url, headers=headers)
 
     #	print url
 
@@ -4335,10 +4395,11 @@ def PlayShowLink ( url ):
     defaultLinkType=selfAddon.getSetting( "DefaultVideoType" ) 
     #	print defaultLinkType
     print "LT link is" + linkType
+    if defaultLinkType=="": defaultLinkType="0"
     # if linktype is not provided then use the defaultLinkType
 
     if linkType.upper()=="SHOWALL" or (linkType.upper()=="" and defaultLinkType=="4"):
-        ShowAllSources(url,link)
+        if redirect: ShowAllSources(url,link)
         return
     if linkType.upper()=="DM" or (linkType=="" and defaultLinkType=="0"):
     #		print "PlayDM"
@@ -4349,7 +4410,7 @@ def PlayShowLink ( url ):
         if len(playURL)==0:
             line1 = "Daily motion link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return 
         playURL=match[0][0]
         if playURL.startswith('//'):
@@ -4399,7 +4460,7 @@ def PlayShowLink ( url ):
             if len(playURL)==0:
                 line1 = "EBound/Povee link not found"
                 xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-                ShowAllSources(url,link)
+                if redirect: ShowAllSources(url,link)
                 return 
             playURL=match[0][0]
             pat='<source src="(.*?)"'
@@ -4422,7 +4483,7 @@ def PlayShowLink ( url ):
         if len(playURL)==0:
             line1 = "Vidrail link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return 
 
         playURL=match[0][0]
@@ -4432,7 +4493,7 @@ def PlayShowLink ( url ):
         if len(playURL)==0:
             line1 = "Vidrail link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return 
         stream_url=playURL[0]
         playlist = xbmc.PlayList(1)
@@ -4454,7 +4515,7 @@ def PlayShowLink ( url ):
         if len(playURL)==0:
             line1 = "Link.pk link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return 
 
         playURL=match[0][0]
@@ -4482,7 +4543,7 @@ def PlayShowLink ( url ):
         if len(playURL)==0:
             line1 = "Playwire link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return 
         if V==1:
             (playWireVar,PubId,videoID)=playURL[0]
@@ -4531,11 +4592,11 @@ def PlayShowLink ( url ):
     else:	#either its default or nothing selected
         line1 = "Playing Youtube Link"
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-        youtubecode= match =re.findall('<strong>Youtube<\/strong>.*?src=\".*?embed\/(.*?)\?.*\".*?<\/iframe>', link,re.DOTALL| re.IGNORECASE)
+        youtubecode= match =re.findall('<strong>Youtube<\/strong>.*?src=\".*?embed\/(.*?)\".*?<\/iframe>', link,re.DOTALL| re.IGNORECASE)
         if len(youtubecode)==0:
             line1 = "Youtube link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
-            ShowAllSources(url,link)
+            if redirect: ShowAllSources(url,link)
             return
         youtubecode=youtubecode[0]
         uurl = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % youtubecode
@@ -4591,12 +4652,16 @@ def ShowAllSources(url, loadedLink=None):
 		available_source.append('Youtube Source')
 
 	if len(available_source)>0:
-		dialog = xbmcgui.Dialog()
-		index = dialog.select('Choose your stream', available_source)
-		if index > -1:
-			linkType=available_source[index].replace(' Source','').replace('Daily Motion','DM').upper()
-#			print 'linkType',linkType
-			PlayShowLink(url);
+		if len(available_source)==1:
+			linkType=available_source[0].replace(' Source','').replace('Daily Motion','DM').upper()
+			PlayShowLink(url, redirect=False);
+		else:    
+			dialog = xbmcgui.Dialog()
+			index = dialog.select('Choose your stream', available_source)
+			if index > -1:
+				linkType=available_source[index].replace(' Source','').replace('Daily Motion','DM').upper()
+#				print 'linkType',linkType
+				PlayShowLink(url);
 
 def PlayDittoLive(url):
     progress = xbmcgui.DialogProgress()
