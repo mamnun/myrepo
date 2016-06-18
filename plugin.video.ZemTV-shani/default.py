@@ -3893,10 +3893,17 @@ def PlayPV2Link(url):
         pass
     print 'before ind',urlToPlay
     try:
-        if 'indaus.dynns.com' in urlToPlay and 'm3u8' in urlToPlay:# quickfix
+        if ('indaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
             testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
     except:
         urlToPlay=urlToPlay.replace('indaus.dynns.com','130.185.144.63')
+        
+    try:
+        if ('movaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
+            testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
+    except:
+        urlToPlay=urlToPlay.replace('movaus.dynns.com','130.185.144.112')
+        
 
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -3904,7 +3911,9 @@ def PlayPV2Link(url):
     if not tryplay(urlToPlay, listitem):
         if '130.185.144.63' not in urlToPlay:
             urlToPlay='http://130.185.144.63:8081'+'/'.join(urlToPlay.split('/')[3:])
-            tryplay(urlToPlay, listitem)
+            if not tryplay(urlToPlay, listitem):
+                urlToPlay='http://130.185.144.112:8081'+'/'.join(urlToPlay.split('/')[3:])
+                tryplay(urlToPlay, listitem)
  
 def PlayOtherUrl ( url ):
     checkbad.do_block_check(False)
