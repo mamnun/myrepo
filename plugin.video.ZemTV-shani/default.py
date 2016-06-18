@@ -3882,8 +3882,8 @@ def PlayPV2Link(url):
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
-    urlToPlay+='User-Agent: AppleCoreMedia/1.%s.%s (iPhone; U; CPU OS 9_3_2%s like Mac OS X; en_gb)'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
-
+    useragent='User-Agent: AppleCoreMedia/1.%s.%s (iPhone; U; CPU OS 9_3_2%s like Mac OS X; en_gb)'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
+    urlToPlay+=useragent
     try:
         if 'iptvaus.dynns.com' in urlToPlay:# quickfix
             a=urllib.urlopen('http://iptvaus.dynns.com/')
@@ -3891,11 +3891,21 @@ def PlayPV2Link(url):
                 urlToPlay=urlToPlay.replace('iptvaus.dynns.com','130.185.144.63')
     except:
         pass
+    print 'before ind',urlToPlay
+    try:
+        if 'indaus.dynns.com' in urlToPlay and 'm3u8' in urlToPlay:# quickfix
+            testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
+    except:
+        urlToPlay=urlToPlay.replace('indaus.dynns.com','130.185.144.63')
+
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
-    xbmc.Player(  ).play( urlToPlay, listitem)  
-    
+    if not tryplay(urlToPlay, listitem):
+        if '130.185.144.63' not in urlToPlay:
+            urlToPlay='http://130.185.144.63:8081'+'/'.join(urlToPlay.split('/')[3:])
+            tryplay(urlToPlay, listitem)
+ 
 def PlayOtherUrl ( url ):
     checkbad.do_block_check(False)
     url=base64.b64decode(url)
