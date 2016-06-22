@@ -2323,6 +2323,27 @@ def getDittoChannels(categories, forSports=False):
     except:
         traceback.print_exc(file=sys.stdout)
     return ret    
+
+def getIpBoxSourcesAllOtherSource():
+    ret=[]
+    try:
+
+
+        htmls=getUrl("http://www.m3uliste.pw/")
+
+        servers=re.findall( '(http:\/\/.*?get.php.*?)<', htmls)
+        import time
+
+        for ln in servers[0:25]:
+            try:
+                surl,servername=ln,ln.split('/')[2].split(':')[0]
+                ret.append((servername, surl.replace('&amp;','&') ))   
+            except: traceback.print_exc(file=sys.stdout)
+
+    except:
+        traceback.print_exc(file=sys.stdout)
+
+    return ret
     
 def getIpBoxSources():
     ret=[]
@@ -2344,8 +2365,10 @@ def getIpBoxSources():
                 except: traceback.print_exc(file=sys.stdout)
     except:
         traceback.print_exc(file=sys.stdout)
-    return ret  
+    
+    return ret+getIpBoxSourcesAllOtherSource()
 
+    
 def getIpBoxChannels(url,forSports=False):
     ret=[]
     try:
@@ -3717,12 +3740,13 @@ def getPV2Url():
     first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
     token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
     #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)      
-    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
+    #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
+    req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTY2MSZ0b2tlbj0lcw==')  %token)    
     req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
     response = urllib2.urlopen(req)
     link=response.read()
-    if 'Sky sports' not in link:
+    if 'Sky sports' not in link and 1==2:
         req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)    
         req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
         req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
@@ -3884,37 +3908,38 @@ def PlayPV2Link(url):
     import random
     useragent='User-Agent: AppleCoreMedia/1.%s.%s (iPhone; U; CPU OS 9_3_2%s like Mac OS X; en_gb)'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
     urlToPlay+=useragent
-    try:
-        if 'iptvaus.dynns.com' in urlToPlay:# quickfix
-            a=urllib.urlopen('http://iptvaus.dynns.com/')
-            if a.getcode()==502: #server not found
-                urlToPlay=urlToPlay.replace('iptvaus.dynns.com','130.185.144.63')
-    except:
-        pass
-    print 'before ind',urlToPlay
-    try:
-        if ('indaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
-            testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
-    except:
-        urlToPlay=urlToPlay.replace('indaus.dynns.com','130.185.144.63')
+    #try:
+    #    if 'iptvaus.dynns.com' in urlToPlay:# quickfix
+    #        a=urllib.urlopen('http://iptvaus.dynns.com/')
+    #        if a.getcode()==502: #server not found
+    #            urlToPlay=urlToPlay.replace('iptvaus.dynns.com','130.185.144.63')
+    #except:
+    #    pass
+    #print 'before ind',urlToPlay
+    #try:
+    #    if ('indaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
+    #        testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
+    #except:
+    #    urlToPlay=urlToPlay.replace('indaus.dynns.com','130.185.144.63')
         
-    try:
-        if ('movaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
-            testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
-    except:
-        urlToPlay=urlToPlay.replace('movaus.dynns.com','130.185.144.112')
+    #try:
+    #    if ('movaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
+    #        testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
+    #except:
+    #    urlToPlay=urlToPlay.replace('movaus.dynns.com','130.185.144.112')
         
 
 #    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 #    print "playing stream name: " + str(name) 
+#88.150.206.7 last ip
     if not tryplay(urlToPlay, listitem):
         if '130.185.144.63' not in urlToPlay:
             urlToPlay='http://130.185.144.63:8081'+'/'.join(urlToPlay.split('/')[3:])
             if not tryplay(urlToPlay, listitem):
                 urlToPlay='http://130.185.144.112:8081'+'/'.join(urlToPlay.split('/')[3:])
                 tryplay(urlToPlay, listitem)
- 
+    
 def PlayOtherUrl ( url ):
     checkbad.do_block_check(False)
     url=base64.b64decode(url)
