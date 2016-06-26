@@ -884,12 +884,9 @@ def RefreshResources(resources):
     return updated
 
 
-def PlayUKTVNowChannels(url):
-    jsondata=getUKTVPage()
-    cc=[item for item in jsondata["msg"]["channels"]
-            if item["pk_id"]== url]
-            
-    
+def PlayUKTVNowChannels(url):            
+    cc= getUKTVPlayUrl(url)
+    print cc
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     played=False
     ##DO YOU WANT ME TO STOP? lol
@@ -2592,14 +2589,26 @@ def local_time(zone='Asia/Karachi'):
     other_zone = timezone(zone)
     other_zone_time = datetime.now(other_zone)
     return other_zone_time.strftime('%B-%d-%Y')
+
+def getUKTVPlayUrl(channelID ):
+    url=base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X3ZhbGlkX2xpbms=")
+    username="-1"
+    usernameC=username+channelID
+    s = base64.b64decode("dWt0dm5vdy10b2tlbi0tX3xfLSVzLXVrdHZub3dfdG9rZW5fZ2VuZXJhdGlvbi0lcy1ffF8tMTIzNDU2X3VrdHZub3dfNjU0MzIxLV98Xy11a3R2bm93X2xpbmtfdG9rZW4=")%(url,usernameC)
+    import hashlib
+    token= hashlib.md5(s).hexdigest()
+    post = {'username':username,'channel_id':channelID}
+    post = urllib.urlencode(post)
+  
+    headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',token)]
+    jsondata=getUrl(url,post=post,headers=headers)
+    return json.loads(jsondata)
     
 def getAPIToken( url,  username):
-    print url,username
-    from pytz import timezone
-    dt=local_time()
-    s = "uktvnow-token-"+ dt + "-"+ "_|_-" + url + "-" + username +"-" + "_|_"+ "-"+ base64.b64decode("MTIzNDU2IUAjJCVedWt0dm5vd14lJCNAITY1NDMyMQ==")
-    
-    print s
+    #print url,username
+    #from pytz import timezone
+    #dt=local_time()
+    s = base64.b64decode("dWt0dm5vdy10b2tlbi0tX3xfLSVzLXVrdHZub3dfdG9rZW5fZ2VuZXJhdGlvbi0lcy1ffF8tMTIzNDU2X3VrdHZub3dfNjU0MzIx")%(url,  username)
     import hashlib
     return hashlib.md5(s).hexdigest()
 
@@ -2647,13 +2656,13 @@ def getUKTVPage():
         traceback.print_exc(file=sys.stdout)
     usernames=eval(base64.b64decode("WydTZXJnaW8nLCdEYXNoJywnRnJhemVyJywnWmVkJywnQWxhbicsJ0RvbWluaWMnLCdLZW50JywnSG93YXJkJywnRXJpYycsJ0plbidd"))
     import random
-    username = random.choice(usernames)
+    username = "-1"#random.choice(usernames)
     post = {'username':username}
     post = urllib.urlencode(post)
   
     #headers=eval(base64.b64decode("WygnVXNlci1BZ2VudCcsJ1VTRVItQUdFTlQtVUtUVk5PVy1BUFAtVjEnKSwoJ2FwcC10b2tlbicsJ2FmZjE2MTRiNTJhNTM3YmQ3YmEyZDMyODE0ODU1NmFmJyld"))
-    headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V1'),('app-token',getAPIToken(base64.b64decode("aHR0cDovL2FwcC51a3R2bm93Lm5ldC92MS9nZXRfYWxsX2NoYW5uZWxz"),username))]
-    jsondata=getUrl(base64.b64decode("aHR0cDovL2FwcC51a3R2bm93Lm5ldC92MS9nZXRfYWxsX2NoYW5uZWxz"),post=post,headers=headers)
+    headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',getAPIToken(base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X2FsbF9jaGFubmVscw=="),username))]
+    jsondata=getUrl(base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X2FsbF9jaGFubmVscw=="),post=post,headers=headers)
     jsondata=json.loads(jsondata)
     
     try:
