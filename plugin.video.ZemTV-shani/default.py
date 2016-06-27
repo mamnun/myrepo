@@ -4347,7 +4347,7 @@ def AddShowsFromSiasat(Fromurl):
 
     headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36')]       
     link=getUrl(Fromurl, headers=headers)
-    match =re.findall('href="(.*?)".*id="thread_title.*?>(.*?)<', link)
+    match =re.findall('<div class="threadinfo".*?<img src="(.*?)".*?href="(.*?)" id="thread_title.*?>(.*?)<', link, re.DOTALL)
     #if len(match)==0:
     #    match =re.findall('<div class="thumbnail">\s*<a href="(.*?)".*\s*<img.*?.*?src="(.*?)".* alt="(.*?)"', link, re.UNICODE)
 
@@ -4358,10 +4358,12 @@ def AddShowsFromSiasat(Fromurl):
     #	print match
     h = HTMLParser.HTMLParser()
 
-    #print match
+    print match
+    
     for cname in match:
-        tname=cname[1]
-        url=cname[0]
+        tname=cname[2]
+        url=cname[1]
+        imageurl=cname[0].replace('&amp;','&')
         try:
             tname=h.unescape(tname).encode("utf-8")
         except:
@@ -4369,9 +4371,12 @@ def AddShowsFromSiasat(Fromurl):
             
         if not url.startswith('http'):
             url='http://www.siasat.pk/forum/'+url
-        
+
+        if not imageurl.startswith('http'):
+            url='http://www.siasat.pk/forum/'+url
+            
         #tname=repr(tname)
-        addDir(tname,url,3,'', True,isItFolder=False)
+        addDir(tname,url,3,imageurl, True,isItFolder=False)
         
 
     match =re.findall('title="Results.*?<a href="(.*?)" title', link, re.IGNORECASE)
