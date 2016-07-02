@@ -1,3 +1,5 @@
+[B]Version 4.9.4[/B]
+ditto fixed
 [B]Version 4.9.3[/B]
 siasat.pk shows icons
 [B]Version 4.9.2[/B]
