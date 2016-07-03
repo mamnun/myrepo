@@ -3744,7 +3744,14 @@ def getPV2Url():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-
+    headers=[('User-Agent',base64.b64decode('dW1hci8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA=='))]
+    iphtml=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvaXBfY2hlY2sucGhw'),headers=headers)
+    ipaddrs=re.findall('Address: (.*)',iphtml)[0]
+    headers=[('User-Agent',base64.b64decode('dW1hci8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==')),('SOAPAction','http://app.dynns.com/saveDeviceIdService/tns:db.saveId'),('Content-Type','text/xml; charset=ISO-8859-1')]
+    xmldata=base64.b64decode("PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iSVNPLTg4NTktMSI/PgogICAgPFNPQVAtRU5WOkVudmVsb3BlIFNPQVAtRU5WOmVuY29kaW5nU3R5bGU9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW5jb2RpbmcvIiB4bWxuczpTT0FQLUVOVj0iaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9lbnZlbG9wZS8iIHhtbG5zOnhzZD0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhtbG5zOnhzaT0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEtaW5zdGFuY2UiIHhtbG5zOlNPQVAtRU5DPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VuY29kaW5nLyIgeG1sbnM6dG5zPSJodHRwOi8vc2NyaXB0YmFrZXIuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgogICAgPFNPQVAtRU5WOkJvZHk+CiAgICA8dG5zOmRiLnNhdmVJZCB4bWxuczp0bnM9Imh0dHA6Ly9hcHAuZHlubnMuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgogICAgPGlkIHhzaTp0eXBlPSJ4c2Q6c3RyaW5nIj4lcyBAZG5AbjAzMzE8L2lkPgogICAgPG5hbWUgeHNpOnR5cGU9InhzZDpzdHJpbmciPkFyYWJpYyB0diBIRDwvbmFtZT4KICAgIDwvdG5zOmRiLnNhdmVJZD4KICAgIDwvU09BUC1FTlY6Qm9keT4KICAgIDwvU09BUC1FTlY6RW52ZWxvcGU+")%ipaddrs
+    try:
+        getUrl(base64.b64decode('aHR0cDovL2FwcC5keW5ucy5jb20vYXBpL2luZGV4LnBocA=='),post=xmldata,headers=headers)
+    except: pass
     import time
     TIME = time.time()
     second= str(TIME).split('.')[0]
