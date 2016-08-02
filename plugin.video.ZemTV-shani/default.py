@@ -3735,6 +3735,16 @@ def getPITVPage():
         print 'pitv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
+
+def getPv2Code(newcode=False):
+    currentcode=selfAddon.getSetting( id="pv2DeviceID")
+    if currentcode=="" or newcode:
+        import os,binascii
+        currentcode=binascii.b2a_hex(os.urandom(16)).upper()
+        selfAddon.setSetting( id="pv2DeviceID" ,value=currentcode)
+    
+    return currentcode
+
     
 def getPV2Url():
     fname='pv2tvpage.json'
@@ -3750,8 +3760,9 @@ def getPV2Url():
     headers=[('User-Agent',base64.b64decode('dW1hci8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA=='))]
     iphtml=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvaXBfY2hlY2sucGhw'),headers=headers)
     ipaddrs=re.findall('Address: (.*)',iphtml)[0]
-    headers=[('User-Agent',base64.b64decode('QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RjQ=')),('SOAPAction','http://app.dynns.com/saveDeviceIdService/tns:db.saveId'),('Content-Type','text/xml; charset=ISO-8859-1')]
-    nm='BEB43C8CC5E945E998B2723801EB94F4'
+    nm=getPv2Code(True)
+    headers=[('User-Agent',nm),('SOAPAction','http://app.dynns.com/saveDeviceIdService/tns:db.saveId'),('Content-Type','text/xml; charset=ISO-8859-1')]
+    
     xmldata=base64.b64decode("PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iSVNPLTg4NTktMSI/Pgo8U09BUC1FTlY6RW52ZWxvcGUgU09BUC1FTlY6ZW5jb2RpbmdTdHlsZT0iaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9lbmNvZGluZy8iIHhtbG5zOlNPQVAtRU5WPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VudmVsb3BlLyIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6U09BUC1FTkM9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW5jb2RpbmcvIiB4bWxuczp0bnM9Imh0dHA6Ly9zY3JpcHRiYWtlci5jb20vc2F2ZURldmljZUlkU2VydmljZSI+CjxTT0FQLUVOVjpCb2R5Pgo8dG5zOmRiLnNhdmVJZCB4bWxuczp0bnM9Imh0dHA6Ly9hcHAuZHlubnMuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgo8aWQgeHNpOnR5cGU9InhzZDpzdHJpbmciPiVzIGNodWxidWxwYW5kYXk8L2lkPgo8bmFtZSB4c2k6dHlwZT0ieHNkOnN0cmluZyI+JXM8L25hbWU+CjwvdG5zOmRiLnNhdmVJZD4KPC9TT0FQLUVOVjpCb2R5Pgo8L1NPQVAtRU5WOkVudmVsb3BlPg==")%(ipaddrs,nm)
     
     try:
@@ -3767,7 +3778,7 @@ def getPV2Url():
     
     req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTY2MSZ0b2tlbj0lcw==')  %token)    
     req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RjQ=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPv2Code()) 
     #req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RkY=")) 
     response = urllib2.urlopen(req)
     link=response.read()
@@ -3797,7 +3808,7 @@ def getPV2Auth():
 
     req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYmFrLnBocD90b2tlbj0=')+token)
     req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RjQ=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPv2Code()) 
     response = urllib2.urlopen(req)
     link=response.read()
     return link
