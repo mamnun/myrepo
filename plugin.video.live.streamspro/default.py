@@ -1189,6 +1189,11 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         else:
                             val=doEvalFunction(m['expres'],link,cookieJar,m)
                         if 'ActivateWindow' in m['expres']: return
+                        if 'listrepeat' in m:
+                            listrepeat=m['listrepeat']                            
+                            #ret=re.findall(m['expres'],link)
+                            #print 'ret',val
+                            return listrepeat,eval(val), m,regexs
 #                        print 'url k val',url,k,val
                         #print 'repr',repr(val)
                         
@@ -1198,7 +1203,9 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                     else:
                         if 'listrepeat' in m:
                             listrepeat=m['listrepeat']
+                            #print 'listrepeat',m['expres']
                             ret=re.findall(m['expres'],link)
+                            #print 'ret',ret
                             return listrepeat,ret, m,regexs
                              
                         val=''
@@ -2816,6 +2823,7 @@ elif mode==17 or mode==117:
         ln=''
         rnumber=0
         for obj in ret:
+            #print 'obj',obj
             try:
                 rnumber+=1
                 newcopy=copy.deepcopy(regexs)

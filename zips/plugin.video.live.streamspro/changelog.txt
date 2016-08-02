@@ -1,3 +1,5 @@
+Version 2.4.5
+Support for Python function in listrepeat regex
 Version 2.4.4
 Added support for liveresolver
 Version 2.4.3
