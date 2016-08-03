@@ -1,3 +1,5 @@
+Version 2.4.6
+removed uploaded.net from urlresolver
 Version 2.4.5
 Support for Python function in listrepeat regex
 Version 2.4.4
