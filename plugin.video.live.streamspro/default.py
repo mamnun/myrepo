@@ -2276,7 +2276,13 @@ def _search(url,name):
 
 def addDir(name,url,mode,iconimage,fanart,description,genre,date,credits,showcontext=False,regexs=None,reg_url=None,allinfo={}):
 
-        u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)
+
+
+        if regexs and len(regexs)>0:
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)+"&regexs="+regexs
+        else:
+            u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)+"&fanart="+urllib.quote_plus(fanart)
+        
         ok=True
         if date == '':
             date = None
@@ -2703,12 +2709,19 @@ if mode==None:
 elif mode==1:
     addon_log("getData")
     data=None
-    if regexs:
-        data=getRegexParsed(regexs, url)
-        url=''
+    
+    if regexs and len(regexs)>0:
+        data,setresolved=getRegexParsed(regexs, url)
+        #print data
+        #url=''
+        if data.startswith('http') or data.startswith('smb') or data.startswith('nfs') or data.startswith('/'):
+            url=data
+            data=None
         #create xml here
+    
     getData(url,fanart,data)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
 
 elif mode==2:
     addon_log("getChannelItems")
