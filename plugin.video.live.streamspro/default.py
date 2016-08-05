@@ -939,6 +939,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                     cookieJarParam=m['cookiejar']
                     if  '$doregex' in cookieJarParam:
                         cookieJar=getRegexParsed(regexs, m['cookiejar'],cookieJar,True, True,cachedPages)
+                        
                         cookieJarParam=True
                     else:
                         cookieJarParam=True
@@ -1189,6 +1190,8 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         else:
                             val=doEvalFunction(m['expres'],link,cookieJar,m)
                         if 'ActivateWindow' in m['expres']: return
+                        if forCookieJarOnly:
+                            return cookieJar# do nothing
                         if 'listrepeat' in m:
                             listrepeat=m['listrepeat']                            
                             #ret=re.findall(m['expres'],link)
@@ -1204,6 +1207,9 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         if 'listrepeat' in m:
                             listrepeat=m['listrepeat']
                             #print 'listrepeat',m['expres']
+                            #print m['expres']
+                            #print 'aaaa'
+                            #print link
                             ret=re.findall(m['expres'],link)
                             #print 'ret',ret
                             return listrepeat,ret, m,regexs

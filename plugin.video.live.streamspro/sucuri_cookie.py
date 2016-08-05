@@ -23,11 +23,12 @@ def _get_sucuri_cookie(html):
             except Exception as e:
                 print 'Exception during sucuri js: %s' % (e)
 
-def _make_cookies(base_url, cookies):
-    cj = cookielib.LWPCookieJar()
+def _make_cookies(base_url, cookies, cj):
+    
     domain = urlparse.urlsplit(base_url).hostname
     for key in cookies:
-        c = cookielib.Cookie(0, key, str(cookies[key]), port=None, port_specified=False, domain=domain, domain_specified=True,
+        
+        c = cookielib.Cookie(0, key, str(cookies[key].split(';')[0]), port=None, port_specified=False, domain=domain, domain_specified=True,
                             domain_initial_dot=False, path='/', path_specified=True, secure=False, expires=None, discard=False, comment=None,
                             comment_url=None, rest={})
         cj.set_cookie(c)
@@ -53,9 +54,9 @@ def createCookie(url,cj=None,agent='Mozilla/5.0 (Windows NT 6.1; rv:32.0) Gecko/
 
         urlData = session.get(url, headers=headers).text
         isCookie=_get_sucuri_cookie(urlData)
-        print isCookie
+        
         if isCookie:
-            session.cookies = _make_cookies(url,isCookie)
+            session.cookies = _make_cookies(url,isCookie,cj)
             urlData = session.get(url, headers=headers).text
         return urlData
     except:
