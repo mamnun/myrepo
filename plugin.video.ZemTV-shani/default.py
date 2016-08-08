@@ -3769,7 +3769,7 @@ def getPV2Url():
         try:
             selfAddon.setSetting( id="pv2PlayOption" ,value=str(pv2option))
             mainurl=''
-            
+            nm=getPv2Code(True)
             if pv2option==1:
                 
                 if pvitr==0:
@@ -3780,7 +3780,7 @@ def getPV2Url():
                 headers=[('User-Agent',base64.b64decode('dW1hci8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA=='))]
                 iphtml=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvaXBfY2hlY2sucGhw'),headers=headers)
                 ipaddrs=re.findall('Address: (.*)',iphtml)[0]
-                nm=getPv2Code(True)
+                
                 headers=[('User-Agent',nm),('SOAPAction',base64.b64decode('aHR0cDovL2FwcC5keW5ucy5jb20vc2F2ZURldmljZUlkU2VydmljZS90bnM6ZGIuc2F2ZUlk')),('Content-Type','text/xml; charset=ISO-8859-1')]
                 
                 xmldata=base64.b64decode("PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iSVNPLTg4NTktMSI/Pgo8U09BUC1FTlY6RW52ZWxvcGUgU09BUC1FTlY6ZW5jb2RpbmdTdHlsZT0iaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9lbmNvZGluZy8iIHhtbG5zOlNPQVAtRU5WPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VudmVsb3BlLyIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6U09BUC1FTkM9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW5jb2RpbmcvIiB4bWxuczp0bnM9Imh0dHA6Ly9zY3JpcHRiYWtlci5jb20vc2F2ZURldmljZUlkU2VydmljZSI+CjxTT0FQLUVOVjpCb2R5Pgo8dG5zOmRiLnNhdmVJZCB4bWxuczp0bnM9Imh0dHA6Ly9hcHAuZHlubnMuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgo8aWQgeHNpOnR5cGU9InhzZDpzdHJpbmciPiVzIGNodWxidWxwYW5kYXk8L2lkPgo8bmFtZSB4c2k6dHlwZT0ieHNkOnN0cmluZyI+JXM8L25hbWU+CjwvdG5zOmRiLnNhdmVJZD4KPC9TT0FQLUVOVjpCb2R5Pgo8L1NPQVAtRU5WOkVudmVsb3BlPg==")%(ipaddrs,nm)
@@ -3829,22 +3829,25 @@ def getPV2Option():
 def getPV2Auth():
     import base64
     import time
-    TIME = time.time()
-    second= str(TIME).split('.')[0]
-    first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
-    token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-    pv2option=getPV2Option()
-    if pv2option==1:
-        url='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvQ2FrLnBocD90b2tlbj0='
-    else:
-        url='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYmFrLnBocD90b2tlbj0='
     
-    req = urllib2.Request( base64.b64decode(url)+token)
-    req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
-    response = urllib2.urlopen(req)
-    link=response.read()
-    return link
+    for url,pv2option in [('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYmFrLnBocD90b2tlbj0=',2),('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvUGFrLnBocD90b2tlbj0=',1)]:
+        try:
+            TIME = time.time()
+            second= str(TIME).split('.')[0]
+            first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
+            token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
+            #pv2option=getPV2Option()
+
+            
+            req = urllib2.Request( base64.b64decode(url)+token)
+            req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
+            req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
+            response = urllib2.urlopen(req)
+            link=response.read()
+            return link
+        except: 
+            print 'auth error',url
+            traceback.print_exc(file=sys.stdout)
     
 def tryplay(url,listitem):    
     import  CustomPlayer,time
