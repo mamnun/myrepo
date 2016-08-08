@@ -2328,14 +2328,16 @@ def getIpBoxSourcesAllOtherSource():
     try:
 
 
-        htmls=getUrl("http://www.m3uliste.pw/")
+        htmls=getUrl("http://www.oneplaylist.eu.pn/")
 
-        servers=re.findall( '(http:\/\/.*?get.php.*?)<', htmls)
+        servers=re.findall( '>(http:\/\/(.*?)\/.*?get.php.*?)<', htmls)
+        print servers
         import time
 
         for ln in servers[0:25]:
             try:
-                surl,servername=ln,ln.split('/')[2].split(':')[0]
+                surl,servername=ln
+                servername=servername.split('/')[0].split(':')[0]
                 ret.append((servername, surl.replace('&amp;','&') ))   
             except: traceback.print_exc(file=sys.stdout)
 
