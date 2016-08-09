@@ -2490,11 +2490,12 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
         else:
             description += '\n\nDate: %s' %date
         liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
-        if len(allinfo) <1:
-            liz.setInfo(type="Video", infoLabels={ "Title": name, "Plot": description, "Genre": genre, "dateadded": date })
+        if isFolder:
+            if len(allinfo) <1:
+                liz.setInfo(type="Video", infoLabels={ "Title": name, "Plot": description, "Genre": genre, "dateadded": date })
 
-        else:
-            liz.setInfo(type="Video", infoLabels=allinfo)
+            else:
+                liz.setInfo(type="Video", infoLabels=allinfo)
         liz.setProperty("Fanart_Image", fanart)
         
         if (not play_list) and not any(x in url for x in g_ignoreSetResolved) and not '$PLAYERPROXY$=' in url:#  (not url.startswith('plugin://plugin.video.f4mTester')):
