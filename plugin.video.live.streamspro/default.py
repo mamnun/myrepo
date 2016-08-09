@@ -1816,8 +1816,10 @@ def doEvalFunction(fun_call,page_data,Cookie_Jar,m):
     ret_val=''
     if functions_dir not in sys.path:
         sys.path.append(functions_dir)
-    f=open(functions_dir+"/LSProdynamicCode.py","w")
-    f.write(fun_call);
+    f=open(functions_dir+"/LSProdynamicCode.py","wb")
+    f.write("# -*- coding: utf-8 -*-\n")
+    f.write(fun_call.encode("utf-8"));
+    
     f.close()
     import LSProdynamicCode
     ret_val=LSProdynamicCode.GetLSProData(page_data,Cookie_Jar,m)

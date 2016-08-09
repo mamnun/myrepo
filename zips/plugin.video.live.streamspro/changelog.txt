@@ -1,3 +1,5 @@
+Version 2.5.1
+unicode support in pyfunction,and logging fix by gujal
 Version 2.5.0
 sucuri support, session/cookie correction
 Version 2.4.9
