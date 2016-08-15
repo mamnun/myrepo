@@ -104,12 +104,46 @@ def Addtypes():
     addDir('Teleplays' ,'http://www.dramaonline.com/?cat=255' ,3,'http://i.imgur.com/FhL5Yas.png')# these are is links
     addDir('All Time Hits' ,'http://dramaonline.com/watch-evergreen-famous-pakistani-dramas-of-all-time/' ,2,'http://i.imgur.com/aFWO9Y7.png') # top 
     addDir('Popular Dramas' ,'http://dramaonline.com//' ,5,'http://i.imgur.com/aFWO9Y7.png') # top 
-    addDir('Live Channels' ,'http://www.dramaonline.com/category/live-channels/' ,6,'') ##
+    addDir('Search Drama' ,'http://dramaonline.com/' ,10,'http://i.imgur.com/aFWO9Y7.png') # top 
+    #addDir('Live Channels' ,'http://www.dramaonline.com/category/live-channels/' ,6,'') ##
     addDir('Settings' ,'http://www.dramaonline.com/category/live-channels/' ,8,'',isItFolder=False) ##
 
 def ShowSettings(Fromurl):
 	selfAddon.openSettings()
+    
+def TakeInput(name, headname):
+    print 'in take input'
+    try:   
+        import xbmc
+        kb = xbmc.Keyboard('default', 'heading', True)
+        kb.setDefault(name)
+        kb.setHeading(headname)
+        kb.setHiddenInput(False)
+        print 'loading text'
+        kb.doModal()
+        return kb.getText()
+    except: traceback.print_exc(file=sys.stdout)
+        
+def SearchDramas(Fromurl):
+    search=TakeInput(selfAddon.getSetting( "searchkeyword" ),'Enter Drama name')
+    if search=="": return
+    print search
+    selfAddon.setSetting( "searchkeyword" ,search)
+    url='http://dramaonline.com/wp-admin/admin-ajax.php?action=autocompleteCallback&term='+urllib.quote_plus(search)
+    link = getHtml(url)
+    import json
+    jsdata=json.loads(link)
 
+    for res in jsdata["results"]:
+
+        item_name =res["title"]
+        item_url =res["url"]
+
+        if not '/category/' in  item_url:
+            addDir(item_name, item_url, 4, '') #name, url, mode, icon
+        else:
+            addDir(item_name, item_url, 3, '') #name, url, mode, icon
+       
 def AddSeries(Fromurl):
 	link = getHtml(Fromurl)
 
@@ -371,7 +405,20 @@ def getDailyMotionUrl(html, short):
 		print 'Error fetching DailyMotion stream url'
 		traceback.print_exc(file=sys.stdout)
 		return None
+def getYouTubeURL(html, short):
+    try:
+        match =re.findall('\[youtube\](.*?)\[\/youtube\]',html)
+        if len(match)>0:
+            print 'utubeurl',match
+            playURL=','.join(match)
+            print playURL
+            return 'youtube:'+playURL
 
+    except:
+        print 'Error fetching DailyMotion stream url'
+        traceback.print_exc(file=sys.stdout)
+        return None
+        
 def getTuneTvUrl(html, short):
 	try:
 		# Find the first match
@@ -429,7 +476,12 @@ def SelectUrl(html, url):
 		mainUrl=getVidrailUrl(html,True)
 		if mainUrl and len(mainUrl)>0:
 			available_source.append('Vidrail Video')
-
+            
+		mainUrl=getYouTubeURL(html,True)
+		if mainUrl and len(mainUrl)>0:
+			available_source.append('Youtube Video')
+            
+            
 		defaultlinks=['Dailymotion Video', 'Tune Video', 'Playwire Video','Vidrail Video']
 		defaultLinkType=selfAddon.getSetting( "DefaultVideoType" ) 
 		if defaultLinkType is None or defaultLinkType == '':
@@ -500,6 +552,8 @@ def _play_from_available_sources(defaultLinkType, available_source, html):
 			ret = getPlaywireUrl(html,False)
 		elif 'Vidrail Video'==linkType:
 			ret = getVidrailUrl(html,False)
+		elif 'Youtube Video'==linkType:
+			ret = getYouTubeURL(html,False)
 		if not ret and len(available_source) > 1:
 			# try next available source
 			available_source.remove(defaultLinkType)
@@ -524,15 +578,32 @@ def PlayShowLink ( url ):
 	print 'urlToPlay: %s' % urlToPlay
 
 	if urlToPlay:
-		playlist = xbmc.PlayList(1)
-		playlist.clear()
-		listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
-		listitem.setInfo("Video", {"Title":name})
-		listitem.setProperty('mimetype', 'video/x-msvideo')
-		listitem.setProperty('IsPlayable', 'true')
-		playlist.add(urlToPlay,listitem)
-		xbmcPlayer = xbmc.Player()
-		xbmcPlayer.play(playlist)
+		if not urlToPlay.startswith('youtube:'):
+			playlist = xbmc.PlayList(1)
+			playlist.clear()
+			listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
+			listitem.setInfo("Video", {"Title":name})
+			listitem.setProperty('mimetype', 'video/x-msvideo')
+			listitem.setProperty('IsPlayable', 'true')
+			playlist.add(urlToPlay,listitem)
+			xbmcPlayer = xbmc.Player()
+			xbmcPlayer.play(playlist)
+		else:
+			playlist=None
+			print urlToPlay.split('youtube:')[1].split(',')
+			for youtubevid in urlToPlay.split('youtube:')[1].split(','):
+				playlist = xbmc.PlayList(1)
+				playlist.clear()
+				listitem = xbmcgui.ListItem(name, iconImage="DefaultVideo.png")
+				listitem.setInfo("Video", {"Title":name})
+				listitem.setProperty('mimetype', 'video/x-msvideo')
+				listitem.setProperty('IsPlayable', 'true')
+				uurl = 'plugin://plugin.video.youtube/?action=play_video&videoid=%s' % youtubevid
+				playlist.add(uurl,listitem)
+			xbmcPlayer = xbmc.Player()
+			xbmcPlayer.play(playlist)
+				
+				#xbmc.executebuiltin("xbmc.PlayMedia("+uurl+")")
 	return 
 	
 	line1 = "Playing DM Link"
@@ -784,6 +855,9 @@ try:
 	elif mode==8:
 		print "Play url is "+url,mode
 		ShowSettings(url)
+	elif mode==10:
+		print "Play url is "+url,mode
+		SearchDramas(url)
 except Exception, ex:
 	print ex
 	print 'somethingwrong'

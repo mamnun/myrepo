@@ -1,3 +1,5 @@
+[B]Version 2.6.1[/B]
+   Search for Dramas
 [B]Version 2.5.8[/B]
    play command
 [B]Version 2.5.7[/B]
