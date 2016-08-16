@@ -343,8 +343,8 @@ def selectMatch(url):
     reg='"stkey":"(.*?)"'
     sitekey=re.findall(reg,decodedst)[0]
     #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
-
-    urlToPlay= decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"%"http://h5.adshell.net/flash"
+    
+    urlToPlay= decode(enclink.replace(sitekey,""))+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209&Cookie=%s"%("http://h5.adshell.net/flash",getCookiesString(cookieJar))
     return urlToPlay
 def select365(url):
     print 'select365',url
@@ -437,3 +437,11 @@ def select365(url):
     except:
         traceback.print_exc(file=sys.stdout)
     return retUtl
+def getCookiesString(cookieJar):
+    try:
+        cookieString=""
+        for index, cookie in enumerate(cookieJar):
+            cookieString+=cookie.name + "=" + cookie.value +";"
+    except: pass
+    #print 'cookieString',cookieString
+    return cookieString
