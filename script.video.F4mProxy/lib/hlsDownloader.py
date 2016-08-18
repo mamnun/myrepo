@@ -48,6 +48,7 @@ from crypto.cipher.rijndael import Rijndael
 from crypto.cipher.aes_cbc import AES_CBC
 '''
 gproxy=None
+gauth=None
 try:
     from Crypto.Cipher import AES
     USEDec=1 ## 1==crypto 2==local, local pycrypto
@@ -86,7 +87,7 @@ class HLSDownloader():
         self.init_done=False
 
     def init(self, out_stream, url, proxy=None,use_proxy_for_chunks=True,g_stopEvent=None, maxbitrate=0, auth=''):
-        global clientHeader,gproxy
+        global clientHeader,gproxy,gauth
         try:
             self.init_done=False
             self.init_url=url
@@ -94,8 +95,11 @@ class HLSDownloader():
             self.status='init'
             self.proxy = proxy
             self.auth=auth
-            if self.auth ==None or self.auth =='None' :
-                self.auth=''
+            if self.auth ==None or self.auth =='None'  or self.auth=='':
+                self.auth=None
+            if self.auth:
+                gauth=self.auth
+            
             if self.proxy and len(self.proxy)==0:
                 self.proxy=None
             gproxy=self.proxy
@@ -107,6 +111,7 @@ class HLSDownloader():
                 sp = url.split('|')
                 url = sp[0]
                 clientHeader = sp[1]
+                print clientHeader
                 clientHeader= urlparse.parse_qsl(clientHeader)
                 print 'header recieved now url and headers are',url, clientHeader 
             self.status='init done'
@@ -125,7 +130,7 @@ class HLSDownloader():
     def keep_sending_video(self,dest_stream, segmentToStart=None, totalSegmentToSend=0):
         try:
             self.status='download Starting'
-            downloadInternal(self.url,dest_stream,self.maxbitrate)
+            downloadInternal(self.url,dest_stream,self.maxbitrate,self.g_stopEvent)
         except: 
             traceback.print_exc()
         self.status='finished'
@@ -154,6 +159,7 @@ def getUrl(url,timeout=20,returnres=False):
         else:
             req = session.get(url, headers=headers,proxies=proxies )
 
+        req.raise_for_status()
         if returnres: 
             return req
         else:
@@ -210,9 +216,9 @@ def getUrlold(url,timeout=20, returnres=False):
         traceback.print_exc()
         return None
 
-def download_chunks(URL, chunk_size=4096, enc=False):
+def download_chunks(URL, chunk_size=4096, enc=None):
     #conn=urllib2.urlopen(URL)
-    print 'starting download'
+    #print 'starting download'
     if enc:
         if USEDec==1 :
             chunk_size*=1000
@@ -234,7 +240,7 @@ def download_chunks(URL, chunk_size=4096, enc=False):
         #yield data
         #if chunk_size==-1: return
     #return 
-    print 'function finished'
+    #print 'function finished'
 
     if 1==2:
         data= conn.read()
@@ -345,11 +351,13 @@ def handle_basic_m3u(url):
     global iv
     global key
     global USEDec
+    global gauth
     seq = 1
     enc = None
     nextlen = 5
     duration = 5
     targetduration=5
+    aesdone=False
     for line in gen_m3u(url):
         if line.startswith('#EXT'):
             tag, attribs = parse_m3u_tag(line)
@@ -370,27 +378,34 @@ def handle_basic_m3u(url):
                     assert 'IV' not in attribs, 'EXT-X-KEY: METHOD=NONE, but IV found'
                     enc = None
                 elif attribs['METHOD'] == 'AES-128':
-                    assert 'URI' in attribs, 'EXT-X-KEY: METHOD=AES-128, but no URI found'
-                    #from Crypto.Cipher import AES
-                    key = download_file(attribs['URI'].strip('"'))
-                    assert len(key) == 16, 'EXT-X-KEY: downloaded key file has bad length'
-                    if 'IV' in attribs:
-                        assert attribs['IV'].lower().startswith('0x'), 'EXT-X-KEY: IV attribute has bad format'
-                        iv = attribs['IV'][2:].zfill(32).decode('hex')
-                        assert len(iv) == 16, 'EXT-X-KEY: IV attribute has bad length'
-                    else:
-                        iv = '\0'*8 + struct.pack('>Q', seq)
-                    
-                    if not USEDec==3:
-                        enc = AES.new(key, AES.MODE_CBC, iv)
-                    else:
-                        ivb=array.array('B',iv)
-                        keyb= array.array('B',key)
-                        enc=python_aes.new(keyb, 2, ivb)
-                    #enc = AES_CBC(key)
-                    #print key
-                    #print iv
-                    #enc=AESDecrypter.new(key, 2, iv)
+                    if not aesdone:
+                        aesdone=False
+                        assert 'URI' in attribs, 'EXT-X-KEY: METHOD=AES-128, but no URI found'
+                        #from Crypto.Cipher import AES
+                        codeurl=attribs['URI'].strip('"')
+                        if gauth:
+                            codeurl=gauth
+                        #http://mlblive-akc.mlb.com/ls01/mlbam/2016/08/18/MLB_GAME_VIDEO_BOSDET_HOME_20160818/1800K/1800_complete.m3u8
+                        #key = download_file(codeurl)
+                        #key='KiWpjhcGUNB6xKTLP7uHRQ=='.decode("base64")
+                        assert len(key) == 16, 'EXT-X-KEY: downloaded key file has bad length'
+                        if 'IV' in attribs:
+                            assert attribs['IV'].lower().startswith('0x'), 'EXT-X-KEY: IV attribute has bad format'
+                            iv = attribs['IV'][2:].zfill(32).decode('hex')
+                            assert len(iv) == 16, 'EXT-X-KEY: IV attribute has bad length'
+                        else:
+                            iv = '\0'*8 + struct.pack('>Q', seq)
+                        enc=(codeurl,iv)
+                        #if not USEDec==3:
+                        #    enc = AES.new(key, AES.MODE_CBC, iv)
+                        #else:
+                        #    ivb=array.array('B',iv)
+                        #    keyb= array.array('B',key)
+                        #    enc=python_aes.new(keyb, 2, ivb)
+                        #enc = AES_CBC(key)
+                        #print key
+                        #print iv
+                        #enc=AESDecrypter.new(key, 2, iv)
                 else:
                     assert False, 'EXT-X-KEY: METHOD=%s unknown'%attribs['METHOD']
             elif tag == '#EXT-X-PROGRAM-DATE-TIME':
@@ -430,10 +445,12 @@ def send_back(data,file):
     file.write(data)
     file.flush()
         
-def downloadInternal(url,file,maxbitrate=0):
+def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
     global key
     global iv
     global USEDec
+    if stopEvent and stopEvent.isSet():
+        return
     dumpfile = None
     #dumpfile=open('c:\\temp\\myfile.mp4',"wb")
     variants = []
@@ -495,26 +512,45 @@ def downloadInternal(url,file,maxbitrate=0):
 
     try:
         while 1==1:#thread.isAlive():
+            if stopEvent and stopEvent.isSet():
+                return
             medialist = list(handle_basic_m3u(url))
             playedSomething=False
+            if medialist==None: return
             if None in medialist:
                 # choose to start playback at the start, since this is a VOD stream
                 pass
             else:
                 # choose to start playback three files from the end, since this is a live stream
                 medialist = medialist[-3:]
-            #print medialist
+            #print 'medialist',medialist
             
             for media in medialist:
+                if stopEvent and stopEvent.isSet():
+                    return
                 if media is None:
                     #queue.put(None, block=True)
                     return
-                seq, enc, duration, targetduration, media_url = media
+                seq, encobj, duration, targetduration, media_url = media
                 if seq > last_seq:
                     #print 'downloading.............',url
-                    
+                    enc=None
+                    if encobj:
+                        codeurl,iv=encobj
+                        key = download_file(codeurl)
+
+                        if not USEDec==3:
+                            enc = AES.new(key, AES.MODE_CBC, iv)
+                        else:
+                            ivb=array.array('B',iv)
+                            keyb= array.array('B',key)
+                            enc=python_aes.new(keyb, 2, ivb)
+                        #enc=AESDecrypter.new(key, 2, iv)
+                        
                     if glsession: media_url=media_url.replace(glsession,glsession[:-10]+''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)))
-                    for chunk in download_chunks(urlparse.urljoin(url, media_url),enc=enc):
+                    for chunk in download_chunks(urlparse.urljoin(url, media_url),enc=encobj):
+                        if stopEvent and stopEvent.isSet():
+                            return
                         #print '1. chunk available %d'%len(chunk)
                         if enc: 
                              if not USEDec==3:

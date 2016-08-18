@@ -109,6 +109,7 @@ request module in hls
 request module in hls
 [B]Version 2.5.1[/B]
 proxy issue in hls
-
+[B]Version 2.5.2[/B]
+auth param for hls if you want to ignore key url and pass yours
 
 
