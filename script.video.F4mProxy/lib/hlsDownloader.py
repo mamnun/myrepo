@@ -489,7 +489,8 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
                 elif key == 'RESOLUTION':
                     print 'resolution %s'%value,
                 else:
-                    raise ValueError("unknown STREAM-INF attribute %s"%key)
+                    print "unknown STREAM-INF attribute %s"%key
+                    #raise ValueError("unknown STREAM-INF attribute %s"%key)
             print
         if choice==-1: choice=0
         #choice = int(raw_input("Selection? "))
