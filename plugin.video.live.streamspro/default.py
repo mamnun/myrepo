@@ -74,15 +74,20 @@ def addon_log(string):
 def makeRequest(url, headers=None):
         try:
             if headers is None:
-                headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0'}
+                headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'}
                 
             if '|' in url:
                 url,header_in_page=url.split('|')
                 header_in_page=header_in_page.split('&')
                 
                 for h in header_in_page:
-                    
-                    n,v=h.split('=')
+                    if len(h.split('='))==2:
+                        n,v=h.split('=')
+                    else:
+                        vals=h.split('=')
+                        n=vals[0]
+                        v='='.join(vals[1:])
+                        #n,v=h.split('=')
                     print n,v
                     headers[n]=v
                     
@@ -1080,7 +1085,13 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                         if header_in_page:
                             header_in_page=header_in_page.split('&')
                             for h in header_in_page:
-                                n,v=h.split('=')
+                                if h.split('=')==2:
+                                    n,v=h.split('=')
+                                else:
+                                    vals=h.split('=')
+                                    n=vals[0]
+                                    v='='.join(vals[1:])
+                                #n,v=h.split('=')
                                 req.add_header(n,v)
                         
                         if not cookieJar==None:
