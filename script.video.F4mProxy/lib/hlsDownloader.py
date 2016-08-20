@@ -155,9 +155,9 @@ def getUrl(url,timeout=20,returnres=False):
             proxies= {"http": "http://"+gproxy}
         
         if post:
-            req = session.post(url, headers = headers, data= post, proxies=proxies)
+            req = session.post(url, headers = headers, data= post, proxies=proxies,verify=False)
         else:
-            req = session.get(url, headers=headers,proxies=proxies )
+            req = session.get(url, headers=headers,proxies=proxies,verify=False )
 
         req.raise_for_status()
         if returnres: 
@@ -385,9 +385,13 @@ def handle_basic_m3u(url):
                         codeurl=attribs['URI'].strip('"')
                         if gauth:
                             codeurl=gauth
-                        #http://mlblive-akc.mlb.com/ls01/mlbam/2016/08/18/MLB_GAME_VIDEO_BOSDET_HOME_20160818/1800K/1800_complete.m3u8
+                        
                         #key = download_file(codeurl)
-                        #key='KiWpjhcGUNB6xKTLP7uHRQ=='.decode("base64")
+                        
+                        if not codeurl.startswith('http'):
+                            import urlparse
+                            codeurl=urlparse.urljoin(url, codeurl)
+                            
                         assert len(key) == 16, 'EXT-X-KEY: downloaded key file has bad length'
                         if 'IV' in attribs:
                             assert attribs['IV'].lower().startswith('0x'), 'EXT-X-KEY: IV attribute has bad format'
