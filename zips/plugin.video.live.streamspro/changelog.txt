@@ -1,3 +1,5 @@
+Version 2.5.4
+support for websocket
 Version 2.5.3
 support of headers in page and other places with two ==
 Version 2.5.2
