@@ -2647,13 +2647,14 @@ def local_time(zone='Asia/Karachi'):
     return other_zone_time.strftime('%B-%d-%Y')
 
 def getUKTVPlayUrl(channelID ):
-    url=base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X3ZhbGlkX2xpbms=")
+
+    url=base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3ZhbGlkX2xpbms=")
     username="-1"
     usernameC=username+channelID
-    s = base64.b64decode("dWt0dm5vdy10b2tlbi0tX3xfLSVzLXVrdHZub3dfdG9rZW5fZ2VuZXJhdGlvbi0lcy1ffF8tMTIzNDU2X3VrdHZub3dfNjU0MzIxLV98Xy11a3R2bm93X2xpbmtfdG9rZW4=")%(url,usernameC)
+    s = base64.b64decode("dWt0dm5vdy10b2tlbi0tX3xfLSVzLXVrdHZub3dfdG9rZW5fZ2VuZXJhdGlvbi0lcy1ffF8tMTIzNDU2X3VrdHZub3dfNjU0MzIxLV98Xy11a3R2bm93X2xpbmtfdG9rZW4=")%(url,username)
     import hashlib
     token= hashlib.md5(s).hexdigest()
-    post = {'username':username,'channel_id':channelID}
+    post = {'username':username,'channel_id':channelID,'useragent':'Test-User-Agent'}
     post = urllib.urlencode(post)
   
     headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',token)]
