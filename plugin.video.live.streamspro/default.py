@@ -2189,22 +2189,23 @@ def urlsolver(url):
     return resolver
 def play_playlist(name, mu_playlist,queueVideo=None):
         playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
-
+        #print 'mu_playlist',mu_playlist
         if addon.getSetting('ask_playlist_items') == 'true' and not queueVideo :
             import urlparse
             names = []
             iloop=0
             for i in mu_playlist:
                 if '$$lsname=' in i:
-                    d_name=i.split('$$lsname=')[1]
+                    d_name=i.split('$$lsname=')[1].split('&regexs')[0]
                     names.append(d_name)
-                    mu_playlist[iloop]=i.split('$$lsname=')[0]
+                    mu_playlist[iloop]=i.split('$$lsname=')[0]+'&regexs'+i.split('&regexs')[1] if '&regexs' in i else ''
                 else:
                     d_name=urlparse.urlparse(i).netloc
                     if d_name == '':
                         names.append(name)
                     else:
                         names.append(d_name)
+                    
                 iloop+=1
             dialog = xbmcgui.Dialog()
             index = dialog.select('Choose a video source', names)
