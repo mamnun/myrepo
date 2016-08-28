@@ -2170,10 +2170,11 @@ def getYPUrl(url):
         else:
             videoid=tmp[0]
     
-        pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
-        emhtm=getUrl(pageurl)
+        pageurl='http://www.yupptv.com/Account/OctoNewFrame.aspx?ChanId=%s'%videoid  
+        emhtm=getUrl(pageurl,headers=[('Referer','http://www.yupptv.com/Livetv/'),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')])
         rr='file:\'(http.*?)\''    
         finalUrl=re.findall(rr,emhtm)
+        print 'finalUrl',finalUrl
         #if len(finalUrl)==0:
         #    
         #    pageurl='http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=%s'%videoid  
@@ -2191,12 +2192,15 @@ def PlayYP(url):
     #print 'gen is '+url
 
     finalUrl=getYPUrl(url)
+    if '.f4m' in finalUrl:
+        finalUrl=urllib.quote_plus(finalUrl+'&g=FLONTKRDWKGI&hdcore=3.2.0&amp;plugin=jwplayer-3.2.0.1|Referer=http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=195')
+        finalUrl='plugin://plugin.video.f4mTester/?url='+finalUrl
+            
+            
+        xbmc.executebuiltin("xbmc.PlayMedia("+finalUrl+")")
+    else:
+        PlayGen(base64.b64encode( finalUrl+'|User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36'))
         
-    finalUrl=urllib.quote_plus(finalUrl+'&g=FLONTKRDWKGI&hdcore=3.2.0&amp;plugin=jwplayer-3.2.0.1|Referer=http://stream.yupptv.com/PreviewPaidChannel.aspx?cid=195')
-    finalUrl='plugin://plugin.video.f4mTester/?url='+finalUrl
-        
-        
-    xbmc.executebuiltin("xbmc.PlayMedia("+finalUrl+")")
 
 def PlayGen(url,checkUrl=False, followredirect=False):
     url = base64.b64decode(url)
