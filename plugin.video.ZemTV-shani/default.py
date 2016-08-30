@@ -2559,7 +2559,7 @@ def getPITVChannels(categories, forSports=False):
 
                 ss=source
                 cname=ss["channelName"]
-                #print cname
+                
                 if 'ebound.tv' in ss["channelLink"]:
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                 else:
@@ -3457,8 +3457,8 @@ def getPTCUrl():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-    req = urllib2.Request( base64.b64decode('aHR0cDovL2NsdW9kYmFja2VuZGFwaS5hcHBzcG90LmNvbS9pb3MvcGFrdHYvcGFrdHYuanNvbg==') )      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYlMjBDb25uZWN0aWZ5LzQuMyBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    req = urllib2.Request( base64.b64decode('aHR0cDovL2NsdW9kYmFja2VuZGFwaS5hcHBzcG90LmNvbS9pb3MvcGFrdHYvcGFrdHY0LjQuanNvbg==') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UGFrJTIwVFYlMjBDb25uZWN0aWZ5LzQuNCBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
     response = urllib2.urlopen(req)
     link=response.read()
     maindata=json.loads(link)
@@ -3675,26 +3675,26 @@ def getUniTVPage():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
         
-    req = urllib2.Request( base64.b64decode('aHR0cDovL3VuaXZlcnNhbHR2LmRkbnMubmV0L1VuaXZlcnNhbC1UVi1IRC9jbXMvWFZlci9nZXRDb250dFYxLTAucGhw') )      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsVFZIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
-    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWpOMGRtVnljMkZzT21SeVFHY3diakZ2YzBBM09EWT0=")) 
+    req = urllib2.Request( base64.b64decode('aHR0cDovL25ld2NtczZocHBhay5keW5kbnMudHYvQ01TNi9jbXMvWFZlci9nZXRDb250dFYxLTAucGhw') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsJTIwU3BvcnRzJTIwSEQlMjBUVi8xLjAuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgUTIxVE5qWlZjMlZTT2tOdFV6WTJWWE5sVWtCd1lYTlRkMDl5UkE9PQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
     import rc
     cryptor=rc.RNCryptor()
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("dGVsYzA5OVBAc3N3b3JkNzg2"))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("Q21TNjZQQDNzU3cwcmQ3ODY="))
     decrypted_data=json.loads(decrypted_data)
     dataUrl=decrypted_data[0]["LiveLink"]
 
     req = urllib2.Request( dataUrl)      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsVFZIRC8xLjAgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
-    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYWpOMGRtVnljMkZzT21SeVFHY3diakZ2YzBBM09EWT0=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("VW5pdmVyc2FsJTIwU3BvcnRzJTIwSEQlMjBUVi8xLjAuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgUTIxVE5qWlZjMlZTT2tOdFV6WTJWWE5sVWtCd1lYTlRkMDl5UkE9PQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
 
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("dGVsYzA5OVBAc3N3b3JkNzg2"))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("Q21TNjZQQDNzU3cwcmQ3ODY="))
     #print decrypted_data
     jsondata=json.loads(decrypted_data)
     try:
@@ -3755,26 +3755,26 @@ def getGTVPage():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
         
-    req = urllib2.Request( base64.b64decode('aHR0cDovL3d3dy5zb2Z0bWFnbmF0ZS5jb20vQ01TLVNlcnZlci1TcG9ydHMtVFYvWFZlci9nZXRDb250dFYxLTAucGhw') )      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("U3BvcnRzVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
+    req = urllib2.Request( base64.b64decode('aHR0cDovL3d3dy5zb2Z0bWFnbmF0ZS5jb20vQ01TLVNlcnZlci1TcG9ydHMtVFYvWFZlci9QVFYtU3BvcnRzLVRWL2dldENvbnR0VjEtMC5waHA=') )      
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UFRWU3BvcnRzLzEuMCBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
     req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgVFRCcU1FdEFhMEU2Y0VGd2NIVkFOamczUUVReFkzUXhiMjVCY25rPQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
     import rc
     cryptor=rc.RNCryptor()
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANjg3QGQwbGw="))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANDc1QGQwMzM="))#first
     decrypted_data=json.loads(decrypted_data)
     dataUrl=decrypted_data[0]["LiveLink"]
 
     req = urllib2.Request( dataUrl)      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("U3BvcnRzVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("UFRWU3BvcnRzLzEuMCBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w")) 
     req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgVFRCcU1FdEFhMEU2Y0VGd2NIVkFOamczUUVReFkzUXhiMjVCY25rPQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
 
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANjg3QGQwbGw="))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("dFcxbjNsZUIzbnpANDc1QGQwMzM="))#second
     #print decrypted_data
     jsondata=json.loads(decrypted_data)
     try:
@@ -4190,7 +4190,7 @@ def PlayOtherUrl ( url ):
         PlayGen(base64.b64encode(url.split('direct2:')[1]),True)
         return
     if "ptc:" in url:
-        PlayGen(base64.b64encode(url.split('ptc:')[1]+getPTCAuth()))
+        PlayGen(base64.b64encode(url.split('ptc:')[1]+getPTCAuth()+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'))
         return    
     if "pv2:" in url:
         PlayPV2Link(url.split('pv2:')[1])
