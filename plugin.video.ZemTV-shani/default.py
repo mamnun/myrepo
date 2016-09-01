@@ -3865,8 +3865,8 @@ def getPV2Url():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-        
-    for pvopt in [(1,2),(2,2)]:#[(0,1),(1,1),(1,2)]:
+    link=''
+    for pvopt in [(1,2),(2,2),(3,2)]:#[(0,1),(1,1),(1,2)]:
         pvitr,pv2option=pvopt  ##pv2option==2=soapxml with, =1 with 
         try:
             selfAddon.setSetting( id="pv2PlayOption" ,value=str(pv2option))
@@ -3894,27 +3894,30 @@ def getPV2Url():
                 
                 deviceid=getPV2Device(pvitr)
                 #if pvitr==1: print 1/0
-                mainurl=base64.b64encode(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPSVz')%deviceid+'&token=%s')
+                if pvitr==3:                    
+                    link=getUrl(base64.b64decode('aHR0cDovL3NoYW5pLm9mZnNob3JlcGFzdGViaW4uY29tL3B2Mkxhc3RXb3JraW5nLnhtbA==')).decode("base64")
+                else:
+                    mainurl=base64.b64encode(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPSVz')%deviceid+'&token=%s')
                 
                 #else:
                 #    mainurl='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTEyMyZ0b2tlbj0lcw=='    
                 #mainurl='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz'
-            import time
-            TIME = time.time()
-            second= str(TIME).split('.')[0]
-            first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
-            token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-            #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)      
-            #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
-            
-            req = urllib2.Request( base64.b64decode(mainurl)  %(token))    
-            req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
-            req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
-            #req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RkY=")) 
-            response = urllib2.urlopen(req)
-            link=response.read()
-            if 'sky sports' in link.lower():
-                break
+                    import time
+                    TIME = time.time()
+                    second= str(TIME).split('.')[0]
+                    first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
+                    token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
+                    #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz')  %token)      
+                    #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
+                    
+                    req = urllib2.Request( base64.b64decode(mainurl)  %(token))    
+                    req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNDZRV3hzWVdneFFBPT0=')) 
+                    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
+                    #req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RkY=")) 
+                    response = urllib2.urlopen(req)
+                    link=response.read()
+                if 'sky sports' in link.lower():
+                    break
         except:
             traceback.print_exc(file=sys.stdout)
             pass
