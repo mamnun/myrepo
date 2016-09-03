@@ -3871,7 +3871,7 @@ def getPV2Url():
         traceback.print_exc(file=sys.stdout)
 
     link=''
-    for pvopt in [(1,2),(2,2),(3,2)]:#[(0,1),(1,1),(1,2)]:
+    for pvopt in [(1,2),(2,2)]:#[(0,1),(1,1),(1,2)]:
         pvitr,pv2option=pvopt  ##pv2option==2=soapxml with, =1 with 
         try:
             selfAddon.setSetting( id="pv2PlayOption" ,value=str(pv2option))
@@ -3921,8 +3921,10 @@ def getPV2Url():
                     #req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RkY=")) 
                     response = urllib2.urlopen(req)
                     link=response.read()
-                if 'sky sports' in link.lower():
-                    break
+                if 'items' in link.lower():
+                    break;
+                #if 'sky sports' in link.lower():
+                #    break
         except:
             traceback.print_exc(file=sys.stdout)
             pass
@@ -3931,7 +3933,12 @@ def getPV2Url():
         #    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("dW1hci8xMjQuMCBDRk5ldHdvcmsvNzU5LjIuOCBEYXJ3aW4vMTUuMTEuMjM=")) 
         #    response = urllib2.urlopen(req)
         #    link=response.read()
-
+    if not 'sky sports' in link.lower():
+        try:
+            dummyxml=getUrl(base64.b64decode('aHR0cDovL3NoYW5pLm9mZnNob3JlcGFzdGViaW4uY29tL3B2MnNwb3J0cy54bWw=')).decode("base64")
+            link='<channel>'+dummyxml+link.split('<channel>')[1]
+            
+        except: pass
     try:
         if 'items' in link:
             storeCacheData(base64.b64encode(link),fname)
@@ -4121,7 +4128,7 @@ def PlayPV2Link(url):
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
-    useragent='User-Agent=AppleCoreMedia/1.0.0.13A45%s (iPhone; U; CPU OS 9_%s_%s like Mac OS X; en_gb)'%(binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:3])
+    useragent='User-Agent=AppleCoreMedia/1.0.0.13F69 (%s; U; CPU OS 9_%s_%s like Mac OS X; en_gb)'%(random.choice(['iPhone','iPad']) ,binascii.b2a_hex(os.urandom(2))[:2],binascii.b2a_hex(os.urandom(2))[:2])#,binascii.b2a_hex(os.urandom(2))[:3])
     urlToPlay+=useragent
     #try:
     #    if 'iptvaus.dynns.com' in urlToPlay:# quickfix
