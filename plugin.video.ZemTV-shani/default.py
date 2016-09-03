@@ -2657,13 +2657,18 @@ def getUniTVChannels(categories, forSports=False):
 def getUKTVUserAgent():
     try:
         username = "-1"#random.choice(usernames)
-        post = {'username':username}
+        post = {'version':'5.7'}
         post = urllib.urlencode(post)
       
         headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',getAPIToken(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3VzZXJfYWdlbnQ="),username))]
         jsondata=getUrl(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3VzZXJfYWdlbnQ="),post=post,headers=headers)
         jsondata=json.loads(jsondata)    
         import pyaes
+        try:
+            if 'useragent' in jsondata["msg"]:
+                return jsondata["msg"]["useragent"]
+        except: 
+            pass
         key="MDk0NTg3MjEyNDJhZmZkZQ==".decode("base64")
         iv="ZWVkY2ZhMDQ4OTE3NDM5Mg==".decode("base64")
         decryptor = pyaes.new(key, pyaes.MODE_CBC, IV=iv)
@@ -2693,7 +2698,7 @@ def getUKTVPlayUrl(channelID ):
     import hashlib
     token= hashlib.md5(s).hexdigest()
     
-    post = {'username':username,'channel_id':channelID,'useragent':getUKTVUserAgent()}
+    post = {'username':username,'channel_id':channelID,'useragent':getUKTVUserAgent(),'version':'5.7'}
     post = urllib.urlencode(post)
   
     headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',token)]
