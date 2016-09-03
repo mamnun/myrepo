@@ -2702,7 +2702,7 @@ def getUKTVPlayUrl(channelID ):
     post = urllib.urlencode(post)
   
     headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',token)]
-    jsondata=getUrl(url,post=post,headers=headers)
+    jsondata=getUrl(url,post=post+'&',headers=headers)
     return json.loads(jsondata)
     
 def getAPIToken( url,  username):
