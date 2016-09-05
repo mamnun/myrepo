@@ -2197,8 +2197,8 @@ def play_playlist(name, mu_playlist,queueVideo=None):
             for i in mu_playlist:
                 if '$$lsname=' in i:
                     d_name=i.split('$$lsname=')[1].split('&regexs')[0]
-                    names.append(d_name)
-                    mu_playlist[iloop]=i.split('$$lsname=')[0]+'&regexs'+i.split('&regexs')[1] if '&regexs' in i else ''
+                    names.append(d_name)                                       
+                    mu_playlist[iloop]=i.split('$$lsname=')[0]+('&regexs'+i.split('&regexs')[1] if '&regexs' in i else '')                    
                 else:
                     d_name=urlparse.urlparse(i).netloc
                     if d_name == '':
@@ -2211,7 +2211,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
             index = dialog.select('Choose a video source', names)
             if index >= 0:
                 playname=names[index]
-                print 'playname',playname
+                print 'playnamexx',playname
                 if "&mode=19" in mu_playlist[index]:
                         #playsetresolved (urlsolver(mu_playlist[index].replace('&mode=19','')),name,iconimage,True)
                     liz = xbmcgui.ListItem(playname, iconImage=iconimage)
