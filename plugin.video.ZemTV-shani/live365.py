@@ -488,7 +488,9 @@ def selectMatch(url):
         getUrl(urlToPlay, headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'),('Referer','http://h5.adshell.net/flash')],cookieJar=newcj)
     except: pass
     print newcj
-    return urlToPlaymain+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209&Cookie=PHPSESSID=%s"%("http://h5.adshell.net/flash",getCookiesString(newcj,'PHPSESSID').split('=')[-1])
+    sessionid=getCookiesString(newcj,'PHPSESSID').split('=')[-1]
+    if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
+    return urlToPlaymain+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209%s"%("http://h5.adshell.net/flash",sessionid)
     
 def select365(url):
     print 'select365',url
@@ -587,6 +589,7 @@ def getCookiesString(cookieJar,cookieName=None):
     try:
         cookieString=""
         for index, cookie in enumerate(cookieJar):
+            print index, cookie
             if cookieName==None:
                 cookieString+=cookie.name + "=" + cookie.value +";"
             elif (cookieName==cookie.name or cookieName in cookie.name ):
