@@ -3994,7 +3994,24 @@ def tryplay(url,listitem):
         xbmc.sleep(1000)
     print 'not played',url
     return False
-                
+              
+def tryplaywithping(url,listitem,pingurl,cookiejar, timeout):    
+    import  CustomPlayer,time
+
+    player = CustomPlayer.MyXBMCPlayer()
+    start = time.time() 
+    #xbmc.Player().play( liveLink,listitem)
+    player.play( url, listitem)
+    xbmc.sleep(1000)
+    getUrl(pingurl, cookieJar = cookiejar)
+    import time
+    lastpingdone=time.time()
+    while player.is_active:
+        xbmc.sleep(3000)
+        if time.time()-lastpingdone>timeout:
+            getUrl(pingurl, cookieJar = cookiejar)
+            lastpingdone=time.time()
+    return False              
 def PlayStreamSports(url):
 
     urlToPlay=base64.b64decode(url)
@@ -4078,8 +4095,20 @@ def PlayiptvLink(url):
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     #    print "playing stream name: " + str(name) 
         xbmc.Player(  ).play( urlToPlay, listitem)  
+def get365CookieJar(updatedUName=False):
+    cookieJar=None
+    try:
+        cookieJar = cookielib.LWPCookieJar()
+        if not updatedUName:
+            cookieJar.load(S365COOKIEFILE,ignore_discard=True)
+    except: 
+        cookieJar=None
 
-def playSports365(url):
+    if not cookieJar:
+        cookieJar = cookielib.LWPCookieJar()
+    return cookieJar 
+    
+def playSports365(url,progress):
     #print ('playSports365')
     import live365
     urlToPlay=live365.selectMatch(url)
@@ -4090,7 +4119,9 @@ def playSports365(url):
             xbmc.executebuiltin('XBMC.RunPlugin('+urlToPlay+')') 
         else:        
     #    print   "playing stream name: " + str(name) 
-            xbmc.Player().play( urlToPlay, listitem)  
+            #xbmc.Player().play( urlToPlay, listitem)  
+            progress.close()
+            tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/main',get365CookieJar(), 10) 
     else:
         if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
             dialog = xbmcgui.Dialog()
@@ -4190,7 +4221,7 @@ def PlayOtherUrl ( url ):
         PlayDittoLive(url.split('ditto:')[1])
         return
     if "Sports365:" in url:
-        playSports365(url.split('Sports365:')[1])
+        playSports365(url.split('Sports365:')[1],progress)
         return
     if "CF:" in url:
         PlayCFLive(url.split('CF:')[1])
