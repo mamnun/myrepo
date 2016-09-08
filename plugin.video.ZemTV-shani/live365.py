@@ -499,7 +499,8 @@ def selectMatch(url):
     #print newcj
     sessionid=getCookiesString(newcj,'PHPSESSID').split('=')[-1]
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
-    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"),sessionid)    
+    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0"),sessionid)    
+    
     return 'plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(urlToPlaymain))
     
 def select365(url):
