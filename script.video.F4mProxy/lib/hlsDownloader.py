@@ -225,7 +225,8 @@ def download_chunks(URL, chunk_size=4096, enc=None):
         else:
             chunk_size*=100
     else:
-        chunk_size=chunk_size*10
+        chunk_size=chunk_size*100
+        
     conn=getUrl(URL,returnres=True)
     #while 1:
     
@@ -529,16 +530,19 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
                 # choose to start playback three files from the end, since this is a live stream
                 medialist = medialist[-3:]
             #print 'medialist',medialist
-            
+            addsomewait=False
             for media in medialist:
+                 
                 if stopEvent and stopEvent.isSet():
                     return
                 if media is None:
                     #queue.put(None, block=True)
                     return
                 seq, encobj, duration, targetduration, media_url = media
+                addsomewait=True
                 if seq > last_seq:
                     #print 'downloading.............',url
+                    
                     enc=None
                     if encobj:
                         codeurl,iv=encobj
@@ -590,7 +594,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
             changed -= 1
             '''
             if not playedSomething:
-                xbmc.sleep(2000)
+                xbmc.sleep(2000+ (3000 if addsomewait else 0))
     except:
         control[0] = 'stop'
         raise

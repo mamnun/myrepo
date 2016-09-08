@@ -4084,11 +4084,15 @@ def playSports365(url):
     import live365
     urlToPlay=live365.selectMatch(url)
     if urlToPlay and len(urlToPlay)>0:
+    
         listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+        if 'f4mtester' in urlToPlay:
+            xbmc.executebuiltin('XBMC.RunPlugin('+urlToPlay+')') 
+        else:        
     #    print   "playing stream name: " + str(name) 
-        xbmc.Player(  ).play( urlToPlay, listitem)  
+            xbmc.Player().play( urlToPlay, listitem)  
     else:
-       if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
+        if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
             dialog = xbmcgui.Dialog()
             ok = dialog.ok('XBMC', 'No Links, so updated files dyamically, try again, just in case!')           
             print 'Updated files'

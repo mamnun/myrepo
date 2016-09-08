@@ -59,7 +59,10 @@ def swapme(st, fromstr , tostr):
 
      
 def decode(encstring):
+    print 'before',encstring
     encstring=tr(encstring ,114,65)
+    print 'encstring tr',encstring
+    print 'enc done'
     mc_from="0BwtxmczunMQR6vVlND3LXa4oA"
     mc_to="p9U1bsyZIHf8YWg5GiJ2Tekd7="
     if 1==2:#encstring.endswith("!"):
@@ -425,15 +428,15 @@ def selectMatch(url):
     
     if len(enclink)==0:
         reg='name="f" value="(.*?)"'
-        enclink=re.findall(reg,enclinkhtml)[0]  
-        reg='name="s" value="(.*?)"'
-        encst=re.findall(reg,enclinkhtml)[0]
+        enclink=re.findall(reg,enclinkhtml)[-1]  
+        reg='name="d" value="(.*?)"'
+        encst=re.findall(reg,enclinkhtml)[-1]
         reg="\('action', ['\"](.*?)['\"]"
         postpage=re.findall(reg,enclinkhtml)
         if len(postpage)>0:
             
             reg='player_div", "st".*?file":"(.*?)"'
-            post={'p':'http://cdn.adshell.net/swf/player.swf','s':encst,'f':enclink}
+            post={'d':encst,'f':enclink}
             post = urllib.urlencode(post)
             enclinkhtml2= getUrl(postpage[0],post=post, headers=[('Referer',linkurl),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')])
             #enclink=re.findall(reg,enclinkhtml2)
@@ -441,8 +444,9 @@ def selectMatch(url):
                 usediv=True
                 #enclinkhtml=enclinkhtml2
                 #print 'usediv',usediv
-                reg="player_div\",.?\"(.*?)\",.?\"(.*?)\",(.*?)\)"
+                reg='player_div\'.*?\s*\s*<.*?\s*.*?\("(.*?)\",.?\"(.*?)\",(.*?)\)'
                 encst,enclink,isenc=re.findall(reg,enclinkhtml2)[0]
+
                 #print 'encst,enclink',encst,enclink,isenc
                 isenc=isenc.strip();
                 if isenc=="1":
@@ -454,8 +458,9 @@ def selectMatch(url):
                     import jscrypto
                     lnk=jscrypto.decode(enclink["ct"],kkey,enclink["s"].decode("hex"))
                     
-                    #print lnk
+                    print lnk                    
                     enclink=lnk
+                    if lnk.startswith('"http'): lnk= lnk.replace('\"','').replace('\\/','/')
                 #enclink=enclink[0]
                 #print 'enclink',enclink
                 #reg='player_div", "st":"(.*?)"'
@@ -474,23 +479,28 @@ def selectMatch(url):
     #    print 'enclink',enclink
     #    reg='player_div", "st":"(.*?)"'
     #    encst=re.findall(reg,enclinkhtml)[0]
-        
-    decodedst=decode(encst)
 
-    #print encst, decodedst
-    reg='"stkey":"(.*?)"'
-    sitekey=re.findall(reg,decodedst)[0]
-    #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
-    urlToPlaymain=decode(enclink.replace(sitekey,""))
+    if not 'peer' in encst:
+        decodedst=decode(encst)
+
+        #print encst, decodedst
+        reg='"stkey":"(.*?)"'
+        sitekey=re.findall(reg,decodedst)[0]
+        #sitekey="myFhOWnjma1omjEf9jmH9WZg91CC"#hardcoded
+        urlToPlaymain=decode(enclink.replace(sitekey,""))
+    else:
+        urlToPlaymain=lnk
     urlToPlay= urlToPlaymain
     newcj=cookielib.LWPCookieJar();
-    try:
-        getUrl(urlToPlay, headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'),('Referer','http://h5.adshell.net/flash')],cookieJar=newcj)
-    except: pass
-    print newcj
+#    try:
+#        getUrl(urlToPlay, headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'),('Origin','http://h5.adshell.net'),('Referer','http://h5.adshell.net/peer5')],cookieJar=newcj)
+#    except: pass
+
+    #print newcj
     sessionid=getCookiesString(newcj,'PHPSESSID').split('=')[-1]
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
-    return urlToPlaymain+"|Referer=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209%s"%("http://h5.adshell.net/flash",sessionid)
+    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36"),sessionid)    
+    return 'plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(urlToPlaymain))
     
 def select365(url):
     print 'select365',url
