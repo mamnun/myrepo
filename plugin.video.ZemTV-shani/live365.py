@@ -326,7 +326,7 @@ def Colored(text = '', colorid = '', isBold = False):
     return '[COLOR ' + color + ']' + text + '[/COLOR]'	
 
 def getLinks():
-    cookieJar=get365CookieJar(True)
+    cookieJar=get365CookieJar()
     kkey=get365Key(cookieJar,useproxy=False)
         
     headers=[('User-Agent',useragent)]
@@ -406,11 +406,14 @@ def getutfoffset():
 def selectMatch(url):
 
     cookieJar=get365CookieJar()
+
+    url=select365(url,cookieJar)
+    
     try:
         headers=[('User-Agent',useragent)]
-        getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
+        hh=getUrl("http://adbetnet.advertserve.com/servlet/view/dynamic/javascript/zone?zid=281&pid=4&resolution=1920x1080&random=11965377&millis=1473441350879&referrer=http%3A%2F%2Fwww.sport365.live%2Fen%2Fhome",headers=headers, cookieJar=cookieJar)
+        getUrl(re.findall('<img width=.*?src=\\\\"(.*?)\\\\"',hh)[0],headers=headers, cookieJar=cookieJar,useproxy=False)
     except: pass
-    url=select365(url,cookieJar)
     if url=="": return 
     import HTMLParser
     h = HTMLParser.HTMLParser()
@@ -418,6 +421,8 @@ def selectMatch(url):
     #urlToPlay=base64.b64decode(url)
 
     html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')],cookieJar=cookieJar)
+    
+    
     #print html
     reg="iframe frameborder=0.*?src=\"(.*?)\""
     linkurl=re.findall(reg,html)
@@ -520,8 +525,9 @@ def selectMatch(url):
     playback=str(uuid.uuid1()).upper()   
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
     urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s&X-Playback-Session-Id=%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid,playback)    
+#    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s&X-Playback-Session-Id=%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid,playback)    
     headers=[('User-Agent',useragent)]
-    #getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
+    getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
     cookieJar.save (S365COOKIEFILE,ignore_discard=True)
 
     return urlToPlaymain

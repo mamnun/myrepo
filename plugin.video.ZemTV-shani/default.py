@@ -4003,13 +4003,16 @@ def tryplaywithping(url,listitem,pingurl,cookiejar, timeout):
     #xbmc.Player().play( liveLink,listitem)
     player.play( url, listitem)
     xbmc.sleep(1000)
-    getUrl(pingurl, cookieJar = cookiejar)
+    useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'
+
+    headers=[('User-Agent',useragent)]
+    getUrl(pingurl, cookieJar = cookiejar,headers=headers)
     import time
     lastpingdone=time.time()
     while player.is_active:
         xbmc.sleep(3000)
         if time.time()-lastpingdone>timeout:
-            getUrl(pingurl, cookieJar = cookiejar)
+            getUrl(pingurl, cookieJar = cookiejar,headers=headers)
             lastpingdone=time.time()
     return False              
 def PlayStreamSports(url):
@@ -4122,7 +4125,7 @@ def playSports365(url,progress):
             #xbmc.Player().play( urlToPlay, listitem)  
             progress.close()
             xbmc.Player().play( urlToPlay, listitem)  
-            #tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/main',get365CookieJar(), 10) 
+            #tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/sidebar ',get365CookieJar(), 10) 
     else:
         if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
             dialog = xbmcgui.Dialog()
