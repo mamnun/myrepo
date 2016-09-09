@@ -4121,7 +4121,8 @@ def playSports365(url,progress):
     #    print   "playing stream name: " + str(name) 
             #xbmc.Player().play( urlToPlay, listitem)  
             progress.close()
-            tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/main',get365CookieJar(), 10) 
+            xbmc.Player().play( urlToPlay, listitem)  
+            #tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/main',get365CookieJar(), 10) 
     else:
         if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
             dialog = xbmcgui.Dialog()

@@ -22,7 +22,7 @@ selfAddon = xbmcaddon.Addon(id=addon_id)
 profile_path =  xbmc.translatePath(selfAddon.getAddonInfo('profile'))
 S365COOKIEFILE='s365CookieFile.lwp'
 S365COOKIEFILE=os.path.join(profile_path, S365COOKIEFILE)
-
+useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'
 
 
 def tr(param1 , param2 , param3):
@@ -82,7 +82,7 @@ def getUrl(mainurl, cookieJar=None,post=None, timeout=20, headers=None, useproxy
     opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
     #opener = urllib2.install_opener(opener)
     req = urllib2.Request(url)
-    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+    req.add_header('User-Agent',useragent)
     if headers:
         for h,hv in headers:
             req.add_header(h,hv)
@@ -197,7 +197,7 @@ def getUrlWithProxy(url, cookieJar=None,post=None, timeout=20, headers=None):
     opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler(),urllib2.ProxyHandler({ 'http'  : '%s:%s'%(proxyserver,proxyport)}))    
     
     req = urllib2.Request(url)
-    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+    req.add_header('User-Agent',useragent)
     if headers:
         for h,hv in headers:
             req.add_header(h,hv)
@@ -277,7 +277,7 @@ def get365CookieJar(updatedUName=False):
         cookieJar = cookielib.LWPCookieJar()
     return cookieJar    
 def get365Key(cookieJar,url=None, useproxy=True):
-    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')]
+    headers=[('User-Agent',useragent)]
     import time
     if not url:
         mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
@@ -318,7 +318,7 @@ def getLinks():
     cookieJar=get365CookieJar()
     kkey=get365Key(cookieJar,useproxy=False)
         
-    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')]
+    headers=[('User-Agent',useragent)]
 
     liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
     linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
@@ -437,7 +437,7 @@ def selectMatch(url):
             reg='player_div", "st".*?file":"(.*?)"'
             post={'d':encst,'f':enclink}
             post = urllib.urlencode(post)
-            enclinkhtml2= getUrl(postpage[0],post=post,cookieJar=cookieJar, headers=[('Referer',linkurl),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')])
+            enclinkhtml2= getUrl(postpage[0],post=post,cookieJar=cookieJar, headers=[('Referer',linkurl),('User-Agent',useragent)])
             #enclink=re.findall(reg,enclinkhtml2)
             if 'player_div' in enclinkhtml2>0:
                 usediv=True
@@ -492,15 +492,15 @@ def selectMatch(url):
     urlToPlay= urlToPlaymain
     newcj=cookielib.LWPCookieJar();
     try:
-        getUrl(urlToPlay, headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'),('Origin','http://h5.adshell.net'),('Referer','http://h5.adshell.net/peer5')],cookieJar=newcj)
+        getUrl(urlToPlay, headers=[('User-Agent',useragent),('Origin','http://h5.adshell.net'),('Referer','http://h5.adshell.net/peer5')],cookieJar=newcj)
     except: pass
 
    
     #print newcj
     sessionid=getCookiesString(newcj,'PHPSESSID').split('=')[-1]
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
-    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus("Mozilla/5.0 (Windows NT 6.1; WOW64; rv:41.0) Gecko/20100101 Firefox/41.0"),sessionid)    
-    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')]
+    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid)    
+    headers=[('User-Agent',useragent)]
     #getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
     cookieJar.save (S365COOKIEFILE,ignore_discard=True)
     
