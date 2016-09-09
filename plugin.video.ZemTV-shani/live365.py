@@ -1,12 +1,12 @@
-import xbmc, xbmcgui, xbmcplugin
+
 import urllib2,urllib,cgi, re  
 import urlparse
 import HTMLParser
-import xbmcaddon
+
 from operator import itemgetter
 import traceback,cookielib
 import base64,os,  binascii
-import CustomPlayer,uuid
+
 from time import time
 import base64,sys
 try:
@@ -14,15 +14,58 @@ try:
 except:
     import simplejson as json
 
-__addon__       = xbmcaddon.Addon()
-__addonname__   = __addon__.getAddonInfo('name')
-__icon__        = __addon__.getAddonInfo('icon')
-addon_id = 'plugin.video.ZemTV-shani'
-selfAddon = xbmcaddon.Addon(id=addon_id)
-profile_path =  xbmc.translatePath(selfAddon.getAddonInfo('profile'))
-S365COOKIEFILE='s365CookieFile.lwp'
-S365COOKIEFILE=os.path.join(profile_path, S365COOKIEFILE)
 useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'
+
+
+def getUrl(mainurl, cookieJar=None,post=None, timeout=20, headers=None, useproxy=True):
+    url=mainurl
+    cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
+    opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
+    #opener = urllib2.install_opener(opener)
+    req = urllib2.Request(url)
+    req.add_header('User-Agent',useragent)
+    if headers:
+        for h,hv in headers:
+            req.add_header(h,hv)
+    
+    if '|' in url:
+        url,header_in_page=url.split('|')
+        header_in_page=header_in_page.split('&')
+        
+        for h in header_in_page:
+            
+            n,v=h.split('=')
+            req.add_header(h,v)
+    link=""
+    try:
+        response = opener.open(req,post,timeout=timeout)
+        link=response.read()
+        response.close()
+    except: pass
+    if link=="" and useproxy: 
+        
+        for retry in range(4):
+            try:
+                link=getUrlWithWebProxy(mainurl,cookieJar,post,timeout,headers)
+                if not link=="": break
+            except: pass
+    return link;
+
+try:
+    import xbmc, xbmcgui, xbmcplugin
+    import xbmcaddon
+    import CustomPlayer,uuid
+    __addon__       = xbmcaddon.Addon()
+    __addonname__   = __addon__.getAddonInfo('name')
+    __icon__        = __addon__.getAddonInfo('icon')
+    addon_id = 'plugin.video.ZemTV-shani'
+    selfAddon = xbmcaddon.Addon(id=addon_id)
+    profile_path =  xbmc.translatePath(selfAddon.getAddonInfo('profile'))
+    S365COOKIEFILE='s365CookieFile.lwp'
+    S365COOKIEFILE=os.path.join(profile_path, S365COOKIEFILE)
+except: pass
+
+
 
 
 def tr(param1 , param2 , param3):
@@ -76,39 +119,7 @@ def decode(encstring):
     print st
     return st.decode("base64")
     
-def getUrl(mainurl, cookieJar=None,post=None, timeout=20, headers=None, useproxy=True):
-    url=mainurl
-    cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
-    opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
-    #opener = urllib2.install_opener(opener)
-    req = urllib2.Request(url)
-    req.add_header('User-Agent',useragent)
-    if headers:
-        for h,hv in headers:
-            req.add_header(h,hv)
-    
-    if '|' in url:
-        url,header_in_page=url.split('|')
-        header_in_page=header_in_page.split('&')
-        
-        for h in header_in_page:
-            
-            n,v=h.split('=')
-            req.add_header(h,v)
-    link=""
-    try:
-        response = opener.open(req,post,timeout=timeout)
-        link=response.read()
-        response.close()
-    except: pass
-    if link=="" and useproxy: 
-        
-        for retry in range(4):
-            try:
-                link=getUrlWithWebProxy(mainurl,cookieJar,post,timeout,headers)
-                if not link=="": break
-            except: pass
-    return link;
+
 
     #function arcfour(k,d) {var o='';s=new Array();var n=256;l=k.length;for(var i=0;i<n;i++){s[i]=i;}for(var j=i=0;i<n;i++){j=(j+s[i]+k.charCodeAt(i%l))%n;var x=s[i];s[i]=s[j];s[j]=x;}for(var i=j=y=0;y<d.length;y++){i=(i+1)%n;j=(j+s[i])%n;x=s[i];s[i]=s[j];s[j]=x;o+=String.fromCharCode(d.charCodeAt(y)^s[(s[i]+s[j])%n]);}return o;}
 def  arcfour(k,d):
@@ -319,7 +330,9 @@ def getLinks():
     kkey=get365Key(cookieJar,useproxy=False)
         
     headers=[('User-Agent',useragent)]
-
+    try:
+        getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
+    except: pass
     liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
     linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
     reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?__showLinks.*?,.?\"(.*?)\".*?\">(.*?)<"
@@ -391,7 +404,11 @@ def getutfoffset():
     return int(utc_offset)
     
 def selectMatch(url):
+
     cookieJar=get365CookieJar()
+    try:
+        getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
+    except: pass
     url=select365(url,cookieJar)
     if url=="": return 
     import HTMLParser
