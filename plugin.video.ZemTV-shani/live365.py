@@ -407,6 +407,7 @@ def selectMatch(url):
 
     cookieJar=get365CookieJar()
     try:
+        headers=[('User-Agent',useragent)]
         getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
     except: pass
     url=select365(url,cookieJar)
