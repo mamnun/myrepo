@@ -516,12 +516,14 @@ def selectMatch(url):
    
     #print newcj
     sessionid=getCookiesString(newcj,'PHPSESSID').split('=')[-1]
+    import uuid
+    playback=str(uuid.uuid1()).upper()   
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
-    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid)    
+    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s&X-Playback-Session-Id=%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid,playback)    
     headers=[('User-Agent',useragent)]
     #getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
     cookieJar.save (S365COOKIEFILE,ignore_discard=True)
-    
+
     return urlToPlaymain
     return 'plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(urlToPlaymain))
     
