@@ -2187,9 +2187,95 @@ def urlsolver(url):
         xbmc.executebuiltin("XBMC.Notification(LiveStreamsPro,Urlresolver donot support this domain. - ,5000)")
         resolver=url
     return resolver
+def tryplay(url,listitem,pdialogue=None):    
+    import  CustomPlayer,time
+
+    player = CustomPlayer.MyXBMCPlayer()
+    player.pdialogue=pdialogue
+    start = time.time() 
+    #xbmc.Player().play( liveLink,listitem)
+    print 'going to play'
+    import time
+    beforestart=time.time()
+    player.play( url, listitem)
+    xbmc.sleep(1000)
+    
+    try:
+        while player.is_active:
+            xbmc.sleep(400)
+           
+            if player.urlplayed:
+                print 'yes played'
+                return True
+            if time.time()-beforestart>4: return False
+            #xbmc.sleep(1000)
+    except: pass
+    print 'not played',url
+    return False
 def play_playlist(name, mu_playlist,queueVideo=None):
         playlist = xbmc.PlayList(xbmc.PLAYLIST_VIDEO)
         #print 'mu_playlist',mu_playlist
+        if '$$LSPlayOnlyOne$$' in mu_playlist[0]:
+            mu_playlist[0]=mu_playlist[0].replace('$$LSPlayOnlyOne$$','')
+            import urlparse
+            names = []
+            iloop=0
+            progress = xbmcgui.DialogProgress()
+            progress.create('Progress', 'Trying Multiple Links')
+            for i in mu_playlist:
+
+                if '$$lsname=' in i:
+                    d_name=i.split('$$lsname=')[1].split('&regexs')[0]
+                    names.append(d_name)                                       
+                    mu_playlist[iloop]=i.split('$$lsname=')[0]+('&regexs'+i.split('&regexs')[1] if '&regexs' in i else '')                    
+                else:
+                    d_name=urlparse.urlparse(i).netloc
+                    if d_name == '':
+                        names.append(name)
+                    else:
+                        names.append(d_name)
+                index=iloop
+                iloop+=1
+                
+                playname=names[index]
+                if progress.iscanceled(): return 
+                progress.update( iloop/len(mu_playlist)*100,"", "Link#%d"%(iloop),playname  )
+                print 'auto playnamexx',playname
+                if "&mode=19" in mu_playlist[index]:
+                        #playsetresolved (urlsolver(mu_playlist[index].replace('&mode=19','')),name,iconimage,True)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz.setInfo(type='Video', infoLabels={'Title':playname})
+                    liz.setProperty("IsPlayable","true")
+                    urltoplay=urlsolver(mu_playlist[index].replace('&mode=19','').replace(';',''))
+                    liz.setPath(urltoplay)
+                    #xbmc.Player().play(urltoplay,liz)
+                    played=tryplay(urltoplay,liz)
+                elif "$doregex" in mu_playlist[index] :
+#                    print mu_playlist[index]
+                    sepate = mu_playlist[index].split('&regexs=')
+#                    print sepate
+                    url,setresolved = getRegexParsed(sepate[1], sepate[0])
+                    url2 = url.replace(';','')
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz.setInfo(type='Video', infoLabels={'Title':playname})
+                    liz.setProperty("IsPlayable","true")
+                    liz.setPath(url2)
+                    #xbmc.Player().play(url2,liz)
+                    played=tryplay(url2,liz)
+
+                else:
+                    url = mu_playlist[index]
+                    url=url.split('&regexs=')[0]
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz.setInfo(type='Video', infoLabels={'Title':playname})
+                    liz.setProperty("IsPlayable","true")
+                    liz.setPath(url)
+                    #xbmc.Player().play(url,liz)
+                    played=tryplay(url,liz)
+                    print 'played',played
+                print 'played',played
+                if played: return
+            return     
         if addon.getSetting('ask_playlist_items') == 'true' and not queueVideo :
             import urlparse
             names = []
