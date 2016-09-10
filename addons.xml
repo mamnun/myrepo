@@ -76,7 +76,7 @@
 
 <addon id="plugin.video.live.streamspro"
        name="LiveStreamsPro"
-       version="2.6.0"
+       version="2.6.1"
        provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -164,7 +164,7 @@
 
 <addon id="plugin.video.ZemTV-shani"
        name="ZemTV.com"
-       version="5.2.6"
+       version="5.2.7"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>

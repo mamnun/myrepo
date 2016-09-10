@@ -2188,6 +2188,18 @@ def urlsolver(url):
         resolver=url
     return resolver
 def tryplay(url,listitem,pdialogue=None):    
+
+    if url.lower().startswith('plugin'):
+        print 'playing via runplugin'
+        xbmc.executebuiltin('XBMC.RunPlugin('+url+')') 
+        for i in range(8):
+            xbmc.sleep(500) ##sleep for 10 seconds, half each time
+            try:
+                #print 'condi'
+                if xbmc.getCondVisibility("Player.HasMedia") and xbmc.Player().isPlaying():
+                    return True
+            except: pass
+        return False
     import  CustomPlayer,time
 
     player = CustomPlayer.MyXBMCPlayer()
