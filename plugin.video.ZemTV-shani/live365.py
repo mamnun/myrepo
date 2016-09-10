@@ -15,9 +15,12 @@ except:
     import simplejson as json
 
 useragent='Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'
-
+#useragent='Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19'
+lastfinalurl=''
 
 def getUrl(mainurl, cookieJar=None,post=None, timeout=20, headers=None, useproxy=True):
+    global lastfinalurl
+    lastfinalurl=''
     url=mainurl
     cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
     opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
@@ -39,6 +42,8 @@ def getUrl(mainurl, cookieJar=None,post=None, timeout=20, headers=None, useproxy
     link=""
     try:
         response = opener.open(req,post,timeout=timeout)
+
+        lastfinalurl = response.geturl()
         link=response.read()
         response.close()
     except: pass
@@ -330,9 +335,7 @@ def getLinks():
     kkey=get365Key(cookieJar,useproxy=False)
         
     headers=[('User-Agent',useragent)]
-    try:
-        getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
-    except: pass
+
     liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
     linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
     reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?__showLinks.*?,.?\"(.*?)\".*?\">(.*?)<"
@@ -406,21 +409,28 @@ def getutfoffset():
 def selectMatch(url):
 
     cookieJar=get365CookieJar()
-
-    url=select365(url,cookieJar)
-    
+    mainref='http://www.sport365.live/en/main'
+    headers=[('User-Agent',useragent)]
     try:
-        headers=[('User-Agent',useragent)]
-        hh=getUrl("http://adbetnet.advertserve.com/servlet/view/dynamic/javascript/zone?zid=281&pid=4&resolution=1920x1080&random=11965377&millis=1473441350879&referrer=http%3A%2F%2Fwww.sport365.live%2Fen%2Fhome",headers=headers, cookieJar=cookieJar)
-        getUrl(re.findall('<img width=.*?src=\\\\"(.*?)\\\\"',hh)[0],headers=headers, cookieJar=cookieJar,useproxy=False)
+        getUrl("http://www.sport365.live/",headers=headers, cookieJar=cookieJar)
+        mainref=lastfinalurl
     except: pass
+    
+    url=select365(url,cookieJar,mainref)
+    
+    if 1==2:
+        try:
+            headers=[('User-Agent',useragent)]
+            hh=getUrl("http://adbetnet.advertserve.com/servlet/view/dynamic/javascript/zone?zid=281&pid=4&resolution=1920x1080&random=11965377&millis=1473441350879&referrer=http%3A%2F%2Fwww.sport365.live%2Fen%2Fhome",headers=headers, cookieJar=cookieJar)
+            getUrl(re.findall('<img width=.*?src=\\\\"(.*?)\\\\"',hh)[0],headers=headers, cookieJar=cookieJar,useproxy=False)
+        except: pass
     if url=="": return 
     import HTMLParser
     h = HTMLParser.HTMLParser()
 
     #urlToPlay=base64.b64decode(url)
 
-    html=getUrl(url,headers=[('Referer','http://www.sport365.live/en/main')],cookieJar=cookieJar)
+    html=getUrl(url,headers=[('Referer',mainref)],cookieJar=cookieJar)
     
     
     #print html
@@ -526,21 +536,21 @@ def selectMatch(url):
     if len(sessionid)>0: '&Cookie=PHPSESSID='+sessionid.split('=')[-1]
     urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s&X-Playback-Session-Id=%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid,playback)    
 #    urlToPlaymain+="|Referer=%s&User-Agent=%s&Origin=http://h5.adshell.net&Referer=http://h5.adshell.net/peer5%s&X-Playback-Session-Id=%s"%( "http://h5.adshell.net/flash",urllib.quote_plus(useragent),sessionid,playback)    
-    headers=[('User-Agent',useragent)]
-    getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
+    headers=[('User-Agent',useragent),('Referer',mainref)]
+    getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
     cookieJar.save (S365COOKIEFILE,ignore_discard=True)
 
     return urlToPlaymain
     return 'plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(urlToPlaymain))
     
-def select365(url,cookieJar):
+def select365(url,cookieJar,mainref):
     print 'select365',url
     url=base64.b64decode(url)
     retUtl=""
     
     try:
         links=[]
-        matchhtml=getUrl(url,cookieJar=cookieJar,headers=[('X-Requested-With','XMLHttpRequest'),('Referer','http://www.sport365.live/en/home/')])        
+        matchhtml=getUrl(url,cookieJar=cookieJar,headers=[('X-Requested-With','XMLHttpRequest'),('Referer',mainref)])        
         reg=".open\('(.*?)'.*?>(.*?)<"
         sourcelinks=re.findall(reg,matchhtml)
         b6=False
@@ -638,3 +648,4 @@ def getCookiesString(cookieJar,cookieName=None):
     except: pass
     print 'cookieString',cookieString
     return cookieString
+

@@ -424,7 +424,7 @@ def AddSports(url):
     addDir('Mona' ,'sss',68,'')
     addDir('Sport365.live [GeoBlocked]' ,'sss',56,'')
     addDir('SmartCric.com (Live matches only)' ,'Live' ,14,'')
-    addDir('UKTVNow','sss' ,57,'')
+    addDir('UKTVNow [Limited Channels]','sss' ,57,'')
     
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
@@ -900,8 +900,8 @@ def PlayUKTVNowChannels(url):
     played=False
     ##DO YOU WANT ME TO STOP? lol
     try:
-        import uktvplayer
-        played=uktvplayer.play(listitem,cc)
+        import uktvplayerlimited
+        played=uktvplayerlimited.play(listitem,cc)
             
     except: 
         print 'error in PlayUKTVNowChannels'
@@ -2701,7 +2701,7 @@ def local_time(zone='Asia/Karachi'):
 
 def getUKTVPlayUrl(channelID ):
 
-    url=base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3ZhbGlkX2xpbms=")
+    url=base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDMvdjMvZ2V0X3ZhbGlkX2xpbms=")
     username="-1"
     usernameC=username+channelID
     s = base64.b64decode("dWt0dm5vdy10b2tlbi0tX3xfLSVzLXVrdHZub3dfdG9rZW5fZ2VuZXJhdGlvbi0lcy1ffF8tMTIzNDU2X3VrdHZub3dfNjU0MzIxLV98Xy11a3R2bm93X2xpbmtfdG9rZW4=")%(url,username)
@@ -2714,6 +2714,7 @@ def getUKTVPlayUrl(channelID ):
     headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',token)]
     jsondata=getUrl(url,post=post+'&',headers=headers)
     return json.loads(jsondata)
+    
     
 def getAPIToken( url,  username):
     #print url,username
@@ -2773,7 +2774,7 @@ def getUKTVPage():
   
     #headers=eval(base64.b64decode("WygnVXNlci1BZ2VudCcsJ1VTRVItQUdFTlQtVUtUVk5PVy1BUFAtVjEnKSwoJ2FwcC10b2tlbicsJ2FmZjE2MTRiNTJhNTM3YmQ3YmEyZDMyODE0ODU1NmFmJyld"))
     headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',getAPIToken(base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X2FsbF9jaGFubmVscw=="),username))]
-    jsondata=getUrl(base64.b64decode("aHR0cHM6Ly9hcHAudWt0dm5vdy5uZXQvdjMvZ2V0X2FsbF9jaGFubmVscw=="),post=post,headers=headers)
+    jsondata=getUrl(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDMvdjMvZ2V0X2FsbF9jaGFubmVscw=="),post=post,headers=headers)
     jsondata=json.loads(jsondata)
     
     try:
@@ -2783,6 +2784,7 @@ def getUKTVPage():
         print 'uktv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
+
 
 def getUKTVCats():
     ret=[]
@@ -2854,9 +2856,11 @@ def getUKTVChannels(categories=[], channels=[]):
             if channel["cat_name"].strip().lower() in categories or  channel["cat_name"] in categories  or channel["channel_name"].strip().lower() in categories  :
                     cname=channel["channel_name"]
                     curl='uktvnow:'+channel["pk_id"]
-                    cimage=channel["img"]
+                    cimage=channel["img"].replace(' ','%20')
+                    print cimage
                     if not cimage.startswith("http"):
                         cimage='https://app.uktvnow.net/'+cimage
+                    print cimage
                     if cname==None: cname=curl
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
                         ret.append((cname +' uktv' ,'manual', curl ,cimage))  
