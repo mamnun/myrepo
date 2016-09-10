@@ -58,6 +58,11 @@ ZEMCOOKIEFILE='ZemCookieFile.lwp'
 ZEMCOOKIEFILE=os.path.join(profile_path, ZEMCOOKIEFILE)
 S365COOKIEFILE='s365CookieFile.lwp'
 S365COOKIEFILE=os.path.join(profile_path, S365COOKIEFILE)
+
+YPLoginFile='YpCookieFile.lwp'
+YPLoginFile=os.path.join(profile_path, YPLoginFile)
+
+
  
 mainurl=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vY2F0ZWdvcnkvcGFraXN0YW5pLw==')
 liveURL=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vbGl2ZS1wYWtpc3RhbmktbmV3cy1jaGFubmVscy8=')
@@ -2170,8 +2175,12 @@ def getYPUrl(url):
         else:
             videoid=tmp[0]
     
-        pageurl='http://www.yupptv.com/Account/OctoNewFrame.aspx?ChanId=%s'%videoid  
-        emhtm=getUrl(pageurl,headers=[('Referer','http://www.yupptv.com/Livetv/'),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')])
+        sess= getYPSession()
+        print 'sess',sess
+        pageurl='http://www.yupptv.com/Account/OctoNewFrame.aspx?ChanId=%s'%videoid 
+        print pageurl
+        emhtm=getUrl(pageurl,headers=[('Cookie',sess),('Referer','http://www.yupptv.com/Livetv/'),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')])
+        print 'after em'
         rr='file:\'(http.*?)\''    
         finalUrl=re.findall(rr,emhtm)
         print 'finalUrl',finalUrl
@@ -2184,7 +2193,8 @@ def getYPUrl(url):
         #    finalUrl=re.findall(rr,emhtm)
         ret=finalUrl[0]
         
-    except: pass
+    except: 
+        traceback.print_exc(file=sys.stdout)
     return ret
     
 def PlayYP(url):
@@ -3589,7 +3599,7 @@ def getDittoPage():
 
 def getYPPage(url,progress):
     
-
+ 
     p="u" if 'urdu' in url.lower() else 'h' if 'hindi' in url.lower() else 'p'
     
     fname='yptvpage_%s.json'%p
@@ -3611,7 +3621,7 @@ def getYPPage(url,progress):
         ln+=1
         progress.update( int((ln*100)/len(links)), "", "Filtering YP links..%d of %d"%(ln, len(links) ))
         if progress.iscanceled(): return []
-        if not getYPUrl(l[0])==None:
+        if 1==1:# not getYPUrl(l[0])==None:
             ret+=[l]
     links=ret
     jj=json.dumps(links)
@@ -3621,7 +3631,46 @@ def getYPPage(url,progress):
         print 'yp file saving error'
         traceback.print_exc(file=sys.stdout)
     return links
- 
+    
+def getYpCookieJar(updatedUName=False):
+    cookieJar=None
+    try:
+        cookieJar = cookielib.LWPCookieJar()
+        if not updatedUName:
+            cookieJar.load(YPLoginFile,ignore_discard=True)
+    except: 
+        cookieJar=None
+
+    if not cookieJar:
+        cookieJar = cookielib.LWPCookieJar()
+    return cookieJar 
+    
+#def getYPSession():
+#    cookieJar=getYpCookieJar()
+#    try:
+#        headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')]
+#        mainpage=getUrl('http://www.yupptv.com/Default.aspx',headers=headers,cookieJar=cookieJar )
+#        if 'Login / Register' in mainpage:
+#            headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),
+#            ('Origin','http://www.yupptv.com') ,
+#              ('Referer','http://www.yupptv.com/Default.aspx') ,
+#                ('X-Requested-With','XMLHttpRequest')             ]
+#            
+#            post="ctl00%24header1%24sm1=ctl00%24header1%24upLocation%7Cctl00%24header1%24btnSubmit&__LASTFOCUS=&__EVENTTARGET=&__EVENTARGUMENT=&ctl00%24header1%24txtSearch1280=&ctl00%24header1%24txtSearch1600=&ctl00%24header1%24txtLogin=cdn54447%40zasod.com&ctl00%24header1%24txtpassword=NOPWD&ctl00%24header1%24txtName=&ctl00%24header1%24txtEmail=&ctl00%24header1%24txtPwd=&ctl00%24header1%24txtretypwd=&ctl00%24header1%24ddlLangugae=0&ctl00%24header1%24TxtBoxCountry=0&ctl00%24header1%24txtCountryCode=&ctl00%24header1%24txtphoneno=&ctl00%24header1%24chkRterm=option3&ctl00%24header1%24txtFLogin=&ctl00%24header1%24lblCountryName=&ctl00%24header1%24lblCountryValue=&ctl00%24header1%24lblCountryNameindia=&ctl00%24header1%24lblCountryValueindia=&ctl00%24header1%24txtOtp=&ctl00%24header1%24dpdotplogin=0&ctl00%24header1%24txtlogincountrycode=&ctl00%24header1%24txtloginphone=&ctl00%24header1%24txtloginotp=&ctl00%24ContentPlaceHolder1%24header3%24txtActDiv=divHindi&__ASYNCPOST=true&ctl00%24header1%24btnSubmit=Login"
+#            mainpage=getUrl('http://www.yupptv.com/Default.aspx',post=post,cookieJar=cookieJar,headers=headers)
+#        cookieJar.save (YPLoginFile,ignore_discard=True)
+#    except: pass
+#    return cookieJar
+def getYPSession():
+    cookieJar=getYpCookieJar()
+    try:
+        import time
+        headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')]
+        mainpage=getUrl('http://shani.offshorepastebin.com/yppsession.php?i'+str(time.time()),headers=headers )
+        sess=re.findall('ASP.NET_SessionId\s(.*)',mainpage)[0]
+        return "ASP.NET_SessionId="+sess+";"
+    except: pass
+    return ""
     
 def getCFPage(catId):
     headers=[('User-Agent',base64.b64decode('Q0ZVTlRWLzMuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))]
