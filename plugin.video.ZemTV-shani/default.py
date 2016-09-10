@@ -2671,7 +2671,7 @@ def getUKTVUserAgent():
         post = urllib.urlencode(post)
       
         headers=[('User-Agent','USER-AGENT-UKTVNOW-APP-V2'),('app-token',getAPIToken(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3VzZXJfYWdlbnQ="),username))]
-        jsondata=getUrl(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDIvdjMvZ2V0X3VzZXJfYWdlbnQ="),post=post,headers=headers)
+        jsondata=getUrl(base64.b64decode("aHR0cDovL3VrdHZub3cubmV0L2FwcDMvdjMvZ2V0X3VzZXJfYWdlbnQ="),post=post,headers=headers)
         jsondata=json.loads(jsondata)    
         import pyaes
         try:
