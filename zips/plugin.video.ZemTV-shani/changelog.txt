@@ -1,3 +1,6 @@
+[B]Version 5.2.6[/B]
+yupp fixed
+
 [B]Version 5.2.5[/B]
 sport365 update
 --removed rest
