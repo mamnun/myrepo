@@ -83,6 +83,7 @@ def play(listitem, item):
                 if ticket.startswith('TKT_'):
                     pDialog.update(60, 'got the ticket!!')
                     selfAddon.setSetting( "uktvticket" ,ticket);
+                    if selfAddon.getSetting( "uktvticket")=="": return False #addon setting curropted?
                     post={'type':'getUrl','ticket':selfAddon.getSetting( "uktvticket"),'url':url}
                     post = urllib.urlencode(post)
                     decurl="aHR0cDovL3NoYW5pLm9mZnNob3JlcGFzdGViaW4uY29tL1VLVFYucGhwP3Q9JXM=".decode("base64")%str(int(time.time()))

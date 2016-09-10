@@ -1,4 +1,4 @@
-[B]Version 5.2.7[/B]
+[B]Version 5.2.8[/B]
 uktvlimited fix
 
 [B]Version 5.2.6[/B]

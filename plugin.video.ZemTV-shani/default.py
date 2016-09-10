@@ -908,7 +908,7 @@ def PlayUKTVNowChannels(url):
         traceback.print_exc(file=sys.stdout)
         pass
     if not played:
-        if RefreshResources([('uktvplayer.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/uktvplayer.py')]):
+        if RefreshResources([('uktvplayerlimited.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/uktvplayerlimited.py')]):
             dialog = xbmcgui.Dialog()
             ok = dialog.ok('XBMC', 'Updated files dyamically, try again, just in case!')           
             print 'Updated files'
