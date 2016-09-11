@@ -98,7 +98,7 @@ def play(listitem, item):
                 else:
                     dialog = xbmcgui.Dialog()
                     ok = dialog.ok('XBMC', 'Error while generating ticket\r\n'+ticket)           
-                    return True
+                    return False
                     
             #if '|' in url:# and 1==2:
             #    url=url#.split('|')[0]+"|User-Agent=UKTVNOW_PLAYER_1.2&Referer=www.uktvnow.net"
