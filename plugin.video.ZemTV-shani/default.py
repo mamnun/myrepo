@@ -431,11 +431,12 @@ def AddSports(url):
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
     addDir('PV2 Sports' ,'zemsports',36,'')
     addDir('Safe' ,'sss',72,'')
+    addDir('TVPlayer [UK Geo Restricted]','sss',74,'https://assets.tvplayer.com/web/images/tvplayer-logo-white.png')
     #addDir('Yupp Asia Cup','Live' ,60,'')
     #addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
     #addDir('cricfree.sx' ,'sss',41,'')
     #addDir('WatchCric.com-Live matches only' ,base64.b64decode('aHR0cDovL3d3dy53YXRjaGNyaWMubmV0Lw==' ),16,'') #blocking as the rtmp requires to be updated to send gaolVanusPobeleVoKosat
-    addDir('c247.tv-P3G.Tv' ,'P3G'  ,30,'')
+   # addDir('c247.tv-P3G.Tv' ,'P3G'  ,30,'')
     #addDir('Streams' ,'sss',39,'')
 
     
@@ -1076,6 +1077,24 @@ def AddSafeLang(url=None):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(cname+','+ctype) ,73 ,'', False, True,isItFolder=True)		#name,url,mode,icon
     return  
     
+def AddTVPlayerChannels(url):
+
+    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]               
+    mainhtml=getUrl('http://tvplayer.com/watch/bbcone',headers=headers)
+    cdata=re.findall('<li class="online.*?free.*?\s*<a href="(.*?)" title="(.*?)".*?\s*<img.*?src="(.*?)"',mainhtml)
+    for cc in cdata:
+        
+        mm=11
+        col='ZM'
+        logo=cc[2]
+        cname=cc[1]
+        if 'Watch ' in cname:
+            cname=cname.replace('Watch ','')
+        curl=cc[0]
+        if not curl.startswith('http'):
+            curl= ' http://tvplayer.com/'+curl
+        addDir(cname.capitalize() ,base64.b64encode('tvplayer:'+curl) ,mm ,logo, False, True,isItFolder=False)		#name,url,mode,icon
+
 def AddSafeChannels(url):
     import time 
     tt=int(time.time())
@@ -4309,7 +4328,11 @@ def PlayOtherUrl ( url ):
         return 
     if "safe:" in url:
         PlaySafeLink(url.split('safe:')[1])
-        return            
+        return        
+    if "tvplayer:" in url:
+        playtvplayer(url.split('tvplayer:')[1])
+        return                 
+       
     if url in [base64.b64decode('aHR0cDovL2xpdmUuYXJ5bmV3cy50di8='),
             base64.b64decode('aHR0cDovL2xpdmUuYXJ5emluZGFnaS50di8='),
             base64.b64decode('aHR0cDovL2xpdmUuYXJ5cXR2LnR2Lw=='),
@@ -4988,7 +5011,52 @@ def PlayShowLink ( url, redirect=True ):
         xbmc.executebuiltin("xbmc.PlayMedia("+uurl+")")
 
     return
+    
+def get_treabaAia():
+    val=""
+    import math
+    for d in [5.6
+            ,12.1
+            ,7.5
+            ,3.3
+            ,11.8
+            ,7
+            ,11.6
+            ,9
+            ,10.7
+            ,6.6
+            ,3.5
+            ,10.1
+            ,11.8
+            ,7.1
+            ,11.5]:
+        val +=  chr(int(math.floor(d * 10)));
+    return val
+import md5
+#print 
 
+def generateKey(tokenexpiry):
+    return md5.new(tokenexpiry+get_treabaAia()).hexdigest()
+print generateKey("1473650167")
+
+def playtvplayer(url):
+    import re,urllib,json
+    watchHtml=getUrl(url)
+    channelid=re.findall('var initialChannelId = "(.*?)"' ,watchHtml)[0]
+    hashval=urllib.unquote(re.findall('hash = "(.*?)"' ,watchHtml)[0])
+    expval=re.findall('exp = "(.*?)"' ,watchHtml)[0]
+    keyval=generateKey(expval)
+    cj = cookielib.LWPCookieJar()
+    data = urllib.urlencode({'id' : channelid})
+    headers=[('Token-Expiry',expval) ,('Hash',hashval),('Key',keyval),('Referer','http://assets.tvplayer.com/web/flash/tvplayer/TVPlayer-DFP-3.swf'),('X-Requested-With','ShockwaveFlash/22.0.0.209')]
+    retjson=getUrl("http://live.tvplayer.com/stream-web-encrypted.php",post=data, headers=headers,cookieJar=cj);
+    jsondata=json.loads(retjson)
+#    print cj
+    url=jsondata["tvplayer"]["response"]["stream"]
+    PlayGen(base64.b64encode(url+'|Cookie=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209&Referer=http://tvplayer.com/watch/'%getCookiesString(cj)))
+    return 
+    
+    
 def ShowAllSources(url, loadedLink=None):
 	global linkType
 #	print 'show all sources',url
@@ -5386,7 +5454,9 @@ try:
 	elif mode==73:
 		print "Play url is "+url
 		AddSafeChannels(url)  
-      
+	elif mode==74:
+		print "Play url is "+url
+		AddTVPlayerChannels(url)        
         
 except:
 	print 'somethingwrong'
