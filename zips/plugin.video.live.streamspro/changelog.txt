@@ -1,3 +1,5 @@
+Version 2.6.2
+Added pyaesnew for more support of different block methods and padding.
 Version 2.6.1
 support for multiple link one play $$LSPlayOnlyOne$$ (small bug)
 Version 2.6.0
