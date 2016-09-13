@@ -331,7 +331,7 @@ def Colored(text = '', colorid = '', isBold = False):
     return '[COLOR ' + color + ']' + text + '[/COLOR]'	
 
 def getLinks():
-    cookieJar=get365CookieJar()
+    cookieJar=get365CookieJar(True)
     kkey=get365Key(cookieJar,useproxy=False)
         
     headers=[('User-Agent',useragent)]
