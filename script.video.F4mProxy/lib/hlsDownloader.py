@@ -221,21 +221,21 @@ def download_chunks(URL, chunk_size=4096, enc=None):
     #conn=urllib2.urlopen(URL)
     #print 'starting download'
     
-    conn=getUrl(URL,returnres=True)
+    conn=getUrl(URL,timeout=6,returnres=True)
     #while 1:
     if enc:
         if USEDec==1 :
             chunk_size*=1000
         else:
             chunk_size*=100
-        for chunk in conn.iter_content(chunk_size=chunk_size):
-            yield chunk
-    else:
-        yield conn.content;
-        chunk_size=chunk_size*100
-        
 
+    else:
+#        yield conn.content;
+        chunk_size=chunk_size*1000
     
+    for chunk in conn.iter_content(chunk_size=chunk_size):
+        yield chunk
+
         #if chunk_size==-1:
         #    data=conn.read()
         #else:
@@ -531,7 +531,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
                 pass
             else:
                 # choose to start playback three files from the end, since this is a live stream
-                medialist = medialist[-3:]
+                medialist = medialist[-6:]
             #print 'medialist',medialist
             addsomewait=False
             for media in medialist:
