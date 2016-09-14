@@ -2500,7 +2500,7 @@ def getIpBoxSourcesAllOtherSource():
 
     return ret
     
-def getIpBoxSources():
+def getIpBoxSources(frompakindia=False):
     ret=[]
     try:
 
@@ -2521,7 +2521,10 @@ def getIpBoxSources():
     except:
         traceback.print_exc(file=sys.stdout)
     
-    return ret+getIpBoxSourcesAllOtherSource()
+    if frompakindia:
+        return ret
+    else:
+        return ret+getIpBoxSourcesAllOtherSource()
 
     
 def getIpBoxChannels(url,forSports=False):
@@ -3339,7 +3342,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         try:
             
             progress.update( 90, "", "Loading IpBox Channels", "" )
-            for nm,url in getIpBoxSources():
+            for nm,url in getIpBoxSources(True):
                 rematch=getIpBoxChannels([url])
                 if len(rematch)>0:
                     match+=rematch
