@@ -1158,7 +1158,8 @@ def AddSafeChannels(url):
     cname,curl=url.split(',')
     headers=[('Referer',"http://customer.safersurf.com/onlinetv.html"),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'),('X-Requested-With','XMLHttpRequest')]               
     jsondata=getUrl('http://customer.safersurf.com/php/getProgForLanguage.php?varName=allChannelsAllCats&noAdd=false&browserLang=%s&displayLang=en&userCountry=United%%20Kingdom&src=all&dtp=%s'%(curl,tt),headers=headers)
-    jsondata=re.findall('=(\[.*?\]);',jsondata)[0]
+    #print jsondata
+    jsondata=re.findall('=(\[.*\])',jsondata)[0]
     addDir(Colored('Channel Language [%s]'.capitalize()%cname,'red') ,'' ,0 ,'', False, True,isItFolder=False)
     #print jsondata
     jsondata=json.loads(jsondata)
