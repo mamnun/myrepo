@@ -1218,7 +1218,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             listrepeat=m['listrepeat']                            
                             #ret=re.findall(m['expres'],link)
                             #print 'ret',val
-                            return listrepeat,eval(val), m,regexs
+                            return listrepeat,eval(val), m,regexs,cookieJar
 #                        print 'url k val',url,k,val
                         #print 'repr',repr(val)
                         
@@ -1234,7 +1234,7 @@ def getRegexParsed(regexs, url,cookieJar=None,forCookieJarOnly=False,recursiveCa
                             #print link
                             ret=re.findall(m['expres'],link)
                             #print 'ret',ret
-                            return listrepeat,ret, m,regexs
+                            return listrepeat,ret, m,regexs,cookieJar
                              
                         val=''
                         if not link=='':
@@ -2953,7 +2953,7 @@ elif mode==17 or mode==117:
 
     data=None
     if regexs and 'listrepeat' in urllib.unquote_plus(regexs):
-        listrepeat,ret,m,regexs =getRegexParsed(regexs, url)
+        listrepeat,ret,m,regexs, cookieJar =getRegexParsed(regexs, url)
         #print listrepeat,ret,m,regexs
         d=''
 #        print 'm is' , m
@@ -3039,6 +3039,11 @@ elif mode==17 or mode==117:
                     listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(i+1) + ']',escape(val))
 #                    print listrepeatT
                 listrepeatT=listrepeatT.replace('[' + regexname+'.param'+str(0) + ']',str(rnumber)) 
+                
+                try:
+                    if cookieJar and '[' + regexname+'.cookies]' in listrepeatT:
+                        listrepeatT=listrepeatT.replace('[' + regexname+'.cookies]',getCookiesString(cookieJar)) 
+                except: pass
                 
                 #newcopy = urllib.quote(repr(newcopy))
     #            print 'new regex list', repr(newcopy), repr(listrepeatT)

@@ -1,3 +1,5 @@
+Version 2.6.3
+now in listrepeat you have [regename.cookies]
 Version 2.6.2
 Added pyaesnew for more support of different block methods and padding.
 Version 2.6.1
