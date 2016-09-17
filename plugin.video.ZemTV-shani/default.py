@@ -1081,7 +1081,7 @@ def AddSafeLang(url=None):
 def AddTVPlayerChannels(url):
     headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]               
     mainhtml=getUrl('http://tvplayer.com/watch/bbcone',headers=headers)
-    cdata=re.findall('<li class="online.*?free.*?\s*<a href="(.*?)" title="(.*?)".*?\s*<img.*?src="(.*?)"',mainhtml)
+    cdata=re.findall('<li .*? class="online.*?free.*?\s*<a href="(.*?)" title="(.*?)".*?\s*<img.*?src="(.*?)',mainhtml)
     for cc in cdata:
         
         mm=11
@@ -5139,7 +5139,8 @@ def playtvplayer(url):
     #    print cj
         cj = cookielib.LWPCookieJar()
         playurl1=jsondata["tvplayer"]["response"]["stream"]
-        getUrl(playurl1, headers=headers,cookieJar=cj);
+        m3utext=getUrl(playurl1, headers=headers,cookieJar=cj);
+        #playurl1=re.findall('(http.*)',m3utext)[-1]
         playurl=playurl1+'|Cookie=%s&User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36&X-Requested-With=ShockwaveFlash/22.0.0.209&Referer=http://tvplayer.com/watch/'%getCookiesString(cj)
         
     except: 
