@@ -4396,7 +4396,7 @@ def PlayPV2Link(url):
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
-    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G34' ,'13G36','13G35']),random.choice(['iPhone','iPad','iPod']),random.choice(['9_3_3','9_3_4','9_3_5']))
+    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G34' ,'13G36']),random.choice(['iPhone','iPad','iPod']),random.choice(['9_3_3','9_3_4','9_3_5']))
     urlToPlay+=useragent
     #try:
     #    if 'iptvaus.dynns.com' in urlToPlay:# quickfix
