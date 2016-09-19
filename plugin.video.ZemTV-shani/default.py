@@ -1220,7 +1220,7 @@ def AddHDFreeChannels(url):
     #    mainhtml=getUrl(re.findall('url=(.*?)"',mainhtml)[0])
     #print jsondata
     elements=re.findall('<a href=[\'"](.*?)[\'"].*?img.*?src=[\'"](.*?)[\'"]',mainhtml)
-    print elements
+    #print elements
     #print jsondata
     #jsondata=json.loads(jsondata)
     for cc in elements:
@@ -1236,7 +1236,7 @@ def AddHDFreeChannels(url):
             name=name.split('-live-stream')[0]
         url=cc[0]
         logo=cc[1]
-        print name, logo
+        #print name, logo
         if not logo.startswith('http'):
             logo= 'http://hdfree.tv'+logo
         addDir(Colored(name.capitalize(),col) ,base64.b64encode('hdfree:'+url) ,mm ,logo, False, True,isItFolder=True)		#name,url,mode,icon
