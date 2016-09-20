@@ -1204,7 +1204,40 @@ def playInfinite(url):
     except:
         traceback.print_exc(file=sys.stdout)
         return
+        
+def playHDCast(url, mainref):
+    try:
 
+        firstframe=url
+        pageURl=mainref
+        agent='Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'
+        headers=[('Referer',pageURl),('User-Agent',agent)]                       
+        result = getUrl(firstframe, headers=headers)
+
+        regid='<script.*?id=[\'"](.*?)[\'"].*?width=[\'"]?(.*?)[\'"]?\;.*?height=[\'"]?(.*?)[\'"]?\;.*?src=[\'"](.*?)[\'"]'
+        id,wd,ht, jsurl=re.findall(regid,result)[0]
+        finalpageUrl=''
+        headers=[('Referer',firstframe),('User-Agent',agent)]                       
+
+
+        jsresult = getUrl(jsurl, headers=headers)
+        regjs='src=[\'"](.*?)[\'"]'
+        embedUrl=re.findall(regjs,jsresult)[0]
+        embedUrl+=id+'&vw'+wd+'&vh='+ht
+        headers=[('Referer',firstframe),('User-Agent',agent)]                             
+        result=getUrl(embedUrl, headers=headers)
+        if '<iframe  width= height=100%' in result:
+            streamurl = re.findall('<div id=[\'"]player.*\s*<iframe.*?src=(.*?)\s',result)
+            if len(streamurl)>0:
+                headers=[('Referer',embedUrl),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]                             
+                html=getUrl(streamurl[0].replace('&amp;','&'),headers=headers)
+                streamurl = re.findall('file:["\'](.*?)["\']',html)[0]
+                return PlayGen(base64.b64encode(streamurl+'|User-Agent='+agent))
+
+    except:
+        traceback.print_exc(file=sys.stdout)
+        return False
+                
 def playHDFree(url):
     try:
 
@@ -5296,14 +5329,20 @@ def playstreamhd(url):
 
     watchHtml=getUrl(url,headers=headers)
     videframe=re.findall('"videoiframe" src="(.*?)"' ,watchHtml)[0]
+    
     videoframedata=getUrl(videframe,headers=headers)
     iframe=re.findall('iframe src="(.*?)"' ,videoframedata)
     if len(iframe)>0:
         
         iframdata=getUrl(iframe[0],headers=headers)
+        iframe=iframe[0]
     else:
+        if 'hdcast' in videoframedata:
+            return playHDCast(videframe, "http://streamhdeu.com/")
         iframdata=videoframedata
     m3ufile=re.findall('file: "(.*?)"' ,iframdata)[0]
+    
+    
     
    
     PlayGen(base64.b64encode(m3ufile+'|User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'))
