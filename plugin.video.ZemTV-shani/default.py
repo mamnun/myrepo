@@ -1175,7 +1175,7 @@ def playInfinite(url):
         page_data=getUrl(url, headers=headers)
         
         
-        areaid= re.findall("area>(.*?)<", page_data)[0]
+        areaid= re.findall(";area=(.*?)<", page_data)[0]
         import string,random
         randomtext=''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(7))
 
