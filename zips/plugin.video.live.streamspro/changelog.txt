@@ -1,3 +1,5 @@
+Version 2.6.4
+now in LSPlayOnlyOne ignores the settings and group links in one
 Version 2.6.3
 now in listrepeat you have [regename.cookies]
 Version 2.6.2

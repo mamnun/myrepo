@@ -761,11 +761,13 @@ def getItems(items,fanart,dontLink=False):
                 if len(url) > 1:
                     alt = 0
                     playlist = []
+                    ignorelistsetting=True if '$$LSPlayOnlyOne$$' in url[0] else False
+                    
                     for i in url:
-                            if  add_playlist == "false":
+                            if  add_playlist == "false" and not ignorelistsetting:
                                 alt += 1
                                 addLink(i,'%s) %s' %(alt, name.encode('utf-8', 'ignore')),thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
-                            elif  add_playlist == "true" and  ask_playlist_items == 'true':
+                            elif  (add_playlist == "true" and  ask_playlist_items == 'true') or ignorelistsetting:
                                 if regexs:
                                     playlist.append(i+'&regexs='+regexs)
                                 elif  any(x in i for x in resolve_url) and  i.startswith('http'):
@@ -774,7 +776,9 @@ def getItems(items,fanart,dontLink=False):
                                     playlist.append(i)
                             else:
                                 playlist.append(i)
+                    
                     if len(playlist) > 1:
+                        
                         addLink('', name,thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
                 else:
                     
@@ -2596,7 +2600,7 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
         u=sys.argv[0]+"?"
         play_list = False
         if playlist:
-            if addon.getSetting('add_playlist') == "false":
+            if addon.getSetting('add_playlist') == "false" and '$$LSPlayOnlyOne$$' not in playlist[0] :
                 u += "url="+urllib.quote_plus(url)+"&mode="+mode
             else:
                 u += "mode=13&name=%s&playlist=%s" %(urllib.quote_plus(name), urllib.quote_plus(str(playlist).replace(',','||')))
