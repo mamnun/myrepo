@@ -472,7 +472,8 @@ def selectMatch(url):
             post = urllib.urlencode(post)
             enclinkhtml2= getUrl(postpage[0],post=post,cookieJar=cookieJar, headers=[('Referer',linkurl),('User-Agent',useragent)])
             #enclink=re.findall(reg,enclinkhtml2)
-            if 'player_div' in enclinkhtml2>0:
+            
+            if 1==1:#'player_div' in enclinkhtml2>0:
                 usediv=True
                 #enclinkhtml=enclinkhtml2
                 #print 'usediv',usediv
