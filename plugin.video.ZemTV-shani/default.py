@@ -1318,14 +1318,31 @@ def AddInfiniteChannels(url):
     mainhtml=getUrl(base64.b64decode('aHR0cDovL3d3dy5sYW9sYTEudHYvZW4taW50L2xpdmUtc2NoZWR1bGU='),headers=headers)
     elements=mainhtml.split('<li class="item list-sport')# re.findall('<time.*?>(.*?)<.*\s*.*\s*.*\s*<span.*?>(.*?)<.*\s*.*\s*.*\s*.*?src="(.*?)".*\s*.*\s*.*\s*.*?href="(.*?)".*\s.*?h3>(.*?)<.*\s*.*?h2>(.*?)<',mainhtml)
     print 'starting'
-    for el in elements[1:30]:
+    for el in elements[1:40]:
         print el
         cc=re.findall('<time.*?>(.*?)<.*?displaymo.*?>(.*?)<.*?img.*?src="(.*?)".*?h3>(.*?)<.*?h2>(.*?)<.*?href="(.*?)".*?data-sstatus="(.*?)"',el,re.DOTALL)[0]
+        res=re.findall('<dt class="full">Available in.*?<dd>(.*?)<\/dd>',el,re.DOTALL)
+        restext=""
+        try:
+            if len(res)>0:
+                res=res[0]
+                if "Worldwide" in res:
+                    restext="Worldwide"
+                if "except" in res:
+                    restext+=" Except "
+                    restext+=res.split('except')[1].split('>')[1].split('<')[0]
+                if len(restext)==0:
+                    restext="Only in "
+                    restext+=res.split('>')[1].split('<')[0]
+        except: pass
+            
         mm=11
         col='ZM'
         #print 'xxxxxxxxxxx'
         #print 'name' in cc
         name='%s %s %s\n%s'%(Colored(cc[0], 'red'),Colored(cc[1],col),cc[4],Colored(cc[4],('blue' if cc[6]=="4" else "white")  ))
+        if len(restext)>0:
+            name+= Colored(' [%s]'%restext, 'red')
         
         
         
