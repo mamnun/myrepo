@@ -1,0 +1,37 @@
+[B]Version 5.4.2[/B]
+sports365
+[B]Version 5.4.1[/B]
+streamhd and infinite bugs
+[B]Version 5.4.0[/B]
+streamhd schedule links update
+[B]Version 5.3.9[/B]
+infi streams few errors
+[B]Version 5.3.8[/B]
+infi streams and movies
+[B]Version 5.3.7[/B]
+pv2 and hdfree
+[B]Version 5.3.6[/B]
+tvplayer lising empty issue
+[B]Version 5.3.5[/B]
+safe links empty issue
+[B]Version 5.3.4[/B]
+sport365 experimental freezing issue
+[B]Version 5.3.3[/B]
+tvplayer, lastest version of the site
+[B]Version 5.3.2[/B]
+StreamHD Added
+[B]Version 5.3.1[/B]
+TVPlayer Added
+[B]Version 5.3.0[/B]
+uktvparams
+[B]Version 5.2.9[/B]
+pv2
+[B]Version 5.2.8[/B]
+uktvlimited fix
+
+[B]Version 5.2.6[/B]
+yupp fixed
+
+[B]Version 5.2.5[/B]
+sport365 update
+--removed rest
