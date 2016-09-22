@@ -1274,20 +1274,43 @@ def playHDCast(url, mainref):
 class InputWindow(xbmcgui.WindowDialog):
     def __init__(self, *args, **kwargs):
         self.cptloc = kwargs.get('captcha')
-        self.img = xbmcgui.ControlImage(335,30,524,100,self.cptloc)
+        self.img = xbmcgui.ControlImage(335,30,524,90,self.cptloc)
+
         self.addControl(self.img)
-        self.kbd = xbmc.Keyboard()
+        self.setProperty('zorder', "99")
+        #self.kbd = xbmc.Keyboard()
 
     def get(self):
         self.show()
-        xbmc.sleep(3000)        
-        self.kbd.doModal()
-        if (self.kbd.isConfirmed()):
-            text = self.kbd.getText()
-            self.close()
-            return text
+        xbmc.sleep(3000)            
+        #self.kbd.doModal()
+        #if (self.kbd.isConfirmed()):
+        #    text = self.kbd.getText()
+        #    self.close()
+        text=xbmcgui.Dialog().input('Enter Captcha', type=xbmcgui.INPUT_ALPHANUM)
         self.close()
-        return False        
+        return text
+        
+        return False  
+        
+    def showme():
+        self.setProperty('zorder', "-1")
+
+def tst():
+    retcaptcha=""
+    if 1==1:
+        local_captcha = os.path.join(profile_path, "captchaC.img" )
+        #localFile = open(local_captcha, "wb")
+        #localFile.write(getUrl(imageurl,cookieJar,headers=[('Referer',logonpaged),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]))
+        #localFile.close()
+        cap=""#cap=parseCaptcha(local_captcha)
+        #if originalcaptcha:
+        #    cap=parseCaptcha(local_captcha)
+        #print 'parsed cap',cap
+        if cap=="":
+            solver = InputWindow(captcha=local_captcha)
+            retcaptcha = solver.get()
+            
 def getHDCastCaptcha(imageurl,cookieJar, logonpaged):
     retcaptcha=""
     if 1==1:
@@ -5895,6 +5918,7 @@ try:
 		AddTVPlayerChannels(url)        
 	elif mode==75:
 		print "Play url is "+url
+		#tst()
 		AddStreamHDCats(url)  
 	elif mode==76:
 		print "Play url is "+url
