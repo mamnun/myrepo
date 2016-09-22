@@ -338,7 +338,8 @@ def getLinks():
 
     liveurl="http://www.sport365.live/en/events/-/1/-/-"+'/'+str(getutfoffset())
     linkshtml=getUrl(liveurl,headers=headers, cookieJar=cookieJar)
-    reg="images\/types.*?(green|red).*?px;\">(.*?)<\/td><td style=\"borde.*?>(.*?)<\/td><td.*?>(.*?)<\/td.*?__showLinks.*?,.?\"(.*?)\".*?\">(.*?)<"
+    reg="images\/types.*?(green|red).*?px;\">([^<]+)<\/td><td style=\"borde.*?>([^<]+)<\/td><td.*?>([^<]+)<\/td.*?\(.*?,.?\"([^\"]+)\".*?\">([^<]+)<"
+                                                                                                         # .*?\(.*?,.?\"(.*?)\".*?\">(.*?)<    
     sportslinks=re.findall(reg,linkshtml)
     print 'got links',sportslinks
     progress = xbmcgui.DialogProgress()
@@ -418,7 +419,13 @@ def selectMatch(url):
         except: pass
         
         url=select365(url,cookieJar,mainref)
-        
+        print 'playurl',url
+        if 'iframe' in url.lower():
+            url=re.findall('(http.*?)\\\\' , url)[0]
+        if 'script' in url.lower():
+            url=re.findall('(http.*?)&' , url)[0]
+                
+        print 'playurl',url
         if 1==2:
             try:
                 headers=[('User-Agent',useragent)]
@@ -559,6 +566,7 @@ def select365(url,cookieJar,mainref):
         reg=".open\('(.*?)'.*?>(.*?)<"
         sourcelinks=re.findall(reg,matchhtml)
         b6=False
+        b7=False
 
         enc=False
         if 1==2 and len(sourcelinks)==0:
@@ -583,8 +591,14 @@ def select365(url,cookieJar,mainref):
             #print sourcelinks
             enc=True    
             b6=False
+        if len(sourcelinks)==0:
+            reg="<td class='row.' wid.*?>(.*?)<.*?onC.*?\\('(.*?)'"
+            sourcelinks=re.findall(reg,matchhtml)
+            #print sourcelinks
+            enc=True    
+            b7=True
             
-        #print 'sourcelinks',sourcelinks
+        print 'sourcelinks',sourcelinks
         kkey=get365Key(get365CookieJar())
         if len(sourcelinks)==0:
             print 'No links',matchhtml
@@ -596,6 +610,8 @@ def select365(url,cookieJar,mainref):
             for curl,cname in sourcelinks:
                 ino+=1
                 try:
+                    if b7:
+                       curl,cname=cname,curl 
                     if b6:
                         curl,cname=cname,curl
                         #print b6,curl
