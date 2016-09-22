@@ -1235,14 +1235,16 @@ def playHDCast(url, mainref):
             embedUrl='http://bro.adca.st'+embedUrl+id+'&width='+wd+'&height='+ht
         headers=[('Referer',firstframe),('User-Agent',agent)]                             
         result=getUrl(embedUrl, headers=headers, cookieJar=cookieJar)
+
         if not broadcast:# in result:
             if 'blockscript=' in result: #ok captcha here
                 try:
-                    xval=re.findall('name="x" value="(.*?)"',html)[0]
-                    urlval=re.findall('name="url" value="(.*?)"',html)[0]
-                    blocscriptval=re.findall('name="blockscript" value="(.*?)"',html)[0]
-                    imageurl==re.findall('<td nowrap><img src="(.*?)"',html)[0]                
-
+                    xval=re.findall('name="x" value="(.*?)"',result)[0]
+                    urlval=re.findall('name="url" value="(.*?)"',result)[0]
+                    blocscriptval=re.findall('name="blockscript" value="(.*?)"',result)[0]
+                    imageurl=re.findall('<td nowrap><img src="(.*?)"',result)[0].replace('&amp;','&')             
+                    if not imageurl.startswith('http'):
+                        imageurl='http://hdcast.org'+imageurl
                     post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,embedUrl )}
                     post = urllib.urlencode(post)
                     headers=[('Referer',embedUrl),('User-Agent',agent)]                             
@@ -1272,13 +1274,13 @@ def playHDCast(url, mainref):
 class InputWindow(xbmcgui.WindowDialog):
     def __init__(self, *args, **kwargs):
         self.cptloc = kwargs.get('captcha')
-        self.img = xbmcgui.ControlImage(335,30,424,50,self.cptloc)
+        self.img = xbmcgui.ControlImage(335,30,524,100,self.cptloc)
         self.addControl(self.img)
         self.kbd = xbmc.Keyboard()
 
     def get(self):
         self.show()
-        time.sleep(3)        
+        xbmc.sleep(3000)        
         self.kbd.doModal()
         if (self.kbd.isConfirmed()):
             text = self.kbd.getText()
@@ -1293,7 +1295,7 @@ def getHDCastCaptcha(imageurl,cookieJar, logonpaged):
         localFile = open(local_captcha, "wb")
         localFile.write(getUrl(imageurl,cookieJar,headers=[('Referer',logonpaged),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]))
         localFile.close()
-        cap="";#cap=parseCaptcha(local_captcha)
+        cap=""#cap=parseCaptcha(local_captcha)
         #if originalcaptcha:
         #    cap=parseCaptcha(local_captcha)
         #print 'parsed cap',cap
