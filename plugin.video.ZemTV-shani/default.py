@@ -3338,6 +3338,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isIpBoxff=selfAddon.getSetting( "isIpBoxff" )
     #isIpBoxff="true"
     isYPgenOff= selfAddon.getSetting( "isYPOff" )
+    isYPgenOff="true"
     isUKTVOff=selfAddon.getSetting( "isUKTVOff" )
 
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
