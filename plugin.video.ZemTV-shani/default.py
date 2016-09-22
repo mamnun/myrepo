@@ -1371,7 +1371,7 @@ def AddInfiniteChannels(url):
     elements=mainhtml.split('<li class="item list-sport')# re.findall('<time.*?>(.*?)<.*\s*.*\s*.*\s*<span.*?>(.*?)<.*\s*.*\s*.*\s*.*?src="(.*?)".*\s*.*\s*.*\s*.*?href="(.*?)".*\s.*?h3>(.*?)<.*\s*.*?h2>(.*?)<',mainhtml)
     print 'starting'
     for el in elements[1:40]:
-        print el
+        
         cc=re.findall('<time.*?>(.*?)<.*?displaymo.*?>(.*?)<.*?img.*?src="([^"]+)".*?h3>([^<]+)<.*?h2>([^<]+)<.*?href="([^"]+)".*?data-sstatus="([^"]+)"',el,re.DOTALL)[0]
         res=re.findall('<dt class="full">Available in.*?<dd>(.*?)<\/dd>',el,re.DOTALL)
         restext=""
