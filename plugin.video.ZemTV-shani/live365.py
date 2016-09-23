@@ -291,7 +291,8 @@ def get365CookieJar(updatedUName=False):
 
     if not cookieJar:
         cookieJar = cookielib.LWPCookieJar()
-    return cookieJar    
+    return cookieJar
+    
 def get365Key(cookieJar,url=None, useproxy=True):
     headers=[('User-Agent',useragent)]
     import time
@@ -304,6 +305,7 @@ def get365Key(cookieJar,url=None, useproxy=True):
             kurl='http://s1.medianetworkinternational.com/js/advertisement.js?'+str(int(time.time()))
     else:
         kurl=url
+    import os
     
     khtml=getUrl(kurl,headers=headers, cookieJar=cookieJar)
 
@@ -312,15 +314,19 @@ def get365Key(cookieJar,url=None, useproxy=True):
         if setProxy():
             kkey=getUrl(kurl,headers=headers, cookieJar=cookieJar)        
 
+
     kstr=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(khtml)[0]
     kunc=get_unwise(kstr)
-    print kunc   
+    #print kunc   
     
-    
-    kkey=re.findall('aes_key="(.*?)"',kunc)
-    print kkey
+    import pyaes
+    reg="ab5f9063d9ddd3200009cb49b10c2d63".decode("hex")
+    keycaller=os.path.dirname(os.path.realpath(__file__)).split('.video.')[-1].encode("hex")+"00000000000000000000000000000000" 
+    de = pyaes.new(keycaller[:32].decode("hex"), pyaes.MODE_ECB)
+    kkey=re.findall(de.decrypt(reg).replace('\x00', '').split('\0')[0],kunc)
+    #print kkey
     kkey=re.findall('aes\(\)\{return "(.*?)"',kunc)
-    print kkey
+    #print kkey
     return kkey[0]
 def Colored(text = '', colorid = '', isBold = False):
     if colorid == 'ZM':
@@ -337,6 +343,8 @@ def Colored(text = '', colorid = '', isBold = False):
     return '[COLOR ' + color + ']' + text + '[/COLOR]'	
 
 def getLinks():
+
+
     cookieJar=get365CookieJar(True)
     kkey=get365Key(cookieJar,useproxy=False)
         
