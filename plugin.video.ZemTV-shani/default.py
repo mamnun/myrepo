@@ -435,6 +435,7 @@ def AddSports(url):
     addDir('Safe' ,'sss',72,'')
     addDir('TVPlayer [UK Geo Restricted]','sss',74,'https://assets.tvplayer.com/web/images/tvplayer-logo-white.png')
     addDir('StreamHD','sss',75,'http://www.streamhd.eu/images/logo.png')
+    addDir('Mama HD','http://mamahd.com/index.html',79,'http://mamahd.com/images/logo.png')
     addDir('HDfree','sss',77,'')
     addDir('inFinite Streams','sss',78,'')
 
@@ -1122,6 +1123,70 @@ def AddStreamHDCats(url):
             curl= 'http://www.streamhd.eu'+curl
         addDir(cname.capitalize() ,curl ,mm ,logo, False, True,isItFolder=True)		#name,url,mode,icon
     
+def AddMAMAHDChannels(url):
+    import time
+    headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]               
+    mainhtml=getUrl(url,headers=headers)
+    tv=False
+    
+    if 1==2 and '/tv/' in url:
+        tv=True
+        reg='<a href="(.*?)".*?class="re.*?alt="(.*?)".*?'
+        cdata=re.findall(reg,mainhtml)
+    else:
+        #cdata=re.findall('eventsmall">(.*?)<.*?den-xs">(.*?)<.*\s*?<.*?img src="(.*?)".*?>(.*?)<.*\s*.*\s*.*?<span>(.*?)<.*\s*?.*?eventsmall.*?href="(.*?)">(.*?)<',mainhtml)
+        cdata= mainhtml.split('<div class="schedule">')[1]
+        cdata= re.findall( '(<a.*?<div class="row">.*?)<\/a>',cdata, re.DOTALL)
+    try:
+        addDir(Colored('Live Channels', 'blue') ,'sss' ,0 ,'', False, True,isItFolder=False)		#name,url,mode,icon
+        chdata= mainhtml.split('<div class="standard row channels">')[1].split('</div>')[0]
+        chdata= re.findall( '<a href="([^"]+)".*?\s*.*?src="([^"]+)".*?<span>([^<]+)<',chdata)
+        for cc2 in chdata:
+            try:
+                mm=11            
+                          
+                logo=cc2[1]            
+                cname=cc2[2]
+                curl=cc2[0]
+                
+
+                addDir(cname ,base64.b64encode('mamahd:'+curl) ,mm ,logo, False, True,isItFolder=False)		#name,url,mode,icon
+            except:
+                traceback.print_exc(file=sys.stdout)
+    except:
+        traceback.print_exc(file=sys.stdout)
+
+    addDir(Colored('Scheduled Games', 'blue') ,'sss' ,0 ,'', False, True,isItFolder=False)		#name,url,mode,icon        
+    for cc in cdata[:30]:
+        try:
+            mm=11
+            
+            if tv:
+                logo=''
+                cname=cc[1]
+                curl=cc[0]
+                if curl=='#': continue
+                
+            else:
+                cc2=re.findall('<a href="([^"]+)".*?<img src="([^"]+)".*?start="([^"]+)".*?home cell.*?<span>([^<]+)<.*?<span>([^<]+)<',cc, re.DOTALL)[0]
+                logo=cc2[1]            
+                cname=cc2[3]+' vs '+cc2[4]
+                curl=cc2[0]
+                timing=cc2[2]
+                livetxt=""
+                try:
+                    if time.time()>int(timing):
+                        livetxt="\nLIVE NOW"
+                    else:
+                        livetxt="\nLIVE in %s Hrs"% str(int((int(timing)-time.time())/60/60))
+                except:
+                    traceback.print_exc(file=sys.stdout)
+                    pass
+                cname+=Colored(livetxt,'red')
+
+            addDir(cname ,base64.b64encode('mamahd:'+curl) ,mm ,logo, False, True,isItFolder=False)		#name,url,mode,icon
+        except:
+            traceback.print_exc(file=sys.stdout)
         
 def AddStreamHDChannels(url):
 
@@ -4733,7 +4798,11 @@ def PlayOtherUrl ( url ):
         return  
     if "streamhd:" in url:
         playstreamhd(url.split('streamhd:')[1])
-        return               
+        return
+    if "mamahd:" in url:
+        playmamahd(url.split('mamahd:')[1])
+        return
+        
     if "hdfree:" in url:
         playHDFree(url.split('hdfree:')[1])
         return                       
@@ -5468,13 +5537,21 @@ def playstreamhd(url):
             return playHDCast(videframe, "http://streamhdeu.com/")
         iframdata=videoframedata
     m3ufile=re.findall('file: "(.*?)"' ,iframdata)[0]
-    
-    
-    
-   
+
     PlayGen(base64.b64encode(m3ufile+'|User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'))
     return 
+    
+def playmamahd(url):
+    import re,urllib,json
+    headers=[('Referer','http://mamahd.com/index.html'),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')]
 
+    watchHtml=getUrl(url,headers=headers)
+    videframe=re.findall('<iframe wid.*?src="(.*?)"' ,watchHtml)[0]
+    watchHtml=getUrl(videframe,headers=headers)
+    if 'hdcast' in watchHtml or 'static.bro' in watchHtml:
+        return playHDCast(videframe, "http://mamahd.com/")
+    return 
+    
 def playtvplayer(url):
     import re,urllib,json
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -5936,6 +6013,9 @@ try:
 	elif mode==78:
 		print "Play url is "+url
 		AddInfiniteChannels(url)               
+	elif mode==79:
+		print "Play url is "+url
+		AddMAMAHDChannels(url)               
 
 
 
