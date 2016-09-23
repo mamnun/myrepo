@@ -1245,10 +1245,11 @@ def playHDCast(url, mainref):
                     imageurl=re.findall('<td nowrap><img src="(.*?)"',result)[0].replace('&amp;','&')             
                     if not imageurl.startswith('http'):
                         imageurl='http://hdcast.org'+imageurl
-                    post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,embedUrl )}
+                    headersforimage=[('Referer',embedUrl),('Origin','http://hdcast.org'),('User-Agent',agent)]                             
+                    post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,headersforimage )}
                     post = urllib.urlencode(post)
-                    headers=[('Referer',embedUrl),('User-Agent',agent)]                             
-                    result=getUrl(embedUrl,post=post, headers=headers, cookieJar=cookieJar)
+                    
+                    result=getUrl(embedUrl,post=post, headers=headersforimage, cookieJar=cookieJar)
                 except: 
                     print 'error in catpcha'
                     traceback.print_exc(file=sys.stdout)
@@ -1311,12 +1312,12 @@ def tst():
             solver = InputWindow(captcha=local_captcha)
             retcaptcha = solver.get()
             
-def getHDCastCaptcha(imageurl,cookieJar, logonpaged):
+def getHDCastCaptcha(imageurl,cookieJar, headers):
     retcaptcha=""
     if 1==1:
         local_captcha = os.path.join(profile_path, "captchaC.img" )
         localFile = open(local_captcha, "wb")
-        localFile.write(getUrl(imageurl,cookieJar,headers=[('Referer',logonpaged),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]))
+        localFile.write(getUrl(imageurl,cookieJar,headers=headers))
         localFile.close()
         cap=""#cap=parseCaptcha(local_captcha)
         #if originalcaptcha:
