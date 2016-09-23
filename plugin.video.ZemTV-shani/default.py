@@ -5442,11 +5442,13 @@ def get_treabaAia():
             ,11.5]:
         val +=  chr(int(math.floor(d * 10)));
     return val
-import md5
+
 #print 
 
 def generateKey(tokenexpiry):
-    return md5.new(tokenexpiry+get_treabaAia()).hexdigest()
+    import hashlib
+    return hashlib.md5(tokenexpiry+get_treabaAia()).hexdigest()
+
 
 def playstreamhd(url):
     import re,urllib,json
