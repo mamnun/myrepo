@@ -1195,8 +1195,12 @@ def playInfinite(url):
         headers=[('Referer',pageurl),('User-Agent',agent)]                       
 
         ttext = getUrl(url, headers = headers)
-    
+        
         mainurl= re.findall("url=\"(.*?)\"", ttext)[0]
+        if mainurl=="restricted":
+            ttext = getUrlFromUS(url)
+            mainurl= re.findall("url=\"(.*?)\"", ttext)[0]
+        
         print mainurl
         auth= re.findall("auth=\"(.*?)\"", ttext)[0]
         final="plugin://plugin.video.f4mTester/?streamtype=HDS&url=%s&swf=%s&name=%s"%(urllib.quote_plus(mainurl+'?hdnea='+auth+'&g='+randomtext+'&hdcore=3.8.0'+'|User-Agent='+urllib.quote_plus(agent)+'&X-Requested-With=ShockwaveFlash/22.0.0.209'),swf,name)
