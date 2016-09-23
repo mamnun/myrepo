@@ -502,6 +502,7 @@ def selectMatch(url):
                         
                         print 'dec link',lnk                    
                         enclink=lnk
+                        
                         if lnk.startswith('"http'): lnk= lnk.replace('\"','').replace('\\/','/')
                     #enclink=enclink[0]
                     #print 'enclink',enclink
@@ -522,7 +523,7 @@ def selectMatch(url):
         #    reg='player_div", "st":"(.*?)"'
         #    encst=re.findall(reg,enclinkhtml)[0]
         print 'encst',encst
-        if not 'peer' in encst:
+        if 1==2:#not 'peer' in encst:
             decodedst=decode(encst)
 
             #print encst, decodedst
