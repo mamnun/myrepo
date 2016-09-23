@@ -1,3 +1,5 @@
+[B]Version 5.4.4[/B]
+streamhd catpcha and sport365 loading issues
 [B]Version 5.4.3[/B]
 YP removed as very limited channels available
 [B]Version 5.4.2[/B]
