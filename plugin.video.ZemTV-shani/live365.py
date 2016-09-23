@@ -299,22 +299,28 @@ def get365Key(cookieJar,url=None, useproxy=True):
         mainhtml=getUrl("http://www.sport365.live/en/main",headers=headers, cookieJar=cookieJar)
         #print 'mainhtml',mainhtml
         try:
-            kurl=re.findall("src=\"(http.*?/wrapper.js.*?)\"",mainhtml)[0]
+            kurl=re.findall("src=\"(http.*?/advertisement.js.*?)\"",mainhtml)[0]
         except:
-            kurl='http://s1.medianetworkinternational.com/js/wrapper.js?'+str(int(time.time()))
+            kurl='http://s1.medianetworkinternational.com/js/advertisement.js?'+str(int(time.time()))
     else:
         kurl=url
     
     khtml=getUrl(kurl,headers=headers, cookieJar=cookieJar)
+
+ 
     if khtml=="": 
         if setProxy():
             kkey=getUrl(kurl,headers=headers, cookieJar=cookieJar)        
+
     kstr=re.compile('eval\(function\(w,i,s,e\).*}\((.*?)\)').findall(khtml)[0]
     kunc=get_unwise(kstr)
-    #print kunc    
+    print kunc   
+    
     
     kkey=re.findall('aes_key="(.*?)"',kunc)
+    print kkey
     kkey=re.findall('aes\(\)\{return "(.*?)"',kunc)
+    print kkey
     return kkey[0]
 def Colored(text = '', colorid = '', isBold = False):
     if colorid == 'ZM':
@@ -492,9 +498,10 @@ def selectMatch(url):
                     print 'encst,enclink',encst,enclink,isenc
                     isenc=isenc.strip();
                     if isenc=="1":
-                        reg="src=\"(.*?\\/wrapper.js.*)\""
-                        wrapurl=re.findall(reg,enclinkhtml2)[0]
-                        kkey=get365Key(cookieJar,url=wrapurl)
+                        #reg="src=\"(.*?\\/wrapper.js.*)\""
+                        #wrapurl=re.findall(reg,enclinkhtml2)[0]
+                        
+                        kkey=get365Key(cookieJar)
                         #print 'kkey',kkey
                         enclink=json.loads(enclink.decode("base64"))
                         import jscrypto
