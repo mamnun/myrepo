@@ -435,7 +435,7 @@ def AddSports(url):
     addDir('Safe' ,'sss',72,'')
     addDir('TVPlayer [UK Geo Restricted]','sss',74,'https://assets.tvplayer.com/web/images/tvplayer-logo-white.png')
     addDir('StreamHD','sss',75,'http://www.streamhd.eu/images/logo.png')
-    addDir('Mama HD','http://mamahd.com/index.html',79,'http://mamahd.com/images/logo.png')
+    addDir('Mama HD','http://mamahd.com/',79,'http://mamahd.com/images/logo.png')
     addDir('HDfree','sss',77,'')
     addDir('inFinite Streams','sss',78,'')
 
@@ -1178,7 +1178,11 @@ def AddMAMAHDChannels(url):
                     if time.time()>int(timing):
                         livetxt="\nLIVE NOW"
                     else:
-                        livetxt="\nLIVE in %s Hrs"% str(int((int(timing)-time.time())/60/60))
+                        hrs=str(int((int(timing)-time.time())/60/60))
+                        if hrs=="0":
+                            livetxt="\nLIVE in %s Minutes"% str(int((int(timing)-time.time())/60))
+                        else:
+                            livetxt="\nLIVE in %s Hrs"% str(int((int(timing)-time.time())/60/60))
                 except:
                     traceback.print_exc(file=sys.stdout)
                     pass
