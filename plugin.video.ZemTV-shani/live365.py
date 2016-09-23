@@ -558,7 +558,7 @@ def selectMatch(url):
         getUrl("http://www.sport365.live/en/sidebar",headers=headers, cookieJar=cookieJar)
         cookieJar.save (S365COOKIEFILE,ignore_discard=True)
 
-        #return urlToPlaymain
+        return urlToPlaymain
         return 'plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(urlToPlaymain))
     except:
         traceback.print_exc(file=sys.stdout)
