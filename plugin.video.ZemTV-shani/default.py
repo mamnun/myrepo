@@ -831,6 +831,7 @@ def AddSports365Channels(url=None):
         import live365
         forced=not live365.isvalid()
         addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored("Update parser file!.",'blue') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
         videos=live365.getLinks()
         for nm,link,active in videos:
             if active:
@@ -843,7 +844,7 @@ def AddSports365Channels(url=None):
     if errored:
        print 'forced',forced
        import time
-       if RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t'+str(time.time()),forced)]):
+       if RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py',forced)]):
             dialog = xbmcgui.Dialog()
             ok = dialog.ok('XBMC', 'Updated files dyamically, Try to play again, just in case!')
             #if not recursive:
@@ -4681,7 +4682,7 @@ def playSports365(url,progress):
     except:
         pass
     import time
-    if not played and RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t'+str(time.time()),forced)]):
+    if not played and RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py',forced)]):
         
         dialog = xbmcgui.Dialog()
         ok = dialog.ok('XBMC', 'Updated files dyamically, Try to play again, just in case!')          
@@ -6040,9 +6041,20 @@ try:
 	elif mode==79:
 		print "Play url is "+url
 		AddMAMAHDChannels(url)               
+	elif mode==80:
+		print "Play url is "+url
+		import time        
+		try:
+			if RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t=%s'%str(int(time.time())),True)]):
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('XBMC', 'Updated files dyamically!')  
+			else:
+				dialog = xbmcgui.Dialog()
+				ok = dialog.ok('XBMC', 'Not updated, perhaps no change?')  
+				print 'Updated files'
+		except: traceback.print_exc(file=sys.stdout)
 
-
-
+        
 except:
 
 	print 'somethingwrong'
