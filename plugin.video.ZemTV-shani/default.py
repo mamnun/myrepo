@@ -826,9 +826,10 @@ def get_unwise( str_eval):
     
 def AddSports365Channels(url=None):
     errored=True
+    forced=False
     try:
         import live365
-        
+        forced=not live365.isvalid()
         addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
         videos=live365.getLinks()
         for nm,link,active in videos:
@@ -840,9 +841,13 @@ def AddSports365Channels(url=None):
             errored=False
     except: traceback.print_exc(file=sys.stdout)
     if errored:
-       if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
+       print 'forced',forced
+       import time
+       if RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t'+str(time.time()),forced)]):
             dialog = xbmcgui.Dialog()
-            ok = dialog.ok('XBMC', 'No Links, so updated files dyamically, try again, just in case!')           
+            ok = dialog.ok('XBMC', 'Updated files dyamically, Try to play again, just in case!')
+            #if not recursive:
+            #    AddSports365Channels(url=url, recursive=True)            
             print 'Updated files'
         
         
@@ -863,6 +868,9 @@ def RefreshResources(resources):
             fileHash=hashlib.md5(fileToDownload+addonversion).hexdigest()
             lastFileTime=selfAddon.getSetting( "Etagid"+fileHash)  
             if lastFileTime=="": lastFileTime=None
+            try:
+                if rfile[2]: lastFileTime=None
+            except: pass
             resCode=200
             #print fileToDownload
             eTag=None        
@@ -4653,24 +4661,31 @@ def get365CookieJar(updatedUName=False):
     
 def playSports365(url,progress):
     #print ('playSports365')
-    import live365
-    urlToPlay=live365.selectMatch(url)
-    if urlToPlay and len(urlToPlay)>0:
-    
-        listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-        if 'f4mtester' in urlToPlay:
-            xbmc.executebuiltin('XBMC.RunPlugin('+urlToPlay+')') 
-        else:        
-    #    print   "playing stream name: " + str(name) 
-            #xbmc.Player().play( urlToPlay, listitem)  
-            progress.close()
-            xbmc.Player().play( urlToPlay, listitem)  
-            #tryplaywithping(urlToPlay,listitem,'http://www.sport365.live/en/sidebar ',get365CookieJar(), 10) 
-    else:
-        if RefreshResources([('live365.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/live365.py')]):
-            dialog = xbmcgui.Dialog()
-            ok = dialog.ok('XBMC', 'No Links, so updated files dyamically, try again, just in case!')           
-            print 'Updated files'
+    played=False
+    forced=False
+    try:
+        import live365
+        forced=not live365.isvalid()
+        urlToPlay=live365.selectMatch(url)
+        if urlToPlay and len(urlToPlay)>0:
+            
+            listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+            if 'f4mtester' in urlToPlay:
+                xbmc.executebuiltin('XBMC.RunPlugin('+urlToPlay+')') 
+            else:        
+        #    print   "playing stream name: " + str(name) 
+                #xbmc.Player().play( urlToPlay, listitem)  
+                progress.close()
+                #xbmc.Player().play( urlToPlay, listitem)  
+                played=tryplay(urlToPlay,listitem) 
+    except:
+        pass
+    import time
+    if not played and RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t'+str(time.time()),forced)]):
+        
+        dialog = xbmcgui.Dialog()
+        ok = dialog.ok('XBMC', 'Updated files dyamically, Try to play again, just in case!')          
+        print 'Updated files'
     return
     
 def PlaySafeLink(url):
