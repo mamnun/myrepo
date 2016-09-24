@@ -1280,7 +1280,7 @@ def playInfinite(url):
         traceback.print_exc(file=sys.stdout)
         return
         
-def playHDCast(url, mainref):
+def playHDCast(url, mainref, altref=None):
     try:
         cookieJar=getHDCASTCookieJar()
         firstframe=url
@@ -1292,7 +1292,7 @@ def playHDCast(url, mainref):
         regid='<script.*?id=[\'"](.*?)[\'"].*?width=[\'"]?(.*?)[\'"]?\;.*?height=[\'"]?(.*?)[\'"]?\;.*?src=[\'"](.*?)[\'"]'
         id,wd,ht, jsurl=re.findall(regid,result)[0]
         finalpageUrl=''
-        headers=[('Referer',firstframe),('User-Agent',agent)]                       
+        headers=[('Referer',pageURl),('User-Agent',agent)]                       
 
 
         jsresult = getUrl(jsurl, headers=headers, cookieJar=cookieJar)
@@ -1306,7 +1306,7 @@ def playHDCast(url, mainref):
             regjs="var url = '(.*?)'"
             embedUrl=re.findall(regjs,jsresult)[0]
             embedUrl='http://bro.adca.st'+embedUrl+id+'&width='+wd+'&height='+ht
-        headers=[('Referer',firstframe),('User-Agent',agent)]                             
+        headers=[('Referer',altref if not altref==None else mainref),('User-Agent',agent)]                             
         result=getUrl(embedUrl, headers=headers, cookieJar=cookieJar)
 
         if not broadcast:# in result:
@@ -1333,6 +1333,11 @@ def playHDCast(url, mainref):
                 streamurl = re.findall('file:["\'](.*?)["\']',html)[0]
                 cookieJar.save (HDCASTCookie,ignore_discard=True)
                 return PlayGen(base64.b64encode(streamurl+'|User-Agent='+agent+'&Referer='+embedUrl))
+            if 'rtmp' in result:
+                print 'rtmp'
+                streamurl= re.findall('"(rtmp.*?)"' , result)[0]
+                cookieJar.save (HDCASTCookie,ignore_discard=True)
+                return PlayGen(base64.b64encode(streamurl+' timeout=20 live=1'))   
         else:
             headers=[('Referer',embedUrl),('User-Agent',agent),('X-Requested-With','XMLHttpRequest')]                             
             token=getUrl('http://bro.adca.st/getToken.php',headers=headers, cookieJar=cookieJar )
@@ -5538,7 +5543,7 @@ def playstreamhd(url):
         iframe=iframe[0]
     else:
         if 'hdcast' in videoframedata or 'static.bro' in videoframedata:
-            return playHDCast(videframe, "http://streamhdeu.com/")
+            return playHDCast(videframe, "http://streamhdeu.com/","http://streamhd.eu/")
         iframdata=videoframedata
     m3ufile=re.findall('file: "(.*?)"' ,iframdata)[0]
 
