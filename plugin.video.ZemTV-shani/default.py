@@ -1243,12 +1243,26 @@ def playInfinite(url):
         mainref=base64.b64decode('aHR0cDovL3d3dy5sYW9sYTEudHYvZW4taW50L2xpdmUtc2NoZWR1bGU=')
         headers=[('Referer',mainref),('User-Agent',agent)]                       
         result = getUrl(url, headers=headers)
-        url=re.findall('<iframe frameborde.*\s*.*\s*.*?src="(.*?)"',result)[0]
-        if not url.startswith('http:'):
-            url=base64.b64decode('aHR0cDovL3d3dy5sYW9sYTEudHY=')+url
-        print url
-        page_data = getUrl(url, headers=headers)
-        streamid = re.findall("streamid: \"(.*?)\"", page_data)[0]
+        url=re.findall('<iframe frameborde.*\s*.*\s*.*?src="(.*?)"',result)
+        if len(url)==0:
+            url=re.findall('<iframe.*?src="(.*?player.php.*?)"',result)[0]
+        else:
+            url=url[0]
+        try:
+            if not url.startswith('http:'):
+                urlnew=base64.b64decode('aHR0cDovL3d3dy5sYW9sYTEudHY=')+url
+            print urlnew
+            page_data = getUrl(urlnew, headers=headers)
+            streamid = re.findall("streamid: \"(.*?)\"", page_data)[0]
+        except:
+            
+            if not url.startswith('http:'):
+                url=base64.b64decode('aHR0cDovL3d3dy5laGZ0di5jb20=')+url
+            print url
+            page_data = getUrl(url, headers=headers)
+            streamid = re.findall("streamid: \"(.*?)\"", page_data)[0]
+        
+        
         partid = re.findall("partnerid: \"(.*?)\"", page_data)[0]
         
         url=base64.b64decode('aHR0cDovL3d3dy5sYW9sYTEudHYvc2VydmVyL2hkX3ZpZGVvLnBocD92PTImcGxheT0lcyZwYXJ0bmVyPSVzJnBvcnRhbD1pbnQmdjVpZGVudD0mbGFuZz1lbg==')%(streamid,partid)
