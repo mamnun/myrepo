@@ -346,6 +346,13 @@ def getSoup(url,data=None):
             except: pass
         return BeautifulSOAP(data, convertEntities=BeautifulStoneSoup.XML_ENTITIES)
 
+def processPyFunction(data):
+    try:
+        if data and len(data)>0 and data.startswith('$pyFunction:'):
+            data=doEval(data.split('$pyFunction:')[1],'',None,None )
+    except: pass
+
+    return data
 
 def getData(url,fanart, data=None):
     import checkbad
@@ -372,7 +379,7 @@ def getData(url,fanart, data=None):
                 thumbnail = channel('thumbnail')[0].string
                 if thumbnail == None:
                     thumbnail = ''
-
+                thumbnail=processPyFunction(thumbnail)
                 try:
                     if not channel('fanart'):
                         if addon.getSetting('use_thumb') == "true":
@@ -486,6 +493,7 @@ def getChannelItems(name,url,fanart):
                 thumbnail = channel('thumbnail')[0].string
                 if thumbnail == None:
                     raise
+                thumbnail=processPyFunction(thumbnail)
             except:
                 thumbnail = ''
             try:
@@ -714,6 +722,7 @@ def getItems(items,fanart,dontLink=False):
                 thumbnail = item('thumbnail')[0].string
                 if thumbnail == None:
                     raise
+                thumbnail=processPyFunction(thumbnail)
             except:
                 thumbnail = ''
             try:
