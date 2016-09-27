@@ -788,7 +788,7 @@ def getItems(items,fanart,dontLink=False):
                     
                     if len(playlist) > 1:
                         
-                        addLink('', name,thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
+                        addLink('', name.encode('utf-8'),thumbnail,fanArt,desc,genre,date,True,playlist,regexs,total)
                 else:
                     
                     if dontLink:
