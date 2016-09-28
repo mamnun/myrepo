@@ -1094,10 +1094,14 @@ def AddSafeLang(url=None):
     for cname,ctype in [('English','en'),('German','de'),('French','fr'),('Italian','it'),('Dutch','nl'),('Polish','pl')]:        
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(cname+','+ctype) ,73 ,'', False, True,isItFolder=True)		#name,url,mode,icon
     return  
-def AddTVPlayerChannels(url):
+    
+    
+def getTVPlayerChannels(thesechannels=[]):
+
     headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]               
     mainhtml=getUrl('http://tvplayer.com/watch/bbcone',headers=headers)
     cdata=re.findall('<li .*? class="online.*?free.*?\s*<a href="(.*?)" title="(.*?)".*?\s*<img.*?src="(.*?)',mainhtml)
+    ret=[]
     for cc in cdata:
         
         mm=11
@@ -1109,7 +1113,13 @@ def AddTVPlayerChannels(url):
         curl=cc[0]
         if not curl.startswith('http'):
             curl= ' http://tvplayer.com/'+curl
-        addDir(cname.capitalize() ,base64.b64encode('tvplayer:'+curl) ,mm ,logo, False, True,isItFolder=False)		#name,url,mode,icon
+        if len(thesechannels)==0 or cname.lower() in thesechannels:
+            ret.append( (cname.capitalize() ,base64.b64encode('tvplayer:'+curl) ,mm ,logo) )		#name,url,mode,icon
+    return ret
+        
+def AddTVPlayerChannels(url, thesechannels=[]):
+    for ch in sorted(getTVPlayerChannels(thesechannels),key=lambda s: s[0].lower() ) :
+        addDir(ch[0] ,ch[1] ,ch[2],ch[3], False, True,isItFolder=False)
 
 def AddStreamHDCats(url):
 
@@ -3635,7 +3645,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     ipBoxGen=None
     UKTVGenCat=[]
     UKTVGenCH=[]
-
+    tvplayerChannels=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
@@ -3656,6 +3666,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         ipBoxGen=1
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL2hpbmRpLXR2Lmh0bWw=")
         UKTVGenCat,UKTVGenCH=['movies'],['zee tv','colors','sony tv hd', 'star plus hd', 'zee tv']
+        tvplayerChannels=['sony sab','zing']
     else:
         pg='punjabi'
         CFgen="1314"
@@ -3780,6 +3791,17 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)
+
+    if tvplayerChannels:
+        try:
+            
+            progress.update( 95, "", "Loading TVPlayer Channels", "" )
+
+            for ch in getTVPlayerChannels(tvplayerChannels):
+                match.append((ch[0] +' UK Only' ,'manual', base64.b64decode(ch[1])  ,ch[3]))
+        except:
+            traceback.print_exc(file=sys.stdout)
+            
 
 #    match=sorted(match,key=itemgetter(0)   )
     if len(eboundMatches)>0:
