@@ -2,7 +2,7 @@
 <addons>
 <addon id="plugin.video.dramasonline"
        name="DramasOnline.com"
-       version="2.6.1"
+       version="2.6.2"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -76,7 +76,7 @@
 
 <addon id="plugin.video.live.streamspro"
        name="LiveStreamsPro"
-       version="2.6.5"
+       version="2.6.6"
        provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>

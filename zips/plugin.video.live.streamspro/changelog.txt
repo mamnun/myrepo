@@ -1,3 +1,5 @@
+Version 2.6.6
+unicode in title for playlist
 Version 2.6.5
 pyfunction in thumbnail
 Version 2.6.4
