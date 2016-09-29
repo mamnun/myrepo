@@ -490,6 +490,7 @@ class TSDownloader():
             fixpid=256
             ignoredblock=None
             sleeptime=0
+            
             while True:
                 if sleeptime>0: 
                     xbmc.sleep(sleeptime)
@@ -497,11 +498,12 @@ class TSDownloader():
                 starttime=time.time()
                 response=self.openUrl(url)
                 buf="start"
-                
+                byteread=0
+                bytesent=0
                 firstBlock=True
                 wrotesomething=False
                 currentduration=0
-                limit=1024*500
+                limit=1024*188
                 lastdataread=limit
                 
                 
@@ -509,7 +511,7 @@ class TSDownloader():
                 try:
                     if self.g_stopEvent and self.g_stopEvent.isSet():
                         return
-                    while (buf != None and len(buf) > 0 and lastdataread>=5000):
+                    while (buf != None and len(buf) > 0 and lastdataread>0):
                         
                         if self.g_stopEvent and self.g_stopEvent.isSet():
                             return
@@ -517,6 +519,7 @@ class TSDownloader():
                             
                             buf = response.read(limit)##500 * 1024)
                             lastdataread=len(buf)
+                            byteread+=lastdataread
                             #print 'got data',len(buf)
                             if lastdataread==0: print 1/0
                         except:
@@ -541,7 +544,7 @@ class TSDownloader():
                                     lastforcurrent=getLastPTS(buf,fixpid,defualtype)
                                     #print 'last pts in new data',lastforcurrent
                                     if lastpts<lastforcurrent:#we have data
-                                        #print 'we have data', (lastforcurrent-lastpts)/90000
+                                        #print 'we have data', lastpts,lastforcurrent, (lastforcurrent-lastpts)/90000
                                         
                                         try:
                                             firstpts,pos= getFirstPTSFrom(buf,fixpid,lastpts,defualtype)#
@@ -586,7 +589,7 @@ class TSDownloader():
                                         #fn=buf.find(buffertofind[:188])
                                         #print 'BUFFER FOUND!!', (pos*100)/len(buf)
                                         if (pos*100)/len(buf)>70:
-                                            sleeptime=2000
+                                            sleeptime=0
                                         buf= buf[pos:]
                                         lastpts=lastforcurrent
                                         #print 'now last pts',lastpts
@@ -594,7 +597,7 @@ class TSDownloader():
                                     else:
                                         #if lastforcurrent==None:
                                         #    print 'NONE ISSUE', buf.encode("hex")
-                                        #print 'problembytes','diff',lastpts-lastforcurrent, lastpts, lastforcurrent
+                                        print 'problembytes','diff',lastpts-lastforcurrent, lastpts, lastforcurrent
                                         #buf.encode("hex")
                                         ignoredblock=writebuf
                                         ignorefind+=1#same or old data?
@@ -633,6 +636,7 @@ class TSDownloader():
                                 lastbuf=buf
                             else:
                                 lastbuf+=buf
+                            bytesent+=len(buf)
                             fileout.write(buf)
                             
                         ##print 'writing something..............'
@@ -658,7 +662,12 @@ class TSDownloader():
                             except: pass
 
                     try:
+                    
+                        print 'finished',byteread
+                        if byteread>0:
+                            print 'Percent Used'+str(((bytesent*100)/byteread))
                         response.close()
+                        
                         print 'response closed'
                     except:
                         print 'close error'
