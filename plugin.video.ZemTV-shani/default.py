@@ -91,33 +91,33 @@ def addLink(name,url,iconimage):
 
 
 def addDir(name,url,mode,iconimage,showContext=False,showLiveContext=False,isItFolder=True, linkType=None):
-#	print name
-	u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
-	ok=True
-	liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
-	liz.setInfo( type="Video", infoLabels={ "Title": name } )
+    #	print name
+    u=sys.argv[0]+"?url="+urllib.quote_plus(url)+"&mode="+str(mode)+"&name="+urllib.quote_plus(name)
+    ok=True
+    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=iconimage)
+    liz.setInfo( type="Video", infoLabels={ "Title": name } )
 
-	if showContext==True:
-		cmd1 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "DM")
-		cmd2 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "LINK")
-		cmd3 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "Youtube")
-		cmd4 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
-		cmd5 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "EBOUND")
-		cmd6 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
-		cmd7 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "VIDRAIL")
+    if showContext==True:
+        cmd1 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "DM")
+        cmd2 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "LINK")
+        cmd3 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "Youtube")
+        cmd4 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
+        cmd5 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "EBOUND")
+        cmd6 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "PLAYWIRE")
+        cmd7 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "VIDRAIL")
 
-		
-		liz.addContextMenuItems([('Show All Sources',cmd6),('Play Vidrail video',cmd7),('Play Ebound video',cmd5),('Play Playwire video',cmd4),('Play Youtube video',cmd3),('Play DailyMotion video',cmd1),('Play Tune.pk video',cmd2)])
-	if linkType:
-		u="XBMC.RunPlugin(%s&linkType=%s)" % (u, linkType)
-		
-#	if showLiself.wfileveContext==True:
-#		cmd1 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "RTMP")
-#		cmd2 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "HTTP")
-#		liz.addContextMenuItems([('Play RTMP Steam (flash)',cmd1),('Play Http Stream (ios)',cmd2)])
-	
-	ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isItFolder)
-	return ok
+        
+        liz.addContextMenuItems([('Show All Sources',cmd6),('Play Vidrail video',cmd7),('Play Ebound video',cmd5),('Play Playwire video',cmd4),('Play Youtube video',cmd3),('Play DailyMotion video',cmd1),('Play Tune.pk video',cmd2)])
+    if linkType:
+        u="XBMC.RunPlugin(%s&linkType=%s)" % (u, linkType)
+        
+    #	if showLiself.wfileveContext==True:
+    #		cmd1 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "RTMP")
+    #		cmd2 = "XBMC.RunPlugin(%s&linkType=%s)" % (u, "HTTP")
+    #		liz.addContextMenuItems([('Play RTMP Steam (flash)',cmd1),('Play Http Stream (ios)',cmd2)])
+
+    ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,isFolder=isItFolder)
+    return ok
 
 def PlayChannel ( channelName ): 
 #	print linkType
@@ -179,22 +179,22 @@ def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None,jsonpost=Fals
     return link;
 
 def get_params():
-	param=[]
-	paramstring=sys.argv[2]
-	if len(paramstring)>=2:
-		params=sys.argv[2]
-		cleanedparams=params.replace('?','')
-		if (params[len(params)-1]=='/'):
-			params=params[0:len(params)-2]
-		pairsofparams=cleanedparams.split('&')
-		param={}
-		for i in range(len(pairsofparams)):
-			splitparams={}
-			splitparams=pairsofparams[i].split('=')
-			if (len(splitparams))==2:
-				param[splitparams[0]]=splitparams[1]
-				
-	return param
+    param=[]
+    paramstring=sys.argv[2]
+    if len(paramstring)>=2:
+        params=sys.argv[2]
+        cleanedparams=params.replace('?','')
+        if (params[len(params)-1]=='/'):
+            params=params[0:len(params)-2]
+        pairsofparams=cleanedparams.split('&')
+        param={}
+        for i in range(len(pairsofparams)):
+            splitparams={}
+            splitparams=pairsofparams[i].split('=')
+            if (len(splitparams))==2:
+                param[splitparams[0]]=splitparams[1]
+                
+    return param
 
 
 def DisplayChannelNames(url):
@@ -824,14 +824,16 @@ def get_unwise( str_eval):
     return page_value    
     
     
-def AddSports365Channels(url=None):
+def AddSports365Channels(url=None, recursive=False)::
     errored=True
     forced=False
     try:
-        import live365
-        forced=not live365.isvalid()
+
         addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
         addDir(Colored("Update parser file!.",'blue') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored("Refresh listing",'blue') ,"sss" ,156,"", False, True,isItFolder=True)		#name,url,mode,icon
+        import live365
+        forced=not live365.isvalid()        
         videos=live365.getLinks()
         for nm,link,active in videos:
             if active:
@@ -5277,27 +5279,27 @@ def getCookiesString(cookieJar):
     #print 'cookieString',cookieString
     return cookieString
 def AddChannels():
-	req = urllib2.Request(liveURL)
-	req.add_header('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-	response = urllib2.urlopen(req)
-	link=response.read()
-	response.close()
-#	print link
-#	match=re.compile('<param name="URL" value="(.+?)">').findall(link)
-#	match=re.compile('<a href="(.+?)"').findall(link)
-#	match=re.compile('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>').findall(link)
-#	match =re.findall('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
-#	match =re.findall('onclick="playChannel\(\'(.*?)\'\);".?>(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
-#	match =re.findall('<div class=\"post-title\"><a href=\"(.*?)\".*<b>(.*)<\/b><\/a>', link, re.IGNORECASE)
-#	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
+    req = urllib2.Request(liveURL)
+    req.add_header('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+    response = urllib2.urlopen(req)
+    link=response.read()
+    response.close()
+    #	print link
+    #	match=re.compile('<param name="URL" value="(.+?)">').findall(link)
+    #	match=re.compile('<a href="(.+?)"').findall(link)
+    #	match=re.compile('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>').findall(link)
+    #	match =re.findall('onclick="playChannel\(\'(.*?)\'\);">(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
+    #	match =re.findall('onclick="playChannel\(\'(.*?)\'\);".?>(.*?)</a>', link, re.DOTALL|re.IGNORECASE)
+    #	match =re.findall('<div class=\"post-title\"><a href=\"(.*?)\".*<b>(.*)<\/b><\/a>', link, re.IGNORECASE)
+    #	match =re.findall('<img src="(.*?)" alt=".*".+<\/a>\n*.+<div class="post-title"><a href="(.*?)".*<b>(.*)<\/b>', link, re.UNICODE)
 
-	match =re.findall('<div class="epic-cs">\s*<a href="(.+)" rel=.*<img src="(.+)" alt="(.+)" \/>', link, re.UNICODE)
+    match =re.findall('<div class="epic-cs">\s*<a href="(.+)" rel=.*<img src="(.+)" alt="(.+)" \/>', link, re.UNICODE)
 
-#	print match
-	h = HTMLParser.HTMLParser()
-	for cname in match:
-		addDir(Colored(h.unescape(cname[2].replace("Watch Now Watch ","").replace("Live, High Quality Streaming","").replace("Live &#8211; High Quality Streaming","").replace("Watch Now ","")) ,'ZM'),cname[0] ,4,cname[1],False,True,isItFolder=False)		
-	return	
+    #	print match
+    h = HTMLParser.HTMLParser()
+    for cname in match:
+        addDir(Colored(h.unescape(cname[2].replace("Watch Now Watch ","").replace("Live, High Quality Streaming","").replace("Live &#8211; High Quality Streaming","").replace("Watch Now ","")) ,'ZM'),cname[0] ,4,cname[1],False,True,isItFolder=False)		
+    return	
 
 	
 	
@@ -5662,62 +5664,62 @@ def playtvplayerfallback(url):
     
     
 def ShowAllSources(url, loadedLink=None):
-	global linkType
-#	print 'show all sources',url
-	link=loadedLink
-	if not loadedLink:
-		req = urllib2.Request(url)
-		req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
-		response = urllib2.urlopen(req)
-		link=response.read()
-		response.close()
-	available_source=[]
-	playURL =re.findall('src=".*?(playwire).*?data-publisher-id="(.*?)"\s*data-video-id="(.*?)"', link)
-#	print 'playURL',playURL
-	if not len(playURL)==0:
-		available_source.append('Playwire Source')
+    global linkType
+    #	print 'show all sources',url
+    link=loadedLink
+    if not loadedLink:
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
+        response = urllib2.urlopen(req)
+        link=response.read()
+        response.close()
+    available_source=[]
+    playURL =re.findall('src=".*?(playwire).*?data-publisher-id="(.*?)"\s*data-video-id="(.*?)"', link)
+    #	print 'playURL',playURL
+    if not len(playURL)==0:
+        available_source.append('Playwire Source')
 
-	playURL =re.findall('data-config="(.*?config.playwire.com.*?)"', link)
-#	print 'playURL',playURL
-	if not len(playURL)==0:
-		available_source.append('Playwire Source')
+    playURL =re.findall('data-config="(.*?config.playwire.com.*?)"', link)
+    #	print 'playURL',playURL
+    if not len(playURL)==0:
+        available_source.append('Playwire Source')
 
-	playURL =re.findall('src="(.*?ebound\\.tv.*?)"', link)
-#	print 'playURL',playURL
-	if not len(playURL)==0:
-		available_source.append('Ebound Source')		
-	else:
-		playURL =re.findall('src="(.*?poovee\.net.*?)"', link)
-		if not len(playURL)==0:
-			available_source.append('Ebound Source')		
+    playURL =re.findall('src="(.*?ebound\\.tv.*?)"', link)
+    #	print 'playURL',playURL
+    if not len(playURL)==0:
+        available_source.append('Ebound Source')		
+    else:
+        playURL =re.findall('src="(.*?poovee\.net.*?)"', link)
+        if not len(playURL)==0:
+            available_source.append('Ebound Source')		
         
-	playURL= match =re.findall('src="(.*?(dailymotion).*?)"',link)
-	if not len(playURL)==0:
-		available_source.append('Daily Motion Source')
+    playURL= match =re.findall('src="(.*?(dailymotion).*?)"',link)
+    if not len(playURL)==0:
+        available_source.append('Daily Motion Source')
 
-	playURL= match =re.findall('src="(.*?(vidrail\.com).*?)"',link)
-	if not len(playURL)==0:
-		available_source.append('Vidrail Source')
+    playURL= match =re.findall('src="(.*?(vidrail\.com).*?)"',link)
+    if not len(playURL)==0:
+        available_source.append('Vidrail Source')
         
-	playURL= match =re.findall('src="(.*?(tune\.pk).*?)"', link)
-	if not len(playURL)==0:
-		available_source.append('Link Source')
+    playURL= match =re.findall('src="(.*?(tune\.pk).*?)"', link)
+    if not len(playURL)==0:
+        available_source.append('Link Source')
 
-	playURL= match =re.findall('<strong>Youtube<\/strong>.*?src=\".*?embed\/(.*?)\?.*\".*?<\/iframe>', link,re.DOTALL| re.IGNORECASE)
-	if not len(playURL)==0:
-		available_source.append('Youtube Source')
+    playURL= match =re.findall('<strong>Youtube<\/strong>.*?src=\".*?embed\/(.*?)\?.*\".*?<\/iframe>', link,re.DOTALL| re.IGNORECASE)
+    if not len(playURL)==0:
+        available_source.append('Youtube Source')
 
-	if len(available_source)>0:
-		if len(available_source)==1:
-			linkType=available_source[0].replace(' Source','').replace('Daily Motion','DM').upper()
-			PlayShowLink(url, redirect=False);
-		else:    
-			dialog = xbmcgui.Dialog()
-			index = dialog.select('Choose your stream', available_source)
-			if index > -1:
-				linkType=available_source[index].replace(' Source','').replace('Daily Motion','DM').upper()
-#				print 'linkType',linkType
-				PlayShowLink(url);
+    if len(available_source)>0:
+        if len(available_source)==1:
+            linkType=available_source[0].replace(' Source','').replace('Daily Motion','DM').upper()
+            PlayShowLink(url, redirect=False);
+        else:    
+            dialog = xbmcgui.Dialog()
+            index = dialog.select('Choose your stream', available_source)
+            if index > -1:
+                linkType=available_source[index].replace(' Source','').replace('Daily Motion','DM').upper()
+
+                PlayShowLink(url);
 def findInDic(lst, key, value):
     for i, dic in enumerate(lst):
         if dic[key] == value:
@@ -5884,221 +5886,221 @@ mode=None
 linkType=None
 
 try:
-	url=urllib.unquote_plus(params["url"])
+    url=urllib.unquote_plus(params["url"])
 except:
-	pass
+    pass
 try:
-	name=urllib.unquote_plus(params["name"])
+    name=urllib.unquote_plus(params["name"])
 except:
-	pass
+    pass
 try:
-	mode=int(params["mode"])
+    mode=int(params["mode"])
 except:
-	pass
+    pass
 
 
 args = cgi.parse_qs(sys.argv[2][1:])
 linkType=''
 try:
-	linkType=args.get('linkType', '')[0]
+    linkType=args.get('linkType', '')[0]
 except:
-	pass
+    pass
 
 
 print 	mode,url,linkType
-		
+
 try:
-	if mode==None or url==None or len(url)<1:
-		print "InAddTypes"
-		checkbad.do_block_check(False)
-		Addtypes()
-	elif mode==2 or mode==43:
-		print "Ent url is ",name,url        
-		AddEnteries(name, url)
+    if mode==None or url==None or len(url)<1:
+        print "InAddTypes"
+        checkbad.do_block_check(False)
+        Addtypes()
+    elif mode==2 or mode==43:
+        print "Ent url is ",name,url        
+        AddEnteries(name, url)
 
-	elif mode==3:
-		print "Play url is "+url
-		PlayShowLink(url)
+    elif mode==3:
+        print "Play url is "+url
+        PlayShowLink(url)
 
-	elif mode==4 or mode==9:
-		print "Play url is "+url
-		PlayLiveLink(url)
-	elif mode==11:
-		print "Play url is "+url
-		PlayOtherUrl(url)
+    elif mode==4 or mode==9:
+        print "Play url is "+url
+        PlayLiveLink(url)
+    elif mode==11:
+        print "Play url is "+url
+        PlayOtherUrl(url)
 
-	elif mode==6 :
-		print "Play url is "+url
-		ShowSettings(url)
-	elif mode==13 :
-		print "Play url is "+url
-		AddSports(url)
-	elif mode==14 or mode==144:
-		print "Play url is "+url
-		AddSmartCric(url)
-	elif mode==15 :
-		print "Play url is "+url
-		PlaySmartCric(url)
-	elif mode==16 :
-		print "Play url is "+url
-		AddWatchCric(url)
-	elif mode==17 :
-		print "Play url is "+url
-		PlayWatchCric(url)
-	elif mode==19 :
-		print "Play url is "+url
-		AddWillowCric(url)
-	elif mode==20:
-		print "Play url is "+url
-		AddWillSportsOldSeries(url)
-	elif mode==21 or mode==22:
-		print "Play url is "+url
-		PlayWillowMatch(url)        
-	elif mode==23:
-		print "Play url is "+url
-		AddWillowReplayParts(url)        
-	elif mode==24:
-		print "Play url is "+url
-		AddWillSportsOldSeriesMatches(url)        
+    elif mode==6 :
+        print "Play url is "+url
+        ShowSettings(url)
+    elif mode==13 :
+        print "Play url is "+url
+        AddSports(url)
+    elif mode==14 or mode==144:
+        print "Play url is "+url
+        AddSmartCric(url)
+    elif mode==15 :
+        print "Play url is "+url
+        PlaySmartCric(url)
+    elif mode==16 :
+        print "Play url is "+url
+        AddWatchCric(url)
+    elif mode==17 :
+        print "Play url is "+url
+        PlayWatchCric(url)
+    elif mode==19 :
+        print "Play url is "+url
+        AddWillowCric(url)
+    elif mode==20:
+        print "Play url is "+url
+        AddWillSportsOldSeries(url)
+    elif mode==21 or mode==22:
+        print "Play url is "+url
+        PlayWillowMatch(url)        
+    elif mode==23:
+        print "Play url is "+url
+        AddWillowReplayParts(url)        
+    elif mode==24:
+        print "Play url is "+url
+        AddWillSportsOldSeriesMatches(url)        
 
-	elif mode==26 :
-		print "Play url is "+url
-		AddCricHD(url)
-	elif mode==27 :
-		print "Play url is "+url
-		PlayCricHD(url)                
-	elif mode==31 :
-		print "Play url is "+url
-		AddFlashtv(url)                
-	elif mode==30 :
-		print "Play url is "+url
-		AddP3gSports(url)                
-	elif mode==32 :
-		print "Play url is "+url
-		PlayFlashTv(url)                
-	elif mode==33 :
-		print "Play url is "+url
-		PlayGen(url)                
-	elif mode==34 :
-		print "Play url is "+url
-		GetSSSEvents(url)                
-	elif mode==35 :
-		print "Play url is "+url
-		PlaySSSEvent(url)                
-	elif mode==36 :
-		print "Play url is "+url
-		AddPv2Sports(url) 
-	elif mode==37 :
-		print "Play url is "+url
-		PlayPV2Link(url) 
+    elif mode==26 :
+        print "Play url is "+url
+        AddCricHD(url)
+    elif mode==27 :
+        print "Play url is "+url
+        PlayCricHD(url)                
+    elif mode==31 :
+        print "Play url is "+url
+        AddFlashtv(url)                
+    elif mode==30 :
+        print "Play url is "+url
+        AddP3gSports(url)                
+    elif mode==32 :
+        print "Play url is "+url
+        PlayFlashTv(url)                
+    elif mode==33 :
+        print "Play url is "+url
+        PlayGen(url)                
+    elif mode==34 :
+        print "Play url is "+url
+        GetSSSEvents(url)                
+    elif mode==35 :
+        print "Play url is "+url
+        PlaySSSEvent(url)                
+    elif mode==36 :
+        print "Play url is "+url
+        AddPv2Sports(url) 
+    elif mode==37 :
+        print "Play url is "+url
+        PlayPV2Link(url) 
 
-	elif mode==39 :
-		print "Play url is "+url
-		AddStreamSports(url) 
-	elif mode==40 :
-		print "Play url is "+url
-		PlayStreamSports(url)         
-	elif mode==41 :
-		print "Play url is "+url
-		AddCricFree(url) 
-	elif mode==42 :
-		print "Play url is "+url
-		PlayCricFree(url) 
-	elif mode==45 :
-		print "Play url is "+url
-		PlayiptvLink(url) 
-	elif mode==46 :
-		print "Play url is "+url
-		addiptvSports(url) 
-	elif mode==51 :
-		print "Play url is "+url
-		AddPTCSports(url) 
-	elif mode==52 :
-		print "Play url is "+url
-		AddPakTVSports(url) 
-	elif mode==53 :
-		print "Play url is "+url
-		AddUniTVSports(url)       
-	elif mode==54 :
-		print "Play url is "+url
-		clearCache()
-	elif mode==55 :
-		print "Play url is "+url
-		AddIpBoxSources(url)     
-	elif mode==61 or mode==67:
-		print "Play url is "+url
-		AddIpBoxChannels(url)     
-	elif mode==56 :
-		print "Play url is 56"+url
-		AddSports365Channels(url) 
-	elif mode==57 :
-		print "Play url is 57"+url
-		AddUKTVNowChannels(url)     
-	elif mode==60 :
-		print "Play url is 60"+url
-		AddYuppSports(url)     
-	elif mode==62 :
-		print "Play url is "+url
-		AddWTVSports(url)
-	elif mode==66 :
-		print "Play url is "+url
-		ShowAllCategories(url)    
-	elif mode==68 :
-		print "Play url is "+url
-		AddMonaChannels(url)            
-	elif mode==70:
-		print "Play url is "+url
-		AddGTVSports(url)  
-	elif mode==71:
-		print "Play url is "+url
-		AddPITVSports(url)  
-	elif mode==72:
-		print "Play url is "+url
-		AddSafeLang(url)  
-	elif mode==73:
-		print "Play url is "+url
-		AddSafeChannels(url)  
-	elif mode==74:
-		print "Play url is "+url
-		AddTVPlayerChannels(url)        
-	elif mode==75:
-		print "Play url is "+url
-		#tst()
-		AddStreamHDCats(url)  
-	elif mode==76:
-		print "Play url is "+url
-		AddStreamHDChannels(url)
-	elif mode==77:
-		print "Play url is "+url
-		AddHDFreeChannels(url)    
-	elif mode==78:
-		print "Play url is "+url
-		AddInfiniteChannels(url)               
-	elif mode==79:
-		print "Play url is "+url
-		AddMAMAHDChannels(url)               
-	elif mode==80:
-		print "Play url is "+url
-		import time        
-		try:
-			if RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t=%s'%str(int(time.time())),True)]):
-				dialog = xbmcgui.Dialog()
-				ok = dialog.ok('XBMC', 'Updated files dyamically!')  
-			else:
-				dialog = xbmcgui.Dialog()
-				ok = dialog.ok('XBMC', 'Not updated, perhaps no change?')  
-				print 'Updated files'
-		except: traceback.print_exc(file=sys.stdout)
+    elif mode==39 :
+        print "Play url is "+url
+        AddStreamSports(url) 
+    elif mode==40 :
+        print "Play url is "+url
+        PlayStreamSports(url)         
+    elif mode==41 :
+        print "Play url is "+url
+        AddCricFree(url) 
+    elif mode==42 :
+        print "Play url is "+url
+        PlayCricFree(url) 
+    elif mode==45 :
+        print "Play url is "+url
+        PlayiptvLink(url) 
+    elif mode==46 :
+        print "Play url is "+url
+        addiptvSports(url) 
+    elif mode==51 :
+        print "Play url is "+url
+        AddPTCSports(url) 
+    elif mode==52 :
+        print "Play url is "+url
+        AddPakTVSports(url) 
+    elif mode==53 :
+        print "Play url is "+url
+        AddUniTVSports(url)       
+    elif mode==54 :
+        print "Play url is "+url
+        clearCache()
+    elif mode==55 :
+        print "Play url is "+url
+        AddIpBoxSources(url)     
+    elif mode==61 or mode==67:
+        print "Play url is "+url
+        AddIpBoxChannels(url)     
+    elif mode in [56,156]  :
+        print "Play url is 56"+url
+        AddSports365Channels(url) 
+    elif mode==57 :
+        print "Play url is 57"+url
+        AddUKTVNowChannels(url)     
+    elif mode==60 :
+        print "Play url is 60"+url
+        AddYuppSports(url)     
+    elif mode==62 :
+        print "Play url is "+url
+        AddWTVSports(url)
+    elif mode==66 :
+        print "Play url is "+url
+        ShowAllCategories(url)    
+    elif mode==68 :
+        print "Play url is "+url
+        AddMonaChannels(url)            
+    elif mode==70:
+        print "Play url is "+url
+        AddGTVSports(url)  
+    elif mode==71:
+        print "Play url is "+url
+        AddPITVSports(url)  
+    elif mode==72:
+        print "Play url is "+url
+        AddSafeLang(url)  
+    elif mode==73:
+        print "Play url is "+url
+        AddSafeChannels(url)  
+    elif mode==74:
+        print "Play url is "+url
+        AddTVPlayerChannels(url)        
+    elif mode==75:
+        print "Play url is "+url
+        #tst()
+        AddStreamHDCats(url)  
+    elif mode==76:
+        print "Play url is "+url
+        AddStreamHDChannels(url)
+    elif mode==77:
+        print "Play url is "+url
+        AddHDFreeChannels(url)    
+    elif mode==78:
+        print "Play url is "+url
+        AddInfiniteChannels(url)               
+    elif mode==79:
+        print "Play url is "+url
+        AddMAMAHDChannels(url)               
+    elif mode==80:
+        print "Play url is "+url
+        import time        
+        try:
+            if not recursive and  RefreshResources([('live365.py','http://shani.offshorepastebin.com/live365.py?t=%s'%str(int(time.time())),True)]):
+                dialog = xbmcgui.Dialog()
+                ok = dialog.ok('XBMC', 'Updated files! Try click Refresh Listing to see if it works')   
+            else:
+                dialog = xbmcgui.Dialog()
+                ok = dialog.ok('XBMC', 'Not updated, perhaps no change?')  
+                print 'Updated files'
+        except: traceback.print_exc(file=sys.stdout)
 
         
 except:
 
-	print 'somethingwrong'
-	traceback.print_exc(file=sys.stdout)
-	
+    print 'somethingwrong'
+    traceback.print_exc(file=sys.stdout)
+
 
 if not ( (mode==3 or mode==4 or mode==9 or mode==11 or mode==15 or mode==21 or mode==22 or mode==27 or mode==33 or mode==35 or mode==37 or mode==40 or mode==42 or mode==45)  )  :
-	if mode==144:
-		xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=True)
-	else:
-		xbmcplugin.endOfDirectory(int(sys.argv[1]))
+    if mode in [144,156]:
+        xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=True)
+    else:
+        xbmcplugin.endOfDirectory(int(sys.argv[1]))
