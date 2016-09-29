@@ -168,12 +168,16 @@ def getLastPTS(data,rpid,type="video"):
                         dtspresent = packet.read(1).uint
                         ##print 'ptspresent',ptspresent
                         if ptspresent:
-                            packet.pos += (22)
-                            pts = packet.read(32)                            
-                            firstpartpts = pts.read(15)
+                            packet.pos += (14)
+                            pts = packet.read(40)
+                            pts.pos = 4
+                            firstpartpts = pts.read(3)
                             pts.pos += 1
                             secondpartpts = pts.read(15)
-                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
+                            pts.pos += 1
+                            thirdpartpts = pts.read(15)
+                            #decodedpts = bitstring.ConstBitArray().join([firstpartpts.bin, secondpartpts.bin, thirdpartpts.bin]).uint
+                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin, thirdpartpts.bin]),2)#
                         if dtspresent:
                                 dts = packet.read(40)
                                 dts.pos = 4
@@ -327,12 +331,16 @@ def getFirstPTSFrom(data,rpid, initpts,type="video" ):
                         dtspresent = packet.read(1).uint
                         ##print 'ptspresent',ptspresent
                         if ptspresent:
-                            packet.pos += (22)
-                            pts = packet.read(32)                            
-                            firstpartpts = pts.read(15)
+                            packet.pos += (14)
+                            pts = packet.read(40)
+                            pts.pos = 4
+                            firstpartpts = pts.read(3)
                             pts.pos += 1
                             secondpartpts = pts.read(15)
-                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
+                            pts.pos += 1
+                            thirdpartpts = pts.read(15)
+                            #decodedpts = bitstring.ConstBitArray().join([firstpartpts.bin, secondpartpts.bin, thirdpartpts.bin]).uint
+                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin, thirdpartpts.bin]),2)#
                         if dtspresent:
                                 dts = packet.read(40)
                                 dts.pos = 4
@@ -480,9 +488,12 @@ class TSDownloader():
             ignorefind=0
             lastpts=None
             fixpid=256
-            
+            ignoredblock=None
+            sleeptime=0
             while True:
-                
+                if sleeptime>0: 
+                    xbmc.sleep(sleeptime)
+                    sleeptime=0
                 starttime=time.time()
                 response=self.openUrl(url)
                 buf="start"
@@ -492,13 +503,13 @@ class TSDownloader():
                 currentduration=0
                 limit=1024*500
                 lastdataread=limit
-                ignoredblock=None
                 
-                print 'starting.............. new url',wrotesomething
+                
+                #print 'starting.............. new url',wrotesomething
                 try:
                     if self.g_stopEvent and self.g_stopEvent.isSet():
                         return
-                    while (buf != None and len(buf) > 0 and lastdataread>=limit):
+                    while (buf != None and len(buf) > 0 and lastdataread>=5000):
                         
                         if self.g_stopEvent and self.g_stopEvent.isSet():
                             return
@@ -506,7 +517,7 @@ class TSDownloader():
                             
                             buf = response.read(limit)##500 * 1024)
                             lastdataread=len(buf)
-                            print 'got data',len(buf)
+                            #print 'got data',len(buf)
                             if lastdataread==0: print 1/0
                         except:
                             buf=None
@@ -529,59 +540,71 @@ class TSDownloader():
                                     #print 'pts to find',lastpts
                                     lastforcurrent=getLastPTS(buf,fixpid,defualtype)
                                     #print 'last pts in new data',lastforcurrent
-                                    if lastpts<=lastforcurrent:#we have data
-                                        print 'we have data', (lastforcurrent-lastpts)/90000
+                                    if lastpts<lastforcurrent:#we have data
+                                        #print 'we have data', (lastforcurrent-lastpts)/90000
                                         
-                                        
-                                        firstpts,pos= getFirstPTSFrom(buf,fixpid,lastpts,defualtype)#
+                                        try:
+                                            firstpts,pos= getFirstPTSFrom(buf,fixpid,lastpts,defualtype)#
+                                        except:                                            
+                                            traceback.print_exc(file=sys.stdout)
+                                            print 'getFirstPTSFrom error, using, last -1',# buf.encode("hex"), lastpts,
+                                            firstpts,pos= getFirstPTSFrom(buf,fixpid,lastpts-1,defualtype)#
+                                            
                                         
                                         #if ignoredblock and (lastpts-firstpts)<0:
                                         #    print 'ignored last block yet the new block loosing data'
                                         #    print lastpts,firstpts,lastpts-firstpts
                                         #    print ignoredblock.encode('hex')
                                         #    print buf.encode('hex')
-                                        ignoredblock=None
-                                        print 'last pst send',lastpts,
-                                        print 'first pst new',firstpts
+                                        
+                                        #print 'last pst send',lastpts,
+                                        #print 'first pst new',firstpts
                                         #if abs(lastpts-firstpts)>300000:
                                         #    print 'xxxxxxxxxxxxxxxxxx',buf.encode("hex") 
-                                        print 'last pst new',lastforcurrent
+                                        #print 'last pst new',lastforcurrent
                                         if firstpts>lastforcurrent:
-                                            print 'bad pts', buf.encode("hex") 
-                                        print 'auto pos',pos
+                                            print 'bad pts? ignore'#, buf.encode("hex") 
+                                        #print 'auto pos',pos
                                         if pos==None: pos=0
-                                        if pos>1000:
-                                            rawpos=buf.find(lastbuf[-1000:])
-                                            if rawpos==-1:
-                                                print 'rawpos',rawpos,lastbuf[-1000:].encode("hex")
-                                                print 'buff',buf.encode("hex") 
+                                        if pos>5000:
+                                            rawpos=buf.find(lastbuf[-5000:])
                                             if rawpos>=0: 
                                                 pos=rawpos+5000
-                                                print 'wow overridin'
-                                        else: pos=0
-                                        print firstpts,pos,(firstpts-lastpts)/90000
+                                                #print 'overridin 1'
+                                            else:
+                                                #print 'rawpos',rawpos,lastbuf[-5000:].encode("hex")
+                                                #print 'buff',buf.encode("hex") 
+                                                rawpos=(ignoredblock+buf).find((lastbuf)[-5000:])
+                                                if rawpos>len(ignoredblock):
+                                                    pos=rawpos-len(ignoredblock)
+                                                    #print 'overridin 2'
+                                        #else:
+                                        #    print 'using next PTS', pos, firstpts
+                                        ignoredblock=None        
+                                        #else: pos=0
+                                        #print firstpts,pos,(firstpts-lastpts)/90000
                                         #fn=buf.find(buffertofind[:188])
-                                        print 'BUFFER FOUND!!', (pos*100)/len(buf)
-                                        if (pos*100)/len(buf)>60:
-                                            xbmc.sleep(1000)
+                                        #print 'BUFFER FOUND!!', (pos*100)/len(buf)
+                                        if (pos*100)/len(buf)>70:
+                                            sleeptime=2000
                                         buf= buf[pos:]
                                         lastpts=lastforcurrent
                                         #print 'now last pts',lastpts
                                         wrotesomething=True
                                     else:
-                                        if lastforcurrent==None:
-                                            print 'NONE ISSUE', buf.encode("hex")
-                                        print 'problembytes','diff',lastpts-lastforcurrent
+                                        #if lastforcurrent==None:
+                                        #    print 'NONE ISSUE', buf.encode("hex")
+                                        #print 'problembytes','diff',lastpts-lastforcurrent, lastpts, lastforcurrent
                                         #buf.encode("hex")
                                         ignoredblock=writebuf
                                         ignorefind+=1#same or old data?
                                         writebuf=None
-                                        if lastpts-lastforcurrent>(90000*10):
+                                        #if lastpts-lastforcurrent>(90000*10):
                                             
                                             #lastdataread=0 # read again we are buffering
                                             #response.close()
                                             #xbmc.sleep(1000)
-                                            print 'reconnect'
+                                        #    print 'reconnect'
                                         #if ignorefind>5:
                                         #    ignorefind=0
                                         #    #print 'not ignoring so write data'
@@ -617,8 +640,8 @@ class TSDownloader():
                             fileout.flush()
                             lastpts1=getLastPTS(lastbuf,fixpid,defualtype)
                             if lastpts and lastpts1 and lastpts1-lastpts<0:
-                                print 'too small?'
-                                print lastbuf.encode("hex")
+                                print 'too small?',lastpts , lastpts1,lastpts1-lastpts
+                                #print lastbuf.encode("hex")
                             if not lastpts1==None: lastpts=lastpts1
                             
                             
