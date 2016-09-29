@@ -48,7 +48,7 @@ def getLastPTS(data,rpid,type="video"):
         if ff==-1:
             #print 'No sync data'
             found=True
-        elif data[ff-packsize]=='\x47':
+        elif data[ff-packsize]=='\x47' and data[ff-packsize-packsize]=='\x47':
             spoint=ff
             found=True
         else:
@@ -168,23 +168,12 @@ def getLastPTS(data,rpid,type="video"):
                         dtspresent = packet.read(1).uint
                         ##print 'ptspresent',ptspresent
                         if ptspresent:
-                            packet.pos += (14)
-                            pts = packet.read(40)
-                            pts.pos = 4
-                            firstpartpts = pts.read(3)
+                            packet.pos += (22)
+                            pts = packet.read(32)                            
+                            firstpartpts = pts.read(15)
                             pts.pos += 1
                             secondpartpts = pts.read(15)
-                            pts.pos += 1
-                            thirdpartpts = pts.read(15)
-                            
-                            #packet.pos += 22
-                            #pts = packet.read(32)
-                            #firstpart = pts.read(15)
-                            #pts.pos += 1
-                            #secondpart = pts.read(15)
-                            ##print [firstpart.bin, secondpart.bin]
-                            #import binascii
-                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin,thirdpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
+                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
                         if dtspresent:
                                 dts = packet.read(40)
                                 dts.pos = 4
@@ -195,7 +184,7 @@ def getLastPTS(data,rpid,type="video"):
                                 thirdpartdts = dts.read(15)
                                 #decodeddts = bitstring.ConstBitArray().join([firstpartdts.bin, secondpartdts.bin, thirdpartdts.bin]).uint
                                 decodeddts =int(''.join([firstpartdts.bin, secondpartdts.bin, thirdpartdts.bin]),2)#
-                if decodedpts and (type=="" or av==type):
+                if decodedpts and (type=="" or av==type) and len(av)>0:
                     ##print 'currentpost',currentpost,decodedpts
                     return decodedpts
             
@@ -219,7 +208,7 @@ def getFirstPTSFrom(data,rpid, initpts,type="video" ):
         if ff==-1:
             #print 'No sync data'
             found=True
-        elif data[ff+packsize]=='\x47':
+        elif data[ff+packsize]=='\x47' and data[ff+packsize+packsize]=='\x47':
             spoint=ff
             found=True
         else:
@@ -338,23 +327,12 @@ def getFirstPTSFrom(data,rpid, initpts,type="video" ):
                         dtspresent = packet.read(1).uint
                         ##print 'ptspresent',ptspresent
                         if ptspresent:
-                            #packet.pos += 22
-                            #pts = packet.read(32)
-                            #firstpart = pts.read(15)
-                            #pts.pos += 1
-                            #secondpart = pts.read(15)
-                            ##print [firstpart.bin, secondpart.bin]
-                            ##import binascii
-                            #decodedpts =int(''.join([firstpart.bin, secondpart.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
-                            packet.pos += (14)
-                            pts = packet.read(40)
-                            pts.pos = 4
-                            firstpartpts = pts.read(3)
+                            packet.pos += (22)
+                            pts = packet.read(32)                            
+                            firstpartpts = pts.read(15)
                             pts.pos += 1
                             secondpartpts = pts.read(15)
-                            pts.pos += 1
-                            thirdpartpts = pts.read(15)
-                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin,thirdpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
+                            decodedpts =int(''.join([firstpartpts.bin, secondpartpts.bin]),2)# bitstring.ConstBitArray().join([firstpart.bin, secondpart.bin]).uint
                         if dtspresent:
                                 dts = packet.read(40)
                                 dts.pos = 4
@@ -365,7 +343,7 @@ def getFirstPTSFrom(data,rpid, initpts,type="video" ):
                                 thirdpartdts = dts.read(15)
                                 #decodeddts = bitstring.ConstBitArray().join([firstpartdts.bin, secondpartdts.bin, thirdpartdts.bin]).uint
                                 decodeddts =int(''.join([firstpartdts.bin, secondpartdts.bin, thirdpartdts.bin]),2)#
-                if decodedpts and (type=="" or av==type):
+                if decodedpts and (type=="" or av==type) and len(av)>0:
                     ##print decodedpts
                     if decodedpts>initpts:
                         return decodedpts,currentpost
@@ -508,11 +486,14 @@ class TSDownloader():
                 starttime=time.time()
                 response=self.openUrl(url)
                 buf="start"
+                
                 firstBlock=True
                 wrotesomething=False
                 currentduration=0
                 limit=1024*500
                 lastdataread=limit
+                ignoredblock=None
+                
                 print 'starting.............. new url',wrotesomething
                 try:
                     if self.g_stopEvent and self.g_stopEvent.isSet():
@@ -525,7 +506,7 @@ class TSDownloader():
                             
                             buf = response.read(limit)##500 * 1024)
                             lastdataread=len(buf)
-                            #print 'got data',len(buf)
+                            print 'got data',len(buf)
                             if lastdataread==0: print 1/0
                         except:
                             buf=None
@@ -548,23 +529,59 @@ class TSDownloader():
                                     #print 'pts to find',lastpts
                                     lastforcurrent=getLastPTS(buf,fixpid,defualtype)
                                     #print 'last pts in new data',lastforcurrent
-                                    if lastpts<lastforcurrent:#we have data
-                                        #print 'we have data'
+                                    if lastpts<=lastforcurrent:#we have data
+                                        print 'we have data', (lastforcurrent-lastpts)/90000
+                                        
+                                        
                                         firstpts,pos= getFirstPTSFrom(buf,fixpid,lastpts,defualtype)#
                                         
-                                        if pos==None: post=0
-                                        #print firstpts,pos
+                                        #if ignoredblock and (lastpts-firstpts)<0:
+                                        #    print 'ignored last block yet the new block loosing data'
+                                        #    print lastpts,firstpts,lastpts-firstpts
+                                        #    print ignoredblock.encode('hex')
+                                        #    print buf.encode('hex')
+                                        ignoredblock=None
+                                        print 'last pst send',lastpts,
+                                        print 'first pst new',firstpts
+                                        #if abs(lastpts-firstpts)>300000:
+                                        #    print 'xxxxxxxxxxxxxxxxxx',buf.encode("hex") 
+                                        print 'last pst new',lastforcurrent
+                                        if firstpts>lastforcurrent:
+                                            print 'bad pts', buf.encode("hex") 
+                                        print 'auto pos',pos
+                                        if pos==None: pos=0
+                                        if pos>1000:
+                                            rawpos=buf.find(lastbuf[-1000:])
+                                            if rawpos==-1:
+                                                print 'rawpos',rawpos,lastbuf[-1000:].encode("hex")
+                                                print 'buff',buf.encode("hex") 
+                                            if rawpos>=0: 
+                                                pos=rawpos+5000
+                                                print 'wow overridin'
+                                        else: pos=0
+                                        print firstpts,pos,(firstpts-lastpts)/90000
                                         #fn=buf.find(buffertofind[:188])
                                         print 'BUFFER FOUND!!', (pos*100)/len(buf)
+                                        if (pos*100)/len(buf)>60:
+                                            xbmc.sleep(1000)
                                         buf= buf[pos:]
                                         lastpts=lastforcurrent
                                         #print 'now last pts',lastpts
                                         wrotesomething=True
                                     else:
-                                        print 'problembytes'
-                                        buf.encode("hex")
+                                        if lastforcurrent==None:
+                                            print 'NONE ISSUE', buf.encode("hex")
+                                        print 'problembytes','diff',lastpts-lastforcurrent
+                                        #buf.encode("hex")
+                                        ignoredblock=writebuf
                                         ignorefind+=1#same or old data?
                                         writebuf=None
+                                        if lastpts-lastforcurrent>(90000*10):
+                                            
+                                            #lastdataread=0 # read again we are buffering
+                                            #response.close()
+                                            #xbmc.sleep(1000)
+                                            print 'reconnect'
                                         #if ignorefind>5:
                                         #    ignorefind=0
                                         #    #print 'not ignoring so write data'
@@ -589,13 +606,21 @@ class TSDownloader():
                         
                         if writebuf and len(writebuf)>0: 
                             wrotesomething=True
-                            lastbuf=buf
+                            if len(buf)>5000 or lastbuf==None:
+                                lastbuf=buf
+                            else:
+                                lastbuf+=buf
                             fileout.write(buf)
                             
                         ##print 'writing something..............'
                         
                             fileout.flush()
-                            lastpts=getLastPTS(lastbuf,fixpid,defualtype)
+                            lastpts1=getLastPTS(lastbuf,fixpid,defualtype)
+                            if lastpts and lastpts1 and lastpts1-lastpts<0:
+                                print 'too small?'
+                                print lastbuf.encode("hex")
+                            if not lastpts1==None: lastpts=lastpts1
+                            
                             
                             try:
                                 firsttime,pos=getFirstPTSFrom(lastbuf,fixpid,0,defualtype)#
@@ -611,7 +636,10 @@ class TSDownloader():
 
                     try:
                         response.close()
-                    except: pass
+                        print 'response closed'
+                    except:
+                        print 'close error'
+                        traceback.print_exc(file=sys.stdout)
                     if wrotesomething==False  :
                         if lost<10: continue   
                         fileout.close()
