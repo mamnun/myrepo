@@ -929,11 +929,11 @@ def PlayUKTVNowChannels(url):
         print 'error in PlayUKTVNowChannels'
         traceback.print_exc(file=sys.stdout)
         pass
-    if not played:
-        if RefreshResources([('uktvplayerlimited.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/uktvplayerlimited.py')]):
-            dialog = xbmcgui.Dialog()
-            ok = dialog.ok('XBMC', 'Updated files dyamically, try again, just in case!')           
-            print 'Updated files'
+    #if not played:
+    #    if RefreshResources([('uktvplayerlimited.py','https://raw.githubusercontent.com/Shani-08/ShaniXBMCWork2/master/plugin.video.ZemTV-shani/uktvplayerlimited.py')]):
+    #        dialog = xbmcgui.Dialog()
+    #        ok = dialog.ok('XBMC', 'Updated files dyamically, try again, just in case!')           
+    #        print 'Updated files'
     return  
 
 def getYuppSportsChannel(Live=True):
@@ -1378,7 +1378,13 @@ def playHDCast(url, mainref, altref=None):
                 print 'rtmp'
                 streamurl= re.findall('"(rtmp.*?)"' , result)[0]
                 cookieJar.save (HDCASTCookie,ignore_discard=True)
-                return PlayGen(base64.b64encode(streamurl+' timeout=20 live=1'))   
+                return PlayGen(base64.b64encode(streamurl+' timeout=20 live=1')) 
+            else:
+                Msg="Links not found, try again"
+                dialog = xbmcgui.Dialog()
+                ok = dialog.ok('Link parsing failed', Msg)
+                return False
+                
         else:
             headers=[('Referer',embedUrl),('User-Agent',agent),('X-Requested-With','XMLHttpRequest')]                             
             token=getUrl('http://bro.adca.st/getToken.php',headers=headers, cookieJar=cookieJar )
