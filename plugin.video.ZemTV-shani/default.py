@@ -416,7 +416,8 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
-    addDir('IpBox sports (Beta1 requires F4mTester)' ,'sss',55,'')
+    addDir('IpBox sports Using TSDownloader and HLS' ,'mpegts',55,'')
+    #addDir('IpBox sports Using HLS ' ,'hls',55,'')
     addDir('PTC sports' ,'sss',51,'')
     addDir('Paktv sports' ,'sss',52,'')
     addDir('UniTV sports' ,'sss',53,'')
@@ -1025,7 +1026,7 @@ def AddUKTVNowChannels(url=None):
     return   
 
 def AddIpBoxSources(url=None):
-    for cname,curl in getIpBoxSources():
+    for cname,curl in getIpBoxSources(caller=url):
         try:
             #print cname
             cname=cname#cname.encode('ascii', 'ignore').decode('ascii')
@@ -2920,35 +2921,39 @@ def getDittoChannels(categories, forSports=False):
         traceback.print_exc(file=sys.stdout)
     return ret    
 
-def getIpBoxSourcesAllOtherSource():
+def getIpBoxSourcesAllOtherSource(caller):
     ret=[]
-    try:
+    print 'getIpBoxSourcesAllOtherSource'
+    if not caller=="hls":
+        try:
 
 
-        htmls=getUrl("http://www.oneplaylist.eu.pn/")
+            htmls=getUrl("http://www.oneplaylist.eu.pn/")
 
-        servers=re.findall( '>(http:\/\/(.*?)\/.*?get.php.*?)<', htmls)
-        print servers
-        import time
+            servers=re.findall( '>(http:\/\/(.*?)\/.*?get.php.*?)<', htmls)
+            print servers
+            import time
 
-        for ln in servers[0:25]:
-            try:
-                surl,servername=ln
-                servername=servername.split('/')[0].split(':')[0]
-                ret.append((servername, surl.replace('&amp;','&')+'&output=hls' ))   
-            except: traceback.print_exc(file=sys.stdout)
+            for ln in servers[0:25]:
+                try:
+                    surl,servername=ln
+                    servername=servername.split('/')[0].split(':')[0]
+                    ret.append((servername, surl.replace('&amp;','&')  ))   
+                except: traceback.print_exc(file=sys.stdout)
 
-    except:
-        traceback.print_exc(file=sys.stdout)
+        except:
+            traceback.print_exc(file=sys.stdout)
 
     return ret
     
-def getIpBoxSources(frompakindia=False):
+def getIpBoxSources(frompakindia=False , caller=None):
     ret=[]
     try:
 
-
-        servers=getUrl("http://pastebin.com/raw/GrYKMHrF")
+        if caller=="mpegts":
+            servers=getUrl("http://pastebin.com/raw/GrYKMHrF")
+        else:
+            servers=getUrl("http://pastebin.com/raw/SQfcddBn")
         servers=servers.splitlines()
 
         import time
@@ -2956,10 +2961,10 @@ def getIpBoxSources(frompakindia=False):
             if not ln.startswith("##") and len(ln)>0:
                 try:
                     ##serial:mac:time:text
-                    #print ln
+                    print 'ln',ln
                     servername,surl=ln.split('$')
                     
-                    ret.append((servername, surl+"&output=hls" ))   
+                    ret.append((servername, surl ))   
                 except: traceback.print_exc(file=sys.stdout)
     except:
         traceback.print_exc(file=sys.stdout)
@@ -2967,7 +2972,7 @@ def getIpBoxSources(frompakindia=False):
     if frompakindia:
         return ret
     else:
-        return ret+getIpBoxSourcesAllOtherSource()
+        return ret+getIpBoxSourcesAllOtherSource(caller)
 
     
 def getIpBoxChannels(url,forSports=False):

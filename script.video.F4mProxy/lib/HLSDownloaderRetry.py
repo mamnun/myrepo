@@ -136,7 +136,7 @@ class HLSDownloaderRetry():
         self.status='finished'
 
         
-def getUrl(url,timeout=15,returnres=False):
+def getUrl(url,timeout=15,returnres=False,stream =False):
     global cookieJar
     global clientHeader
     try:
@@ -156,9 +156,9 @@ def getUrl(url,timeout=15,returnres=False):
         #import random
         #headers['User-Agent'] =headers['User-Agent'] + str(int(random.random()*100000))
         if post:
-            req = session.post(url, headers = headers, data= post, proxies=proxies,verify=False,timeout=timeout)
+            req = session.post(url, headers = headers, data= post, proxies=proxies,verify=False,timeout=timeout,stream=stream)
         else:
-            req = session.get(url, headers=headers,proxies=proxies,verify=False ,timeout=timeout)
+            req = session.get(url, headers=headers,proxies=proxies,verify=False ,timeout=timeout,stream=stream)
 
         req.raise_for_status()
         if returnres: 
@@ -221,17 +221,9 @@ def download_chunks(URL, chunk_size=4096, enc=None):
     #conn=urllib2.urlopen(URL)
     #print 'starting download'
     
-    conn=getUrl(URL,timeout=6,returnres=True)
+    conn=getUrl(URL,returnres=True,stream=True)
     #while 1:
-    if enc:
-        if USEDec==1 :
-            chunk_size*=1000
-        else:
-            chunk_size*=100
-
-    else:
-#        yield conn.content;
-        chunk_size=chunk_size*1000
+    chunk_size=chunk_size*100
     
     for chunk in conn.iter_content(chunk_size=chunk_size):
         yield chunk
@@ -499,33 +491,22 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
                     #queue.put(None, block=True)
                     return
                 seq, encobj, duration, targetduration, media_url = media
-                addsomewait=True
+                
                 if seq > last_seq:
                     #print 'downloading.............',url
                     
                     enc=None
-                    if encobj:
-                        codeurl,iv=encobj
-                        key = download_file(codeurl)
-
-                        if not USEDec==3:
-                            enc = AES.new(key, AES.MODE_CBC, iv)
-                        else:
-                            ivb=array.array('B',iv)
-                            keyb= array.array('B',key)
-                            enc=python_aes.new(keyb, 2, ivb)
-                        #enc=AESDecrypter.new(key, 2, iv)
-                        
-                    
                     try:
                         data=None
                         try:
+                            print 'downloading', urlparse.urljoin(url, media_url)
                             for chunk in download_chunks(urlparse.urljoin(url, media_url)):
                                 if stopEvent and stopEvent.isSet():
                                     return
-                                #print 'first chunk', len(chunk)
+                                #print 'sending chunk', len(chunk)
                                 send_back(chunk,file)
                             data="send"
+                            addsomewait=True
                         except: traceback.print_exc()
                         if stopEvent and stopEvent.isSet():
                             return
