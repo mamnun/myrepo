@@ -1348,17 +1348,22 @@ def playHDCast(url, mainref, altref=None):
         if not broadcast:# in result:
             if 'blockscript=' in result: #ok captcha here
                 try:
-                    xval=re.findall('name="x" value="(.*?)"',result)[0]
-                    urlval=re.findall('name="url" value="(.*?)"',result)[0]
-                    blocscriptval=re.findall('name="blockscript" value="(.*?)"',result)[0]
-                    imageurl=re.findall('<td nowrap><img src="(.*?)"',result)[0].replace('&amp;','&')             
-                    if not imageurl.startswith('http'):
-                        imageurl='http://hdcast.org'+imageurl
-                    headersforimage=[('Referer',embedUrl),('Origin','http://hdcast.org'),('User-Agent',agent)]                             
-                    post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,headersforimage )}
-                    post = urllib.urlencode(post)
-                    
-                    result=getUrl(embedUrl,post=post, headers=headersforimage, cookieJar=cookieJar)
+                    tries=0
+                    while 'blockscript=' in result and tries<3:
+                        tries+=1
+                        xval=re.findall('name="x" value="(.*?)"',result)[0]
+                        urlval=re.findall('name="url" value="(.*?)"',result)[0]
+                        blocscriptval=re.findall('name="blockscript" value="(.*?)"',result)[0]
+                        imageurl=re.findall('<td nowrap><img src="(.*?)"',result)[0].replace('&amp;','&')             
+                        if not imageurl.startswith('http'):
+                            imageurl='http://hdcast.org'+imageurl
+                        headersforimage=[('Referer',embedUrl),('Origin','http://hdcast.org'),('User-Agent',agent)]                             
+                        post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,headersforimage )}
+                        post = urllib.urlencode(post)
+                        
+                        result=getUrl(embedUrl,post=post, headers=headersforimage, cookieJar=cookieJar)
+                        cookieJar.save (HDCASTCookie,ignore_discard=True)
+                        result=getUrl(embedUrl, headers=headers, cookieJar=cookieJar)
                 except: 
                     print 'error in catpcha'
                     traceback.print_exc(file=sys.stdout)
