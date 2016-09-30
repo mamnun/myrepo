@@ -824,7 +824,7 @@ def get_unwise( str_eval):
     return page_value    
     
     
-def AddSports365Channels(url=None, recursive=False)::
+def AddSports365Channels(url=None, recursive=False):
     errored=True
     forced=False
     try:
