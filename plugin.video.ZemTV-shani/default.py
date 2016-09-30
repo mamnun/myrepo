@@ -2935,7 +2935,7 @@ def getIpBoxSourcesAllOtherSource():
             try:
                 surl,servername=ln
                 servername=servername.split('/')[0].split(':')[0]
-                ret.append((servername, surl.replace('&amp;','&') ))   
+                ret.append((servername, surl.replace('&amp;','&')+'&output=hls' ))   
             except: traceback.print_exc(file=sys.stdout)
 
     except:
@@ -2959,7 +2959,7 @@ def getIpBoxSources(frompakindia=False):
                     #print ln
                     servername,surl=ln.split('$')
                     
-                    ret.append((servername, surl ))   
+                    ret.append((servername, surl+"&output=hls" ))   
                 except: traceback.print_exc(file=sys.stdout)
     except:
         traceback.print_exc(file=sys.stdout)
@@ -2994,7 +2994,7 @@ def getIpBoxChannels(url,forSports=False):
                         ss=source
                         cname=ss[0] if forSports else ss[1] 
                         #print repr(cname), repr(ss)
-                        if '.ts' in ss[2]:
+                        if 1==1:
                             #curl='direct:'+ss[2].replace('.ts','.ts').replace('\r','')
                             #curl='direct:'+ss[2].replace('.ts','.m3u8').replace('\r','')
                             #curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')#+'|Mozilla/5.0 (Windows NT 6.1 WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
@@ -4648,8 +4648,11 @@ def getiptvmac():
 
 def playipbox(finalUrl):
     print 'finalUrl',finalUrl
-    finalUrl='plugin://plugin.video.f4mTester/?name=%s&url=%s&streamtype=TSDOWNLOADER'%(urllib.quote_plus(name),urllib.quote_plus(finalUrl))
-    
+    if '.ts' in finalUrl:
+        finalUrl='plugin://plugin.video.f4mTester/?name=%s&url=%s&streamtype=TSDOWNLOADER'%(urllib.quote_plus(name),urllib.quote_plus(finalUrl))
+    elif '.m3u8' in finalUrl:
+        finalUrl='plugin://plugin.video.f4mTester/?name=%s&url=%s&streamtype=HLSRETRY'%(urllib.quote_plus(name),urllib.quote_plus(finalUrl))
+        
 #    finalUrl='plugin://plugin.video.f4mTester/?url=%s&streamtype=HLS'%(urllib.quote_plus(finalUrl))
     xbmc.executebuiltin('XBMC.RunPlugin('+finalUrl+')') 
     

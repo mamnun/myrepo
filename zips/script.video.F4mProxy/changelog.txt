@@ -123,6 +123,8 @@ m3u8 fine tuning
 TSDownloader second improvements
 [B]Version 2.5.8[/B]
 TSDownloader second improvements again
+[B]Version 2.5.9[/B]
+HLSRETRY in f4mproxy
 
 
 

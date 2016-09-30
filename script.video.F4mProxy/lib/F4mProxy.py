@@ -198,7 +198,18 @@ class MyHandler(BaseHTTPRequestHandler):
                 rtype="flv-application/octet-stream"  #default type could have gone to the server to get it.
                 self.send_header("Content-Type", rtype)
                 srange=None
-            
+            elif streamtype=='HLSRETRY':
+                from HLSDownloaderRetry import HLSDownloaderRetry
+                downloader=HLSDownloaderRetry()
+                if not downloader.init(self.wfile,url,proxy,use_proxy_for_chunks,g_stopEvent,maxbitrate,auth):
+                    print 'cannot init'
+                    return
+                    
+                srange,framgementToSend=(None,None)
+                self.send_response(200)
+                rtype="flv-application/octet-stream"  #default type could have gone to the server to get it.
+                self.send_header("Content-Type", rtype)
+                srange=None            
 
             #rtype="flv-application/octet-stream"  #default type could have gone to the server to get it. 
             #self.send_header("Content-Type", rtype)    
