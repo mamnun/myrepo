@@ -4734,9 +4734,9 @@ def PlaySafeLink(url):
     import websocket
     ws = websocket.WebSocket()
     
-    header=["Origin: http://customer.safersurf.com","User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"]
-    ws.connect("ws://52.48.86.135:1337/tb/m3u8/master/siteid/customer.onlinetv",header=header)
-    jsdata=''
+    header=[base64.b64decode("T3JpZ2luOiBodHRwOi8vY3VzdG9tZXIuc2FmZXJzdXJmLmNvbQ=="),"User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"]
+    ws.connect(base64.b64decode("d3M6Ly81Mi40OC44Ni4xMzU6MTMzOC90Yi9tM3U4L21hc3Rlci9zaXRlaWQvY3VzdG9tZXIub25saW5ldHYudjM="),header=header)
+    jsdata='[{"key":"type","value":"info"},{"key":"info","value":"speedtest"},{"key":"country","value":""},{"key":"language","value":"en"},{"key":"speedTestSize","value":"210"},{"key":"kbPs","value":"3554.38"},{"key":"speedResKb","value":"4G"},{"key":"speedResTime","value":"4G"},{"key":"websocketSupport","value":"true"},{"key":"speedTestInTime","value":"true"},{"key":"flash","value":"true"},{"key":"touchScreen","value":"false"},{"key":"rotationSupport","value":"false"},{"key":"pixelRatio","value":"1"},{"key":"width","value":"1920"},{"key":"height","value":"1080"},{"key":"mobilePercent","value":"0"}]'
     ws.send(jsdata)
     result = ws.recv()   
 
@@ -4745,13 +4745,13 @@ def PlaySafeLink(url):
     result = ws.recv()
     #print repr(result)
     #ws.close()
-    headers = [('Referer', 'http://customer.safersurf.com/onlinetv.html'),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),('Origin','http://customer.safersurf.com')]
+    headers = [('Referer', base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20vb25saW5ldHYuaHRtbA==')),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),('Origin',base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20='))]
     url=re.findall('[\'"](http.*?)[\'"]',result)[0]
     result=getUrl(url,headers=headers)
     urlToPlay=re.findall('(http.*?)\s',result)[-1]
     import random
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    xbmc.Player(  ).play( urlToPlay+'|Origin=http://customer.safersurf.com&User-Agent=Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36&Referer=http://customer.safersurf.com/onlinetv.html', listitem)
+    xbmc.Player(  ).play( urlToPlay+base64.b64decode('fE9yaWdpbj1odHRwOi8vY3VzdG9tZXIuc2FmZXJzdXJmLmNvbSZVc2VyLUFnZW50PU1vemlsbGEvNS4wIChXaW5kb3dzIE5UIDYuMSkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzUyLjAuMjc0My4xMTYgU2FmYXJpLzUzNy4zNiZSZWZlcmVyPWh0dHA6Ly9jdXN0b21lci5zYWZlcnN1cmYuY29tL29ubGluZXR2Lmh0bWw='), listitem)
      
 def PlayPV2Link(url):
 
