@@ -136,7 +136,7 @@ class HLSDownloader():
         self.status='finished'
 
         
-def getUrl(url,timeout=15,returnres=False):
+def getUrl(url,timeout=15,returnres=False,stream=False):
     global cookieJar
     global clientHeader
     try:
@@ -156,9 +156,9 @@ def getUrl(url,timeout=15,returnres=False):
         #import random
         #headers['User-Agent'] =headers['User-Agent'] + str(int(random.random()*100000))
         if post:
-            req = session.post(url, headers = headers, data= post, proxies=proxies,verify=False,timeout=timeout)
+            req = session.post(url, headers = headers, data= post, proxies=proxies,verify=False,timeout=timeout,stream=stream)
         else:
-            req = session.get(url, headers=headers,proxies=proxies,verify=False ,timeout=timeout)
+            req = session.get(url, headers=headers,proxies=proxies,verify=False ,timeout=timeout,stream=stream)
 
         req.raise_for_status()
         if returnres: 
@@ -221,7 +221,7 @@ def download_chunks(URL, chunk_size=4096, enc=None):
     #conn=urllib2.urlopen(URL)
     #print 'starting download'
     
-    conn=getUrl(URL,timeout=6,returnres=True)
+    conn=getUrl(URL,timeout=6,returnres=True,stream=True)
     #while 1:
     if enc:
         if USEDec==1 :
