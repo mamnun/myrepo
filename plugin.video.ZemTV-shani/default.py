@@ -2325,18 +2325,25 @@ def getWillowHighlights(matchid):
         matchdata=json.loads(link)
         
         r=[]
+        loginworked,cookieJar= performWillowLogin();
         for m in matchdata["result"]:
-            if "BGUrl" in m and  (not m["BGUrl"]=="") and (base64.b64decode('d3p2b2Q6') in m["BGUrl"] or base64.b64decode('Ymd2b2Q=') in m["BGUrl"] ):
+            if "BGUrl" in m and  (not m["BGUrl"]=="") and (base64.b64decode('d3p2b2Q6') in m["BGUrl"] or base64.b64decode('Ymd2b2Q=') in m["BGUrl"]  or base64.b64decode("d2x2b2Q=") in m["BGUrl"] ):
                 rurl=m["BGUrl"]
+                print 'rurl',rurl
                 if base64.b64decode('d3p2b2Q6') in rurl:
                     rurl=rurl.replace(base64.b64decode('d3p2b2Q6Ly8='),base64.b64decode('aHR0cDovLzM4Ljk5LjY4LjE2MjoxOTM1L3dsbHd2b2QvX2RlZmluc3RfL3dsdm9kL3NtaWw6'));
                     rurl=rurl.replace('.mp4',base64.b64decode('X3dlYi5zbWlsL3BsYXlsaXN0Lm0zdTg='));
+                elif base64.b64decode("d2x2b2Q=")  in m["BGUrl"]:
+                    rurl=base64.b64decode("aHR0cHM6Ly93d3cud2lsbG93LnR2L0V2ZW50TWdtdC93ZWJzZXJ2aWNlcy9nZXRIaWdobGlnaHRVUkwuYXNwP3ZvZHVybD0=")+urllib.quote_plus(rurl)
+                    rurl=getUrl(rurl, cookieJar=cookieJar)
+                    rurl=json.loads(rurl)["url"]
                 else:
                     rurl=rurl.replace('bgvod:/','')
                     data={"bgvodurl":rurl}
-                    rurl=getUrl('https://www.willow.tv/EventMgmt/webservices/getBGHgltUrl.asp?'+urllib.urlencode(data))
+                    rurl=getUrl(base64.b64decode('aHR0cHM6Ly93d3cud2lsbG93LnR2L0V2ZW50TWdtdC93ZWJzZXJ2aWNlcy9nZXRCR0hnbHRVcmwuYXNw?')+urllib.urlencode(data))
                     print rurl
                     rurl=json.loads(rurl)["url"]
+                    
 
                 r.append([m["YTVideoName"],rurl,m["YTThumbId"]])
 #        print 'replays',r
