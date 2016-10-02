@@ -3726,6 +3726,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     UKTVGenCat=[]
     UKTVGenCH=[]
     tvplayerChannels=None
+    Zengagen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
@@ -3864,7 +3865,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)    
-    print    'Zengagen',Zengagen        
+    
     if Zengagen:
         try:
             
