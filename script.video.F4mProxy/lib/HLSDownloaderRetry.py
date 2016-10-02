@@ -86,7 +86,7 @@ class HLSDownloaderRetry():
     def __init__(self):
         self.init_done=False
 
-    def init(self, out_stream, url, proxy=None,use_proxy_for_chunks=True,g_stopEvent=None, maxbitrate=0, auth=''):
+    def init(self, out_stream, url, proxy=None,use_proxy_for_chunks=True,g_stopEvent=None, maxbitrate=0, auth='', callbackpath="", callbackparam=""):
         global clientHeader,gproxy,gauth
         try:
             self.init_done=False
@@ -95,6 +95,8 @@ class HLSDownloaderRetry():
             self.status='init'
             self.proxy = proxy
             self.auth=auth
+            self.callbackpath=callbackpath
+            self.callbackparam=callbackparam
             if self.auth ==None or self.auth =='None'  or self.auth=='':
                 self.auth=None
             if self.auth:
@@ -130,7 +132,8 @@ class HLSDownloaderRetry():
     def keep_sending_video(self,dest_stream, segmentToStart=None, totalSegmentToSend=0):
         try:
             self.status='download Starting'
-            downloadInternal(self.url,dest_stream,self.maxbitrate,self.g_stopEvent)
+
+            downloadInternal(self.url,dest_stream,self.maxbitrate,self.g_stopEvent , self.callbackpath,  self.callbackparam)
         except: 
             traceback.print_exc()
         self.status='finished'
@@ -169,6 +172,7 @@ def getUrl(url,timeout=15,returnres=False,stream =False):
     except:
         print 'Error in getUrl'
         traceback.print_exc()
+        raise 
         return None
         
     
@@ -404,10 +408,12 @@ def send_back(data,file):
     file.write(data)
     file.flush()
         
-def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
+def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",callbackparam=""):
     global key
     global iv
     global USEDec
+    global cookieJar
+    global clientHeader
     if stopEvent and stopEvent.isSet():
         return
     dumpfile = None
@@ -458,10 +464,10 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
             print 'choose %d'%choice
             url = urlparse.urljoin(url, variants[choice][0])
     except: 
-        control[0] = 'stop'
+        
         raise
 
-    control = ['go']
+    
 
     last_seq = -1
     targetduration = 5
@@ -475,7 +481,33 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
             if fails>10: break
             if stopEvent and stopEvent.isSet():
                 return
-            medialist = list(handle_basic_m3u(url))
+            try:
+                medialist = list(handle_basic_m3u(url))
+            except Exception as inst:
+                print 'here in exp',inst
+                print fails
+                fails+=1
+                
+                if '403' in repr(inst).lower() and callbackpath and len(callbackpath)>0:
+                    print 'callback'
+                    import importlib, os
+                    foldername=os.path.sep.join(callbackpath.split(os.path.sep)[:-1])
+                    if foldername not in sys.path:
+                        sys.path.append(foldername)
+                    try:
+                        callbackfilename= callbackpath.split(os.path.sep)[-1].split('.')[0]
+                        callbackmodule = importlib.import_module(callbackfilename)
+                        urlnew,cjnew=callbackmodule.f4mcallback(callbackparam, 1, inst, cookieJar , url, clientHeader)
+                    except: traceback.print_exc()
+                    if urlnew and len(urlnew)>0 and urlnew.startswith('http'):
+                        print 'got new url',url
+                        url=urlnew
+                        cookieJar= cjnew
+                    continue
+                        
+                raise 
+
+                    
             playedSomething=False
             if medialist==None: return
 
@@ -549,7 +581,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
                 xbmc.sleep(2000+ (3000 if addsomewait else 0))
             
     except:
-        control[0] = 'stop'
+        
         raise
 
     
