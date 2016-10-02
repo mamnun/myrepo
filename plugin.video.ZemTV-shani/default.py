@@ -439,6 +439,7 @@ def AddSports(url):
     addDir('Mama HD','http://mamahd.com/',79,'http://mamahd.com/images/logo.png')
     addDir('HDfree','sss',77,'')
     addDir('inFinite Streams','sss',78,'')
+    addDir('Euro Streams','sss',81,'')
 
     #addDir('Yupp Asia Cup','Live' ,60,'')
     #addDir('CricHD.tv (Live Channels)' ,'pope' ,26,'')
@@ -1115,7 +1116,7 @@ def getTVPlayerChannels(thesechannels=[]):
             cname=cname.replace('Watch ','')
         curl=cc[0]
         if not curl.startswith('http'):
-            curl= ' http://tvplayer.com/'+curl
+            curl= 'http://tvplayer.com/'+curl
         if len(thesechannels)==0 or cname.lower() in thesechannels:
             ret.append( (cname.capitalize() ,base64.b64encode('tvplayer:'+curl) ,mm ,logo) )		#name,url,mode,icon
     return ret
@@ -1144,7 +1145,38 @@ def AddStreamHDCats(url):
         if not curl.startswith('http'):
             curl= 'http://www.streamhd.eu'+curl
         addDir(cname.capitalize() ,curl ,mm ,logo, False, True,isItFolder=True)		#name,url,mode,icon
-    
+        
+def getEuroStreamChannels(url):
+    import time
+    headers=[('User-Agent','Sports%20TV/2 CFNetwork/758.0.2 Darwin/15.0.0')]               
+    mainhtml=getUrl(base64.b64decode('aHR0cDovL3d3dy5ub3RpY2lhc3RlbGVmb25pYS5lcy9zcG9ydHNiaWd0ZWQucGxpc3Q='),headers=headers)
+    ret=[]
+    try:
+        chdata= re.findall( '<string>(.*?)</string>',mainhtml)
+        for cc2 in chdata:
+            try:
+                mm=11            
+                          
+                logo=''         
+                cname,curl=cc2.split(',')                
+                ret.append((cname ,base64.b64encode('direct2:'+curl+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)') ,mm ,logo))
+            except:
+                traceback.print_exc(file=sys.stdout)
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return sorted(ret,key=lambda s: s[0].lower()   )
+        
+def AddEuroStreamChannels(url):
+
+    try:
+        for cc2 in getEuroStreamChannels(url):
+            try:
+                addDir(cc2[0] ,cc2[1] ,cc2[2] ,cc2[3], False, True,isItFolder=False)		#name,url,mode,icon
+            except:
+                traceback.print_exc(file=sys.stdout)
+    except:
+        traceback.print_exc(file=sys.stdout)
+        
 def AddMAMAHDChannels(url):
     import time
     headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]               
@@ -2893,6 +2925,25 @@ def getCFChannels(category):
         traceback.print_exc(file=sys.stdout)
     return ret  
     
+def getZengaChannels(url,progress):
+    ret=[]
+    try:
+        
+        jsondata=getZengaPage(url,progress)
+        print 'jsondata',jsondata
+        for js in jsondata:
+
+            cname=js["title"]
+            cimage=base64.b64decode('aHR0cDovL2Qzam5rcDNscnMyaGQ1LmNsb3VkZnJvbnQubmV0L2ltYWdlcy8zMjB4MTgwLyVzLmpwZw==')%js["uid"]
+            curl="zenga:"+js["dvrid"]     
+            print curl            
+            ret.append((cname +' Zenga' ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret    
+    
 def getYPChannels(url,progress):
     ret=[]
     try:
@@ -2968,10 +3019,10 @@ def getIpBoxSources(frompakindia=False , caller=None):
     ret=[]
     try:
 
-        if caller=="mpegts":
+        if caller=="mpegts" or caller==None:
             servers=getUrl("http://pastebin.com/raw/GrYKMHrF")
-        else:
-            servers=getUrl("http://pastebin.com/raw/SQfcddBn")
+        #else:
+        #    servers=getUrl("http://pastebin.com/raw/SQfcddBn")
         servers=servers.splitlines()
 
         import time
@@ -3075,6 +3126,7 @@ def getPITVCats():
         traceback.print_exc(file=sys.stdout)
     print ret
     return ret  
+
     
 def getWTVChannels(categories, forSports=False):
     ret=[]
@@ -3502,7 +3554,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     isYPgenOff= selfAddon.getSetting( "isYPOff" )
     isYPgenOff="true"
     isUKTVOff=selfAddon.getSetting( "isUKTVOff" )
-
+    
+    isZengaOff=selfAddon.getSetting( "isZengaOff" )
+    
+    
     main_ch='(<section_name>Pakistani<\/section_name>.*?<\/section>)'
 #    v4link='aHR0cDovL3N0YWdpbmcuamVtdHYuY29tL3FhLnBocC8yXzIvZ3htbC9jaGFubmVsX2xpc3QvMQ=='
     v4link='aHR0cDovL2ZlcnJhcmlsYi5qZW10di5jb20vaW5kZXgucGhwLzJfMi9neG1sL2NoYW5uZWxfbGlzdC8x'
@@ -3692,6 +3747,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL2hpbmRpLXR2Lmh0bWw=")
         UKTVGenCat,UKTVGenCH=['movies'],['zee tv','colors','sony tv hd', 'star plus hd', 'zee tv']
         tvplayerChannels=['sony sab','zing']
+        Zengagen='ch'
     else:
         pg='punjabi'
         CFgen="1314"
@@ -3711,7 +3767,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     if isUKTVOff=='true': 
         UKTVGenCat=[]
         UKTVGenCH=[]
+    if isZengaOff=='true': 
+        Zengagen=None
 
+        
     if pg:
         try:
 #            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxx'
@@ -3804,7 +3863,20 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             if len(rematch)>0:
                 match+=rematch
         except:
-            traceback.print_exc(file=sys.stdout)     
+            traceback.print_exc(file=sys.stdout)    
+    print    'Zengagen',Zengagen        
+    if Zengagen:
+        try:
+            
+            progress.update( 90, "", "Loading Zenga Channels", "" )
+            
+            rematch=getZengaChannels(base64.b64decode('aHR0cDovL3plbmdhdHZnZXRhcGktZW52LmVsYXN0aWNiZWFuc3RhbGsuY29tL2dldHRyZW5kc2J5Y29udGVudHR5cGU/Y29udGVudHR5cGU9NmZmNDM3OGEtMDdkZC0xMWUyLTg1NWItNzA3MWJjY2M4NWFjJmNvdW50cnljb2RlPUlOJmZyb209MCZpczE4cGx1cz0wJnBsYXRmb3JtPWJmYzY4NWYxLTNkMzQtNDNmOS1hODliLTkzMDUxYzI4OGJjZSZzaXplPTIwMCZzdGF0ZT0yYmViMzJmZS0zM2RiLTQ3YWItYjJlNy1kMmRlOTVmZWM4NTI='),progress)
+            progress.update( 92, "", "Loading Zenga Channels loaded", "" )
+            if len(rematch)>0:
+                match+=rematch
+        except:
+            traceback.print_exc(file=sys.stdout)    
+            
             
     if ipBoxGen:
         try:
@@ -3869,6 +3941,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     cc='ffdc00cc'                
                 elif cname.lower().endswith(' uktv'):
                     cc='ffdc1111'
+                elif cname.lower().endswith(' zenga'):
+                    cc='ffcc1111'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -4083,8 +4157,12 @@ def clearCache():
     files=[]
     fname='paktvpage.json'
     fname=os.path.join(profile_path, fname)
-    files+=[fname]    
-
+    files+=[fname]   
+    
+    fname='zenga.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]   
+   
     fname='ptcpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]    
@@ -4107,6 +4185,11 @@ def clearCache():
     fname='wtvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]       
+    fname='dreampage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]           
+    
+    
     try:
         for cat in getMonaCats():
             fname='monapage_%s.json'%cat[0]
@@ -4156,10 +4239,34 @@ def getDittoPage():
     #r+=eval(base64.b64decode('W3sibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE4MyIsIm5hbWUiOicmIFBpY3R1cmVzJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxODMuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxOTAiLCJuYW1lIjonJlBpY3R1cmVzIEhEJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxOTAuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMDQiLCJuYW1lIjonJlRWJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMDQuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxODkiLCJuYW1lIjonJlRWIEhEJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxODkuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMTkiLCJuYW1lIjonMjQgR2hhbnRhJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMTkuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxNTkiLCJuYW1lIjonQ1RWTiBBS0QgUGx1cycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTU5LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTcxIiwibmFtZSI6J0RpdnlhIFRWJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxNzEuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxNTIiLCJuYW1lIjonRVRDJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxNTIuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMjIiLCJuYW1lIjonSW5kaWEgMjR4NycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDIyLmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTYwIiwibmFtZSI6J0tvbGthdGEgVFYnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE2MC5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAxMyIsIm5hbWUiOidMaXZpbmcgRm9vZHonLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAxMy5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE5MyIsIm5hbWUiOidNYWtrYWwgVFYnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE5My5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE4NSIsIm5hbWUiOidNYXN0aWknLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE4NS5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE2MSIsIm5hbWUiOidSIFBsdXMnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE2MS5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE1NyIsIm5hbWUiOidSYWogRGlnaXRhbCBQbHVzJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxNTcuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMjUiLCJuYW1lIjonUmFqIE11c2ljJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMjUuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMTciLCJuYW1lIjonUmFqIE11c2l4JywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMTcuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMDkiLCJuYW1lIjonUmFqIE11c2l4IFRlbHVndScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDA5LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDE2IiwibmFtZSI6J2FqIE5ld3MgMjR4NycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDE2LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDI2IiwibmFtZSI6J1JhaiBOZXdzIEthbm5hZGEnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAyNi5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAxOCIsIm5hbWUiOidSYWogTmV3cyBNYWxheWFsYW0nLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAxOC5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAwOCIsIm5hbWUiOidSYWogTmV3cyBUZWx1Z3UnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAwOC5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAwNyIsIm5hbWUiOidSYWogVFYnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAwNy5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE2MiIsIm5hbWUiOidUYWF6YSBUViAnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE2Mi5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE2MyIsIm5hbWUiOidVdHRhciBCYW5nbGEgQUtEJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxNjMuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxNjciLCJuYW1lIjonVmlzc2EgVFYnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE2Ny5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE1NCIsIm5hbWUiOidaRUUgMjQgVGFhcycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTU0LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTY5IiwibmFtZSI6J1plZSBBZmxhbScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTY5LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTcwIiwibmFtZSI6J1plZSBBbHdhbicsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTcwLmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDE0IiwibmFtZSI6J1plZSBCYW5nbGEnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAxNC5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE4OCIsIm5hbWUiOidaZWUgQmFuZ2xhIENpbmVtYScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTg4LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDA1IiwibmFtZSI6J1plZSBCdXNpbmVzcycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDA1LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTkxIiwibmFtZSI6J1plZSBDaW5lbWEgSEQnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE5MS5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAwMyIsIm5hbWUiOidaZWUgQ2xhc3NpYycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDAzLmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTU1IiwibmFtZSI6J1plZSBLYWxpbmdhIE5ld3MnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDE1NS5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAzMSIsIm5hbWUiOidaZWUgS2FubmFkYScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDMxLmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDEwIiwibmFtZSI6J1plZSBNYXJhdGhpJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMTAuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMjAiLCJuYW1lIjonWmVlIE1QQ0cnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAyMC5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDAwNiIsIm5hbWUiOidaZWUgTmV3cycsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMDA2LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTU2IiwibmFtZSI6J1plZSBQdW5qYWIgSGFyeWFuYSBIaW1hY2hhbCBQcmFkZXNoJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxNTYuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMjMiLCJuYW1lIjonWmVlIFB1cnZhaXlhJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMjMuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxOTQiLCJuYW1lIjonWmVlIFNhbGFhbScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTk0LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDExIiwibmFtZSI6J1plZSBUYWxraWVzJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMTEuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAwMTUiLCJuYW1lIjonWmVlIFRhbWlsJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAwMTUuanBnIn0sCiAgICB7Im1hbnVhbCI6Im1hbnVhbCIsImlkIjoiMTAxNjYiLCJuYW1lIjonWmVlIFRlbHVndScsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTY2LmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMTkyIiwibmFtZSI6J1plZSBUViBIRCcsInBvc3RlciI6Imh0dHA6XC9cLzg5LjM1LjE1OC4zNFwvaW1hZ2VzX2RpdHRvXC9uZXdfaW1hZ2VzXC9saXZldHZcLzEwMTkyLmpwZyJ9LAogICAgeyJtYW51YWwiOiJtYW51YWwiLCJpZCI6IjEwMDEyIiwibmFtZSI6J1ppbmcgSW5kaWEnLCJwb3N0ZXIiOiJodHRwOlwvXC84OS4zNS4xNTguMzRcL2ltYWdlc19kaXR0b1wvbmV3X2ltYWdlc1wvbGl2ZXR2XC8xMDAxMi5qcGcifSwKICAgIHsibWFudWFsIjoibWFudWFsIiwiaWQiOiIxMDE4NyIsIm5hbWUiOidabGl2aW5nJywicG9zdGVyIjoiaHR0cDpcL1wvODkuMzUuMTU4LjM0XC9pbWFnZXNfZGl0dG9cL25ld19pbWFnZXNcL2xpdmV0dlwvMTAxODcuanBnIn1d'))
 
     return r
-
-def getYPPage(url,progress):
     
+def getZengaPage(url,progress):
  
+    print 'url',url
+    fname='zenga.json'
+    fname=os.path.join(profile_path, fname)
+    jj=None
+    try:
+        jsondata=getCacheData(fname,60*60*2)
+        if not jsondata==None:
+            return json.loads(jsondata)
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+        
+    headers=[('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)'), ('Origin','file://')]
+
+    try:
+        print 'url',url
+        jj= json.loads(getUrl(url,headers=headers,post=""))
+        storeCacheData(json.dumps(jj),fname)
+    except:
+        print 'zenga file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jj
+    
+def getYPPage(url,progress):
+     
     p="u" if 'urdu' in url.lower() else 'h' if 'hindi' in url.lower() else 'p'
     
     fname='yptvpage_%s.json'%p
@@ -4322,7 +4429,7 @@ def getUniTVPage():
         print 'unitv file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata
-
+    
 def getWTVPage():
     fname='wtvpage.json'
     fname=os.path.join(profile_path, fname)
@@ -4898,7 +5005,9 @@ def PlayOtherUrl ( url ):
     if "infi:" in url:
         playInfinite(url.split('infi:')[1])
         return                       
-        
+    if "zenga:" in url:
+        playzenga(url.split('zenga:')[1],progress)
+        return          
         
        
     if url in [base64.b64decode('aHR0cDovL2xpdmUuYXJ5bmV3cy50di8='),
@@ -5641,6 +5750,34 @@ def playmamahd(url):
         return playHDCast(videframe, "http://mamahd.com/")
     return 
     
+def playzenga(url,progress):
+    import re,urllib,json
+    listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+
+    playurl=''
+    try:
+
+        headers=[('Referer','http://ada.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
+        
+        jsfile=getUrl(base64.b64decode('aHR0cDovL2FkYS56ZW5nYXR2LmNvbS9jb250cm9sbGVycy9MaXZlUGxheWVyQ29udHJvbGxlci5qcw=='),headers=headers)
+        reg= "var dvrid.*?\s.*?\"(http.*)\s"
+        
+        churl=re.findall(reg,jsfile)[0]
+        churl=churl.replace('" + dvrid + "',url)
+        headers=[('Referer','http://ada.zengatv.com/'),('Origin','http://ada.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
+        xmlfile=getUrl(churl,headers=headers)
+        reg= "(http.*?)\]?\]?>"
+        m3uurl=re.findall(reg,xmlfile)[0]
+        
+        playurl=m3uurl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://ada.zengatv.com/'
+        
+    except: 
+        traceback.print_exc(file=sys.stdout)
+        playurl=''
+    progress.close()
+    xbmc.Player().play( playurl, listitem)
+        
+    
 def playtvplayer(url):
     import re,urllib,json
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -6117,7 +6254,9 @@ try:
                 ok = dialog.ok('XBMC', 'Not updated, perhaps no change?')  
                 print 'Updated files'
         except: traceback.print_exc(file=sys.stdout)
-
+    elif mode==81:
+        print "Play url is "+url
+        AddEuroStreamChannels(url)      
         
 except:
 
