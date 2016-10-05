@@ -1037,10 +1037,12 @@ def AddIpBoxSources(url=None):
     return
     
 def AddIpBoxChannels(url=None):
+    sort=False
     if not mode==67:
         addDir(Colored('>>Click Here for All Channels<<'.capitalize(),'red') ,url ,67 ,"", False, True,isItFolder=True)		#name,url,mode,icon
+        sort=True
 
-    for cname,ctype,curl,imgurl in getIpBoxChannels([url],True):
+    for cname,ctype,curl,imgurl in getIpBoxChannels([url],True,sort=sort):
         try:
             #print cname
             cname=cname#cname.encode('ascii', 'ignore').decode('ascii')
@@ -3044,7 +3046,7 @@ def getIpBoxSources(frompakindia=False , caller=None):
         return ret+getIpBoxSourcesAllOtherSource(caller)
 
     
-def getIpBoxChannels(url,forSports=False):
+def getIpBoxChannels(url,forSports=False, sort=True):
     ret=[]
     try:
         for u in url:
@@ -3078,7 +3080,7 @@ def getIpBoxChannels(url,forSports=False):
                             ret.append((cname +' Ipbox' ,'manual', curl ,''))   
                     except: pass
             except: pass
-            if len(ret)>0:
+            if len(ret)>0 and sort:
                 ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
@@ -4867,10 +4869,13 @@ def PlaySafeLink(url):
     #print 'safe url',url    
     import websocket
     ws = websocket.WebSocket()
+    wsfirst = websocket.WebSocket()
     
     header=[base64.b64decode("T3JpZ2luOiBodHRwOi8vY3VzdG9tZXIuc2FmZXJzdXJmLmNvbQ=="),"User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"]
+
     ws.connect(base64.b64decode("d3M6Ly81Mi40OC44Ni4xMzU6MTMzOC90Yi9tM3U4L21hc3Rlci9zaXRlaWQvY3VzdG9tZXIub25saW5ldHYudjM="),header=header)
-    jsdata='[{"key":"type","value":"info"},{"key":"info","value":"speedtest"},{"key":"country","value":""},{"key":"language","value":"en"},{"key":"speedTestSize","value":"210"},{"key":"kbPs","value":"3554.38"},{"key":"speedResKb","value":"4G"},{"key":"speedResTime","value":"4G"},{"key":"websocketSupport","value":"true"},{"key":"speedTestInTime","value":"true"},{"key":"flash","value":"true"},{"key":"touchScreen","value":"false"},{"key":"rotationSupport","value":"false"},{"key":"pixelRatio","value":"1"},{"key":"width","value":"1920"},{"key":"height","value":"1080"},{"key":"mobilePercent","value":"0"}]'
+
+    jsdata='[{"key":"type","value":"info"},{"key":"info","value":"speedtest"},{"key":"country","value":"France"},{"key":"language","value":"en"},{"key":"speedTestSize","value":"210"},{"key":"kbPs","value":"3554.56"},{"key":"speedResKb","value":"DSL"},{"key":"bpsResult","value":""},{"key":"speedResTime","value":"3G"},{"key":"websocketSupport","value":"true"},{"key":"speedTestInTime","value":"true"},{"key":"bpsTimeResult","value":""},{"key":"flash","value":"true"},{"key":"touchScreen","value":"false"},{"key":"rotationSupport","value":"false"},{"key":"pixelRatio","value":"1"},{"key":"width","value":"1366"},{"key":"height","value":"768"},{"key":"mobilePercent","value":"15"}]'
     ws.send(jsdata)
     result = ws.recv()   
 
