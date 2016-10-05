@@ -4867,45 +4867,49 @@ def PlaySafeLink(url):
 
 
     #print 'safe url',url    
-    import time
-    bpsurl="https://livedemo.safersurf.com/php/speed.php?dtp="+ str(int(time.time()))
-    headers = [('Referer', base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20=')),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),('Origin',base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20v'))]
-
-    bpsdata=getUrl( bpsurl,headers=headers)
-
-    bpsres, bpstime=re.findall("'bpsResultDiv'>(.*?)<.*?bpsTimeResultDiv'>(.*?)<",bpsdata)[0]
 
     import websocket
     ws = websocket.WebSocket()
-    wsfirst = websocket.WebSocket()
+    #wsfirst = websocket.WebSocket()
     try:
     
 
     
         header=[base64.b64decode("T3JpZ2luOiBodHRwOi8vY3VzdG9tZXIuc2FmZXJzdXJmLmNvbQ=="),"User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"]
-        wsfirst.connect(base64.b64decode("d3M6Ly81Mi40OC44Ni4xMzU6MTMzOC90Yi9tM3U4L21hc3Rlci9zaXRlaWQvY3VzdG9tZXIub25saW5ldHYudjM="),header=header)
-        wsfirst.recv() 
+        #wsfirst.connect(base64.b64decode("d3M6Ly81Mi40OC44Ni4xMzU6MTMzOC90Yi9tM3U4L21hc3Rlci9zaXRlaWQvY3VzdG9tZXIub25saW5ldHYudjM="),header=header)
+        #wsfirst.recv() 
         ws.connect(base64.b64decode("d3M6Ly81Mi40OC44Ni4xMzU6MTMzOC90Yi9tM3U4L21hc3Rlci9zaXRlaWQvY3VzdG9tZXIub25saW5ldHYudjM="),header=header)
         result = ws.recv() 
-        
-        
-        jsdata='[{"key":"type","value":"info"},{"key":"info","value":"speedtest"},{"key":"country","value":"France"},{"key":"language","value":"en"},{"key":"speedTestSize","value":"210"},{"key":"kbPs","value":"1600.79"},{"key":"speedResKb","value":"4G"},{"key":"bpsResult","value":"%s"},{"key":"speedResTime","value":"3G"},{"key":"websocketSupport","value":"true"},{"key":"speedTestInTime","value":"true"},{"key":"bpsTimeResult","value":"%s"},{"key":"flash","value":"true"},{"key":"touchScreen","value":"false"},{"key":"rotationSupport","value":"false"},{"key":"pixelRatio","value":"1"},{"key":"width","value":"1366"},{"key":"height","value":"768"},{"key":"mobilePercent","value":"0"}]'%(bpsres, bpstime)
-        ws.send(jsdata)
-        #result = ws.recv()   
 
+        import time
+        bpsurl=base64.b64decode("aHR0cHM6Ly9saXZlZGVtby5zYWZlcnN1cmYuY29tL3BocC9zcGVlZC5waHA/ZHRwPQ==")+ str(int(time.time()*1000))
+        headers = [('Referer', base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20=')),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),('Origin',base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20v'))]
+        bpsdata=getUrl( bpsurl,headers=headers)
+        bpsres, bpstime=re.findall("'bpsResultDiv'>(.*?)<.*?bpsTimeResultDiv'>(.*?)<",bpsdata)[0]
+        #bpsres, bpstime="f2824d2ea474e61cade597825656747e","1475696762" 
+        
+        jsdata='[{"key":"type","value":"info"},{"key":"info","value":"speedtest"},{"key":"country","value":"France"},{"key":"language","value":"en"},{"key":"speedTestSize","value":"210"},{"key":"kbPs","value":"1600.79"},{"key":"speedResKb","value":"4G"},{"key":"bpsResult","value":"%s"},{"key":"speedResTime","value":"DSL"},{"key":"websocketSupport","value":"true"},{"key":"speedTestInTime","value":"true"},{"key":"bpsTimeResult","value":"%s"},{"key":"flash","value":"true"},{"key":"touchScreen","value":"false"},{"key":"rotationSupport","value":"false"},{"key":"pixelRatio","value":"1"},{"key":"width","value":"1366"},{"key":"height","value":"768"},{"key":"mobilePercent","value":"33"}]'%(bpsres, bpstime)
+        ws.send(jsdata)
+        
+        #result = ws.recv()   
+        #xbmc.sleep(2000)
         jsdata='[{"key":"type","value":"channelrequest"},{"key":"dbid","value":"%s"},{"key":"tbid","value":""},{"key":"format","value":"masterm3u8"},{"key":"proxify","value":"true"},{"key":"bitrate","value":"1368000"},{"key":"maxbitrate","value":"3305000"}]'%url
         ws.send(jsdata)
         result = ws.recv()
-        #print repr(result)
+        #result = ws.recv()
+        print repr(result)
 
         headers = [('Referer', base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20vb25saW5ldHYuaHRtbA==')),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'),('Origin',base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20='))]
         url=re.findall('[\'"](http.*?)[\'"]',result)[0]
         result=getUrl(url,headers=headers)
-    except: pass
+    except: 
+        traceback.print_exc(file=sys.stdout)
+
     try:
-        ws.close()
-        wsfirst.close()
-    except: pass
+        print ws.close()
+        #wsfirst.close()
+    except: 
+        traceback.print_exc(file=sys.stdout)
     urlToPlay=re.findall('(http.*?)\s',result)[-1]
     import random
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
