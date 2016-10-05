@@ -382,7 +382,7 @@ class f4mProxy():
 
 class f4mProxyHelper():
 
-    def playF4mLink(self,url,name,proxy=None,use_proxy_for_chunks=False, maxbitrate=0, simpleDownloader=False, auth=None, streamtype='HDS',setResolved=False,swf=None , callbackpath="",callbackparam=""):
+    def playF4mLink(self,url,name,proxy=None,use_proxy_for_chunks=False, maxbitrate=0, simpleDownloader=False, auth=None, streamtype='HDS',setResolved=False,swf=None , callbackpath="",callbackparam="", iconImage="DefaultVideo.png"):
         try:
             print "URL: " + url
             stopPlaying=threading.Event()
@@ -400,7 +400,7 @@ class f4mProxyHelper():
             xbmc.sleep(stream_delay*1000)
             progress.update( 100, "", 'Loading local proxy', "" )
             url_to_play=f4m_proxy.prepare_url(url,proxy,use_proxy_for_chunks,maxbitrate=maxbitrate,simpleDownloader=simpleDownloader,auth=auth, streamtype=streamtype, swf=swf , callbackpath=callbackpath,callbackparam=callbackparam)
-            listitem = xbmcgui.ListItem(name,path=url_to_play)
+            listitem = xbmcgui.ListItem(name,path=url_to_play, iconImage=iconImage, thumbnailImage=iconImage)
             listitem.setInfo('video', {'Title': name})
 
             if setResolved:
