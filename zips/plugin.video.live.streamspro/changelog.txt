@@ -1,3 +1,5 @@
+Version 2.6.9
+playlist issue
 Version 2.6.8
 vipracing fix
 Version 2.6.7

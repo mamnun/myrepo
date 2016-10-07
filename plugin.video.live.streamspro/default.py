@@ -2255,6 +2255,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
             progress = xbmcgui.DialogProgress()
             progress.create('Progress', 'Trying Multiple Links')
             for i in mu_playlist:
+                
 
                 if '$$lsname=' in i:
                     d_name=i.split('$$lsname=')[1].split('&regexs')[0]
@@ -2275,7 +2276,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
                 print 'auto playnamexx',playname
                 if "&mode=19" in mu_playlist[index]:
                         #playsetresolved (urlsolver(mu_playlist[index].replace('&mode=19','')),name,iconimage,True)
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     urltoplay=urlsolver(mu_playlist[index].replace('&mode=19','').replace(';',''))
@@ -2288,7 +2289,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
 #                    print sepate
                     url,setresolved = getRegexParsed(sepate[1], sepate[0])
                     url2 = url.replace(';','')
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     liz.setPath(url2)
@@ -2298,7 +2299,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
                 else:
                     url = mu_playlist[index]
                     url=url.split('&regexs=')[0]
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     liz.setPath(url)
@@ -2332,7 +2333,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
                 print 'playnamexx',playname
                 if "&mode=19" in mu_playlist[index]:
                         #playsetresolved (urlsolver(mu_playlist[index].replace('&mode=19','')),name,iconimage,True)
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     urltoplay=urlsolver(mu_playlist[index].replace('&mode=19','').replace(';',''))
@@ -2344,7 +2345,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
 #                    print sepate
                     url,setresolved = getRegexParsed(sepate[1], sepate[0])
                     url2 = url.replace(';','')
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     liz.setPath(url2)
@@ -2353,7 +2354,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
                 else:
                     url = mu_playlist[index]
                     url=url.split('&regexs=')[0]
-                    liz = xbmcgui.ListItem(playname, iconImage=iconimage)
+                    liz = xbmcgui.ListItem(playname, iconImage=iconimage, thumbnailImage=iconimage)
                     liz.setInfo(type='Video', infoLabels={'Title':playname})
                     liz.setProperty("IsPlayable","true")
                     liz.setPath(url)
@@ -2563,7 +2564,7 @@ def pluginquerybyJSON(url,give_me_result=None,playlist=False):
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlist,regexs,total,setCookie="",allinfo={}):
-        #print 'url,name',url,name
+        #print 'url,name',url,name,iconimage
         contextMenu =[]
         parentalblock =addon.getSetting('parentalblocked')
         parentalblock= parentalblock=="true"
@@ -2628,7 +2629,9 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
             u += "&regexs="+regexs
         if not setCookie == '':
             u += "&setCookie="+urllib.quote_plus(setCookie)
-
+        if iconimage and  not iconimage == '':
+            u += "&iconimage="+urllib.quote_plus(iconimage)
+            
         if date == '':
             date = None
         else:
@@ -2675,14 +2678,16 @@ def addLink(url,name,iconimage,fanart,description,genre,date,showcontext,playlis
                     fav_params += "&regexs="+regexs
                 contextMenu.append(('Add to LiveStreamsPro Favorites','XBMC.RunPlugin(%s)' %fav_params))
             liz.addContextMenuItems(contextMenu)
-        if not playlist is None:
-            if addon.getSetting('add_playlist') == "false":
-                playlist_name = name.split(') ')[1]
-                contextMenu_ = [
-                    ('Play '+playlist_name+' PlayList','XBMC.RunPlugin(%s?mode=13&name=%s&playlist=%s)'
-                     %(sys.argv[0], urllib.quote_plus(playlist_name), urllib.quote_plus(str(playlist).replace(',','||'))))
-                     ]
-                liz.addContextMenuItems(contextMenu_)
+        try:
+            if not playlist is None:
+                if addon.getSetting('add_playlist') == "false":
+                    playlist_name = name.split(') ')[1]
+                    contextMenu_ = [
+                        ('Play '+playlist_name+' PlayList','XBMC.RunPlugin(%s?mode=13&name=%s&playlist=%s)'
+                         %(sys.argv[0], urllib.quote_plus(playlist_name), urllib.quote_plus(str(playlist).replace(',','||'))))
+                         ]
+                    liz.addContextMenuItems(contextMenu_)
+        except: pass
         #print 'adding',name
         ok=xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]),url=u,listitem=liz,totalItems=total,isFolder=isFolder)
 
@@ -2700,7 +2705,7 @@ def playsetresolved(url,name,iconimage,setresolved=True,reg=None):
         if reg and 'notplayable' in reg:
             setres=False
 
-        liz = xbmcgui.ListItem(name, iconImage=iconimage)
+        liz = xbmcgui.ListItem(name, iconImage=iconimage, thumbnailImage=iconimage)
         liz.setInfo(type='Video', infoLabels={'Title':name})
         liz.setProperty("IsPlayable","true")
         liz.setPath(url)
