@@ -1383,7 +1383,7 @@ def playHDCast(url, mainref, altref=None):
             if 'blockscript=' in result: #ok captcha here
                 try:
                     tries=0
-                    while 'blockscript=' in result and tries<3:
+                    while 'blockscript=' in result and tries<2:
                         tries+=1
                         xval=re.findall('name="x" value="(.*?)"',result)[0]
                         urlval=re.findall('name="url" value="(.*?)"',result)[0]
@@ -1391,8 +1391,10 @@ def playHDCast(url, mainref, altref=None):
                         imageurl=re.findall('<td nowrap><img src="(.*?)"',result)[0].replace('&amp;','&')             
                         if not imageurl.startswith('http'):
                             imageurl='http://hdcast.org'+imageurl
-                        headersforimage=[('Referer',embedUrl),('Origin','http://hdcast.org'),('User-Agent',agent)]                             
-                        post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':getHDCastCaptcha(imageurl,cookieJar,headersforimage )}
+                        headersforimage=[('Referer',embedUrl),('Origin','http://hdcast.org'),('User-Agent',agent)]     
+                        captchaval=getHDCastCaptcha(imageurl,cookieJar,headersforimage , tries )
+                        if captchaval=="": break
+                        post={'blockscript':blocscriptval, 'x':xval, 'url':urlval,'val':captchaval}
                         post = urllib.urlencode(post)
                         
                         result=getUrl(embedUrl,post=post, headers=headersforimage, cookieJar=cookieJar)
@@ -1471,10 +1473,10 @@ def tst():
             solver = InputWindow(captcha=local_captcha)
             retcaptcha = solver.get()
             
-def getHDCastCaptcha(imageurl,cookieJar, headers):
+def getHDCastCaptcha(imageurl,cookieJar, headers, tries):
     retcaptcha=""
     if 1==1:
-        local_captcha = os.path.join(profile_path, "captchaC.img" )
+        local_captcha = os.path.join(profile_path, "captchaC%s.img"%str(tries) )
         localFile = open(local_captcha, "wb")
         localFile.write(getUrl(imageurl,cookieJar,headers=headers))
         localFile.close()
