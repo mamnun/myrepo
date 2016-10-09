@@ -2209,7 +2209,7 @@ def urlsolver(url):
     return resolver
 def tryplay(url,listitem,pdialogue=None):    
 
-    if url.lower().startswith('plugin'):
+    if url.lower().startswith('plugin') and 'youtube' not in  url.lower():
         print 'playing via runplugin'
         xbmc.executebuiltin('XBMC.RunPlugin('+url+')') 
         for i in range(8):
@@ -2219,6 +2219,7 @@ def tryplay(url,listitem,pdialogue=None):
                 if xbmc.getCondVisibility("Player.HasMedia") and xbmc.Player().isPlaying():
                     return True
             except: pass
+        print 'returning now'
         return False
     import  CustomPlayer,time
 
