@@ -219,11 +219,13 @@ def DisplayChannelNames(url):
 			addDir(cname[1] ,cname[0] ,1,'',isItFolder=False)
 	return
 
-
-def Addtypes():
+def AddtypesForShows():
 	addDir('Latest Shows (ZemTv)' ,'Shows' ,2,'')
 	addDir('Latest Shows (Siasat.pk)' ,'http://www.siasat.pk/forum/forumdisplay.php?29-Daily-Talk-Shows' ,2,'')
 	addDir('All Programs and Talk Shows' ,'ProgTalkShows' ,2,'')
+
+def Addtypes():
+	addDir('Pakistani Political Shows' ,'PakLive' ,29,'')
 	addDir('Pakistani Live Channels' ,'PakLive' ,2,'')
 	addDir('Indian Live Channels' ,'IndianLive' ,2,'')
 	addDir('Punjabi Live Channels' ,'PunjabiLive' ,2,'')
@@ -6180,7 +6182,10 @@ try:
     elif mode==2 or mode==43:
         print "Ent url is ",name,url        
         AddEnteries(name, url)
-
+    elif mode==29:
+        print "Ent url is ",name,url        
+        AddtypesForShows()
+        
     elif mode==3:
         print "Play url is "+url
         PlayShowLink(url)
