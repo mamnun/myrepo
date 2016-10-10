@@ -1,3 +1,5 @@
+[B]Version 2.6.3[/B]
+   youtube url fix, thanks to pwoxisolutions @github
 [B]Version 2.6.2[/B]
    Url correction
 [B]Version 2.6.1[/B]
