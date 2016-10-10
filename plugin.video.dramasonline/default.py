@@ -407,15 +407,16 @@ def getDailyMotionUrl(html, short):
 		return None
 def getYouTubeURL(html, short):
     try:
-        match =re.findall('\[youtube\](.*?)\[\/youtube\]',html)
+    	print 'Trying to find Youtube Link >>'
+        match =re.findall('((?<=(v|V)/)|(?<=be/)|(?<=(\?|\&)v=)|(?<=embed/))([\w-]+)',html)
         if len(match)>0:
-            print 'utubeurl',match
-            playURL=','.join(match)
+            print 'YoutubeURL>>>',match[2]
+            playURL=','.join(match[2])
             print playURL
             return 'youtube:'+playURL
 
     except:
-        print 'Error fetching DailyMotion stream url'
+        print 'Error fetching YouTube Stream URL>>'
         traceback.print_exc(file=sys.stdout)
         return None
         
@@ -482,7 +483,7 @@ def SelectUrl(html, url):
 			available_source.append('Youtube Video')
             
             
-		defaultlinks=['Dailymotion Video', 'Tune Video', 'Playwire Video','Vidrail Video']
+		defaultlinks=['Dailymotion Video', 'Tune Video', 'Playwire Video','Vidrail Video', 'Youtube Video']
 		defaultLinkType=selfAddon.getSetting( "DefaultVideoType" ) 
 		if defaultLinkType is None or defaultLinkType == '':
 			defaultLinkType='0'
@@ -531,11 +532,17 @@ def _play_from_available_sources(defaultLinkType, available_source, html):
 	index=0
 	if len(available_source)>1:
 		print 'defaultLinkType: %s' % defaultLinkType
-		if not defaultLinkType in available_source:
-			dialog = xbmcgui.Dialog()
-			index = dialog.select('Choose your source', available_source)
-		else:
-			index=available_source.index(defaultLinkType)
+		
+		# if not defaultLinkType in available_source:
+		# 	dialog = xbmcgui.Dialog()
+		# 	index = dialog.select('Choose your source', available_source)
+		# else:
+		# 	index=available_source.index(defaultLinkType)
+		
+		# since the settings default is not being used, we will show the dialog for the source selection.
+		dialog = xbmcgui.Dialog()
+		index = dialog.select('Choose your source', available_source)
+
 	if index > -1:
 		linkType=available_source[index]
 		line1 = "Finding links from "+linkType
