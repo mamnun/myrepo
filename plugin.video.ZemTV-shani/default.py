@@ -4886,7 +4886,7 @@ def PlaySafeLink(url, recursive=False, usecode=None, progress=None):
         useragent=''
         headers = [('Referer', base64.b64decode('aHR0cDovL29ubGluZWRlbW8uc2FmZXJzdXJmLmNvbS9vbmxpbmV0di1saXZlZGVtby5odG1s')),('User-Agent','Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')]
         import time
-        od= base64.b64decode('aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20v')
+        od= base64.b64decode('aHR0cDovL29ubGluZWRlbW8uc2FmZXJzdXJmLmNvbS8=')
         mainhtml=getUrl(od,headers=headers)
         js=urllib.unquote(re.findall("StartScriptSpeedTest\(unescape\('(.*?)'",mainhtml)[0])
         if not js.startswith('http'):
