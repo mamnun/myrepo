@@ -4890,6 +4890,7 @@ def PlaySafeLink(url, recursive=False, usecode=None, progress=None):
         mainhtml=getUrl(od,headers=headers)
         
         js=urllib.unquote(re.findall("StartScriptSpeedTest\(unescape\('(.*?)'",mainhtml)[0])
+        speedhtml= urllib.unquote(re.findall("phpUrl = unescape\('(.*?)'",mainhtml)[0])
         
         servername,portnum=re.findall("\n\s*\{.*?url.*?:.*?['\"](.*?)?['\"].*?port.*?:(.*?)\}",mainhtml.split('man.AddServers')[1].split(']);')[0])[0]
         print servername,portnum
@@ -4911,7 +4912,7 @@ def PlaySafeLink(url, recursive=False, usecode=None, progress=None):
         totaltime=time.time()- st
         print totaltime
         testsize,kbps, kbRes, res =safeFinishedTest(totaltime)
-        bpsurl=base64.b64decode("aHR0cDovL2N1c3RvbWVyLnNhZmVyc3VyZi5jb20vcGhwL3NwZWVkLnBocD9kdHA9")+ str(int(time.time()*1000))
+        bpsurl=base64.b64decode("JXM/ZHRwPQ==")%speedhtml+ str(int(time.time()*1000))
         bpsdata=getUrl( bpsurl,headers=headers)
         bpsres, bpstime=re.findall("'bpsResultDiv'>(.*?)<.*?bpsTimeResultDiv'>(.*?)<",bpsdata)[0]
         lastval=selfAddon.getSetting( "safeplaylastcode" ) 
