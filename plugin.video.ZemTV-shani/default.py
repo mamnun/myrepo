@@ -4892,8 +4892,9 @@ def PlaySafeLink(url, recursive=False, usecode=None, progress=None):
         js=urllib.unquote(re.findall("StartScriptSpeedTest\(unescape\('(.*?)'",mainhtml)[0])
         speedhtml= urllib.unquote(re.findall("phpUrl = unescape\('(.*?)'",mainhtml)[0])
         
-        servername,portnum=re.findall("\n\s*\{.*?url.*?:.*?['\"](.*?)?['\"].*?port.*?:(.*?)\}",mainhtml.split('man.AddServers')[1].split(']);')[0])[0]
+        servername,portnum=re.findall("\n\s*?\{.*?url\s*?\:\s*?['\"]([^'\"]+?)['\"].*?port\s*?\:\s*?([0-9]+)\s*?\}",mainhtml.split('man.AddServers')[1].split(']);')[0])[0]
         print servername,portnum
+        portnum=portnum.strip()
         if not js.startswith('http'):
             js=od+js
         header=[base64.b64decode("T3JpZ2luOiBodHRwOi8vb25saW5lZGVtby5zYWZlcnN1cmYuY29t"),"User-Agent: Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"]
