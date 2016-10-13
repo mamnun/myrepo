@@ -98,24 +98,27 @@ def getSafeChannels(url):
     jsondata=json.loads(jsondata)
     ret=[]
     for cc in jsondata:
-        cc=json.loads(cc)
-        mm=11
-        col='ZM'
-        #print 'xxxxxxxxxxx'
-        #print 'name' in cc
-        if 'name' in cc:
-            #print 'in name'
-            cname,logo,cid=cc["name"],cc["logo"],cc["cId"]
-        else:
-            mm=0
-            col='red'
-            if 'seperatorText' in cc:
-                cname,logo,cid=cc["seperatorText"],'',''
+        try:
+            cc=json.loads(cc)
+            mm=11
+            col='ZM'
+            #print 'xxxxxxxxxxx'
+            ##print cc
+            if 'name' in cc:
+                #print 'in name'
+                cname,logo,cid=cc["name"].encode("utf-8"),cc["logo"],cc["cId"]
             else:
-                continue
-        if not logo.startswith('http'):
-            logo= 'http://customer.safersurf.com/'+logo
-        ret.append((Colored(cname.capitalize(),col) ,base64.b64encode('safe:'+cid) ,mm ,logo))
+                mm=0
+                col='red'
+                if 'seperatorText' in cc:
+                    cname,logo,cid=cc["seperatorText"],'',''
+                else:
+                    continue
+            if not logo.startswith('http'):
+                logo= 'http://customer.safersurf.com/'+logo
+            ret.append((Colored(cname.capitalize(),col) ,base64.b64encode('safe:'+cid) ,mm ,logo))
+        except: 
+            traceback.print_exc(file=sys.stdout)
     return ret
 def f4mcallback(param, type, error, Cookie_Jar, url, headers):
   if type==1:
