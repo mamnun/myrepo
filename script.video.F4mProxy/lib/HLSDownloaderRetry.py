@@ -492,6 +492,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                     print 'callback'
                     import importlib, os
                     foldername=os.path.sep.join(callbackpath.split(os.path.sep)[:-1])
+                    urlnew=''
                     if foldername not in sys.path:
                         sys.path.append(foldername)
                     try:
@@ -503,7 +504,9 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                         print 'got new url',url
                         url=urlnew
                         cookieJar= cjnew
-                    continue
+                        continue
+                    else: 
+                        return
                         
                 raise 
 
@@ -578,7 +581,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             '''
             
             if not playedSomething:
-                xbmc.sleep(2000+ (3000 if addsomewait else 0))
+                xbmc.sleep(3000+ (3000 if addsomewait else 0))
             
     except:
         
