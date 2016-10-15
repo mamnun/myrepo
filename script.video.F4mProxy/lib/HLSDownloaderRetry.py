@@ -421,6 +421,19 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     variants = []
     variant = None
     veryfirst=True
+    #url check if requires redirect
+    redirurl=url
+    try:
+        print 'going gor  ',url
+        res=getUrl(url,returnres=True )
+        print 'here ', res
+        if res.history: 
+            print 'history'
+            redirurl=res.url
+        res.close()
+        
+    except: traceback.print_exc()
+    print 'redirurl',redirurl
     try:
         for line in gen_m3u(url):
             if line.startswith('#EXT'):
@@ -431,7 +444,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                 variants.append((line, variant))
                 variant = None
         if len(variants) == 1:
-            url = urlparse.urljoin(url, variants[0][0])
+            url = urlparse.urljoin(redirurl, variants[0][0])
         elif len(variants) >= 2:
             print "More than one variant of the stream was provided."
 
@@ -462,7 +475,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             if choice==-1: choice=0
             #choice = int(raw_input("Selection? "))
             print 'choose %d'%choice
-            url = urlparse.urljoin(url, variants[choice][0])
+            url = urlparse.urljoin(redirurl, variants[choice][0])
     except: 
         
         raise
@@ -474,6 +487,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     changed = 0
 
     fails=0
+
     print 'inside HLS RETRY'
     try:
         while 1==1:#thread.isAlive():
