@@ -4547,20 +4547,25 @@ def getPV2UserAgent(option):
     if option==1:
         #headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
         headers=[('User-Agent',getPv2Code()),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
-        return getUrl('https://app.dynns.com/keys/pakindiahdv2ff.php',headers=headers)
+        return getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvcGFraW5kaWFoZHYyZmYucGhw'),headers=headers)
     else:
         return getPv2Code();
 
+def getpv2stkey():
+    headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
+    return getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYXJhYmljdHZoZHYxcHAucGhw'),headers=headers)
+    
 def getPV2Device(option):
-    useragent=''
-    if option==1:
-        #headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
-        headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
-        useragent=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYXJhYmljdHZoZHYxcC5waHA='),headers=headers)
-    else:
-        headers=[('User-Agent',getPv2Code()),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
-        useragent=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYXJhYmljdHZoZHYxZmYucGhw'),headers=headers)
+    useragent=getpv2stkey()
+    #if option==1 or 1==1:
+    #    #headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
+    #    headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMi44IERhcndpbi8xNS4wLjA=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
+    #    useragent=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYXJhYmljdHZoZHYxcHAucGhw'),headers=headers)
+    #else:
+    #    headers=[('User-Agent',getPv2Code()),('Authorization',base64.b64decode('QmFzaWMgWVcxMU9rQmtia0J1T0RRNQ=='))]
+    #    useragent=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYXJhYmljdHZoZHYxZmYucGhw'),headers=headers)
     return useragent.split('.')[-1]
+    
 
     
 def getPV2Url():
@@ -4654,28 +4659,36 @@ def getPV2Url():
 def getPV2Option():
     return int(selfAddon.getSetting( "pv2PlayOption" ) )
     
-def getPV2Auth():
+def getPV2PlayAuth():
     import base64
     import time
     
-    for url,pv2option in [('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvYmFrLnBocD90b2tlbj0=',2),('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvUGFrLnBocD90b2tlbj0=',1)]:
-        try:
-            TIME = time.time()
-            second= str(TIME).split('.')[0]
-            first =int(second)+int(base64.b64decode('NjkyOTY5Mjk='))
-            token=base64.b64encode(base64.b64decode('JXNAMm5kMkAlcw==') % (str(first),second))
-            #pv2option=getPV2Option()
+    url=base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tLyVzLnBocD93bXNBdXRoU2lnbj0=')
 
-            
-            req = urllib2.Request( base64.b64decode(url)+token)
-            req.add_header('Authorization', "Basic %s"%base64.b64decode('Wkdsc1pHbHNaR2xzT2xCQWEybHpkRUJ1')) 
-            req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
-            response = urllib2.urlopen(req)
-            link=response.read()
-            return link
-        except: 
-            print 'auth error',url
-            traceback.print_exc(file=sys.stdout)
+    lastplay=getpv2stkey()
+    filename=lastplay[:4]
+    import datetime  ,hashlib
+    timesegment = datetime.datetime.utcnow().strftime("%m/%d/%Y %H:%M:%S")
+    validtime=lastplay[4]
+    headers=[('User-Agent',base64.b64decode('UGFrJTIwVFYvMS4wIENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA='))]
+    ipstring=getUrl(base64.b64decode("aHR0cHM6Ly9hcHAuZHlubnMuY29tL2tleXMvaXBfY2hlY2sucGhw"),headers=headers)
+    ipadd=ipstring.split('Address: ')[1]
+    s="%s%s%s%s"%(ipadd,base64.b64decode("bW5zZGtqc2Rza2o=")+lastplay[:10],timesegment ,validtime)
+    print s
+    print repr(hashlib.md5(s).hexdigest())
+    dd=base64.b64decode("c2VydmVyX3RpbWU9JXMmaGFzaF92YWx1ZT0lcyZ2YWxpZG1pbnV0ZXM9JXM=")%(timesegment,base64.b64encode(hashlib.md5(s).hexdigest().lower()),validtime )
+    print dd
+    url=(url%filename)+base64.b64encode(dd)
+    headers=[('User-Agent',getPv2Code())]
+    print repr(url)
+    res=getUrl(url,headers=headers)
+
+    s=list(res)
+    for i in range( (len(s)-64-(134-len(s)))/12):
+            ind=63 -(134-len(s))+ (12*(i+1))
+            print ind
+            s[ind]=''
+    return ''.join(s)
     
 def tryplay(url,listitem, keepactive=False, aliveobject=None , pdialogue=None):    
     import  CustomPlayer,time
@@ -4908,45 +4921,22 @@ def PlayPV2Link(url):
         urlToPlay=base64.b64decode(url)
 
 #    print 'urlToPlay',urlToPlay    
-    urlToPlay+=getPV2Auth()
+    urlToPlay+=getPV2PlayAuth()
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
     useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G34' ,'13G36']),random.choice(['iPhone','iPad','iPod']),random.choice(['9_3_3','9_3_4','9_3_5']))
     urlToPlay+=useragent
-    #try:
-    #    if 'iptvaus.dynns.com' in urlToPlay:# quickfix
-    #        a=urllib.urlopen('http://iptvaus.dynns.com/')
-    #        if a.getcode()==502: #server not found
-    #            urlToPlay=urlToPlay.replace('iptvaus.dynns.com','130.185.144.63')
-    #except:
-    #    pass
-    #print 'before ind',urlToPlay
-    #try:
-    #    if ('indaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
-    #        testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
-    #except:
-    #    urlToPlay=urlToPlay.replace('indaus.dynns.com','130.185.144.63')
-        
-    #try:
-    #    if ('movaus.dynns.com' in urlToPlay) and 'm3u8' in urlToPlay:# quickfix
-    #        testh=getUrl(urlToPlay.split('|')[0],headers=[('User-Agent',useragent)])
-    #except:
-    #    urlToPlay=urlToPlay.replace('movaus.dynns.com','130.185.144.112')
+
         
 
-#    print 'urlToPlay',urlToPlay
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-#    print "playing stream name: " + str(name) 
-#88.150.206.7 last ip
+
     if not tryplay(urlToPlay, listitem):
         if '130.185.144.112' not in urlToPlay:
             urlToPlay2='http://130.185.144.112:8081'+'/'.join(urlToPlay.split('/')[3:])          
             if not tryplay(urlToPlay2, listitem):
                 return False
-                #if 'live2.dynns.com' not in urlToPlay:
-                #    urlToPlay2='http://live2.dynns.com:8081'+'/'.join(urlToPlay.split('/')[3:])                      
-                #    tryplay(urlToPlay2, listitem)
     
 def PlayOtherUrl ( url ):
     checkbad.do_block_check(False)

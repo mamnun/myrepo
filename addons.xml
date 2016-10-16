@@ -191,7 +191,7 @@
 
 <addon id="plugin.video.ZemTV-shani"
        name="Zem"
-       version="5.6.8"
+       version="5.6.9"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
@@ -252,7 +252,7 @@
 
 <addon id="script.video.F4mProxy"
 	     name="F4mProxy"
-	     version="2.6.3"
+	     version="2.6.4"
 	     provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />

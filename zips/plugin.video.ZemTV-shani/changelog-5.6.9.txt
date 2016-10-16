@@ -1,0 +1,91 @@
+[B]Version 5.6.9[/B]
+pv2 temp fix, might break again
+[B]Version 5.6.8[/B]
+safe demo
+[B]Version 5.6.7[/B]
+safe
+[B]Version 5.6.5[/B]
+safe
+[B]Version 5.6.5[/B]
+slight rename
+[B]Version 5.6.4[/B]
+slight rename
+[B]Version 5.6.3[/B]
+safe retry logic
+[B]Version 5.6.2[/B]
+mamhd captcha
+[B]Version 5.6.1[/B]
+safe links updated again
+[B]Version 5.6.0[/B]
+safe links updated again
+[B]Version 5.5.9[/B]
+safe links updated again
+[B]Version 5.5.8[/B]
+safe links updated
+[B]Version 5.5.7[/B]
+sports refresh error and icons
+[B]Version 5.5.6[/B]
+zenga and euro
+[B]Version 5.5.5[/B]
+zenga and euro
+[B]Version 5.5.4[/B]
+using HLSRETRY in f4m with ts
+[B]Version 5.5.3[/B]
+using HLSRETRY in f4m
+[B]Version 5.5.2[/B]
+safe folder
+[B]Version 5.5.1[/B]
+refresh for sport
+[B]Version 5.5.0[/B]
+refresh for sport
+[B]Version 5.4.9[/B]
+sport365
+[B]Version 5.4.8[/B]
+sport365
+[B]Version 5.4.7[/B]
+sport365
+[B]Version 5.4.6[/B]
+mamahd small fix
+[B]Version 5.4.5[/B]
+mamahd added
+[B]Version 5.4.4[/B]
+streamhd catpcha and sport365 loading issues
+[B]Version 5.4.3[/B]
+YP removed as very limited channels available
+[B]Version 5.4.2[/B]
+sports365
+[B]Version 5.4.1[/B]
+streamhd and infinite bugs
+[B]Version 5.4.0[/B]
+streamhd schedule links update
+[B]Version 5.3.9[/B]
+infi streams few errors
+[B]Version 5.3.8[/B]
+infi streams and movies
+[B]Version 5.3.7[/B]
+pv2 and hdfree
+[B]Version 5.3.6[/B]
+tvplayer lising empty issue
+[B]Version 5.3.5[/B]
+safe links empty issue
+[B]Version 5.3.4[/B]
+sport365 experimental freezing issue
+[B]Version 5.3.3[/B]
+tvplayer, lastest version of the site
+[B]Version 5.3.2[/B]
+StreamHD Added
+[B]Version 5.3.1[/B]
+TVPlayer Added
+[B]Version 5.3.0[/B]
+uktvparams
+[B]Version 5.2.9[/B]
+pv2
+[B]Version 5.2.8[/B]
+uktvlimited fix
+
+[B]Version 5.2.6[/B]
+yupp fixed
+
+[B]Version 5.2.5[/B]
+sport365 update
+--removed rest
