@@ -4684,10 +4684,11 @@ def getPV2PlayAuth():
     res=getUrl(url,headers=headers)
 
     s=list(res)
-    for i in range( (len(s)-64-(134-len(s)))/12):
-            ind=63 -(134-len(s))+ (12*(i+1))
-            print ind
-            s[ind]=''
+    for i in range( (len(s)-59)/12):
+            ind=len(s)-59 + (12*(i))
+            if ind<len(s):
+                print ind
+                s[ind]=''
     return ''.join(s)
     
 def tryplay(url,listitem, keepactive=False, aliveobject=None , pdialogue=None):    
