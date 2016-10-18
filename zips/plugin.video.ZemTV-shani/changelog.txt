@@ -1,3 +1,5 @@
+[B]Version 5.7.2[/B]
+Added My Sports
 [B]Version 5.7.1[/B]
 Removed Safe, added Status Report
 [B]Version 5.7.0[/B]

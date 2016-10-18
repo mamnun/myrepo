@@ -440,6 +440,7 @@ def AddSports(url):
 #    addDir('Flashtv.co (Live Channels)' ,'flashtv' ,31,'')
     addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
+    addDir('My Sports' ,'sss',82,'')
     addDir('PV2 Sports' ,'zemsports',36,'')
     #addDir('Safe' ,'sss',72,'')
     addDir('TVPlayer [UK Geo Restricted]','sss',74,'https://assets.tvplayer.com/web/images/tvplayer-logo-white.png')
@@ -716,7 +717,15 @@ def AddPv2Sports(url):
             addDir(Colored(url[int(seq)].capitalize(),col),'',37,'', False, True,isItFolder=True)            
         prevseq=seq    
         addDir (Colored(r[0].capitalize(),col) ,base64.b64encode(r[2]),37,r[3], False, True,isItFolder=False)
-            
+
+def AddMyTVSports(url=None):
+        
+    for cname,ctype,curl,imgurl in getMyTVChannels():
+        cname=cname.encode('ascii', 'ignore').decode('ascii')
+        mm=11
+        addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    return    
+    
 def AddPakTVSports(url=None):
 
     if url=="sss":
@@ -2753,6 +2762,17 @@ def getYPUrl(url):
         traceback.print_exc(file=sys.stdout)
     return ret
     
+def playMYTV(url):
+    url = base64.b64decode(url)
+    #print 'gen is '+url
+    headers=[('User-Agent','sport%20TV%20Live/2.5 CFNetwork/758.0.2 Darwin/15.0.0')]
+    jsondata=getUrl(base64.b64decode('aHR0cDovL3d3dy5yZWFkZXJ3aWxsLmNvbS9zcG9ydC9hcGkucGhwP2NoYW5uZWxfaWQ9JXM=')%url,headers=headers)
+    jsondata=json.loads(jsondata)
+    
+    PlayGen(base64.b64encode( jsondata["LIVETV"][0]["channel_url"]+'|AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'))
+        
+
+        
 def PlayYP(url):
     url = base64.b64decode(url)
     #print 'gen is '+url
@@ -2867,6 +2887,25 @@ def getPakTVCats():
         traceback.print_exc(file=sys.stdout)
     return ret
             
+def getMyTVChannels():
+    ret=[]
+    try:
+        xmldata=getMYTVPage()
+        for ss in xmldata["LIVETV"]:
+            
+            cname=ss["channel_title"]
+            curl='mytv:'+ss["id"]#+'|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'
+            cimage='http://www.readerwill.com/sport/images/thumbs/'+ss["channel_thumbnail"]
+            
+            
+            if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
+                ret.append((cname ,'manual', curl ,cimage))   
+        if len(ret)>0:
+            ret=sorted(ret,key=lambda s: s[0].lower()   )
+    except:
+        traceback.print_exc(file=sys.stdout)
+    return ret
+    
 def getPakTVChannels(categories, forSports=False):
     ret=[]
     try:
@@ -2884,11 +2923,13 @@ def getPakTVChannels(categories, forSports=False):
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     ret.append((cname +' v7' ,'manual', curl ,cimage))   
+        
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
+    
 def getCFChannels(category):
     ret=[]
     try:
@@ -4171,6 +4212,11 @@ def clearCache():
     fname=os.path.join(profile_path, fname)
     files+=[fname]  
     
+    fname='mytvpage.json'
+    fname=os.path.join(profile_path, fname)
+    files+=[fname]  
+    
+    
     fname='wtvpage.json'
     fname=os.path.join(profile_path, fname)
     files+=[fname]       
@@ -4333,6 +4379,29 @@ def getCFPage(catId):
     html= getUrl(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWNvbnRlbnQmY2F0ZWdvcnlpZD0lcyZkZXZpY2U9aW9zJnZlcnNpb249MCZrZXk9Q1l4UElWRTlhZQ==')%catId,headers=headers)
     return json.loads(html)
 
+def getMYTVPage():
+
+    fname='mytvpage.json'
+    fname=os.path.join(profile_path, fname)
+    try:
+        jsondata=getCacheData(fname,3*60*60)
+        if not jsondata==None:
+            return jsondata
+    except:
+        print 'file getting error'
+        traceback.print_exc(file=sys.stdout)
+    
+    headers=[('User-Agent','sport%20TV%20Live/2.5 CFNetwork/758.0.2 Darwin/15.0.0')]
+    jsondata=getUrl('http://www.readerwill.com/sport/api.php?latest=350', headers=headers)
+    print 'decrypted paktvpage'
+    #print decrypted_data
+    jsondata=json.loads(jsondata)
+    try:
+        storeCacheData(jsondata,fname)
+    except:
+        print 'paktv file saving error'
+        traceback.print_exc(file=sys.stdout)
+    return jsondata
     
 def getPakTVPage():
 
@@ -4984,6 +5053,10 @@ def PlayOtherUrl ( url ):
     if "direct:" in url:
         PlayGen(base64.b64encode(url.split('direct:')[1]))
         return    
+    if "mytv:" in url:
+        playMYTV(base64.b64encode(url.split('mytv:')[1]))
+        return  
+        
     if "direct3:" in url:
         PlayGen(base64.b64encode(url.split('direct3:')[1]),True,followredirect=True)
         return    
@@ -6279,7 +6352,9 @@ try:
     elif mode==81:
         print "Play url is "+url
         AddEuroStreamChannels(url)      
-        
+    elif mode==82:
+        print "Play url is "+url
+        AddMyTVSports(url)            
 except:
 
     print 'somethingwrong'
