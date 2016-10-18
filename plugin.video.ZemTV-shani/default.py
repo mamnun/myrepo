@@ -81,7 +81,12 @@ class NoRedirection(urllib2.HTTPErrorProcessor):
 
 def ShowSettings(Fromurl):
 	selfAddon.openSettings()
-	
+
+def ShowStatus(Fromurl):
+    dialog = xbmcgui.Dialog()
+    ok = dialog.ok('Status',getUrl('http://pastebin.com/raw/f3EBTxM3'))
+    
+    
 def addLink(name,url,iconimage):
 	ok=True
 	liz=xbmcgui.ListItem(name, iconImage="DefaultVideo.png", thumbnailImage=iconimage)
@@ -233,7 +238,7 @@ def Addtypes():
 	addDir('Sports' ,'Live' ,13,'')
 	addDir('Settings' ,'Live' ,6,'',isItFolder=False)
 	addDir('Clear Cache' ,'Live' ,54,'',isItFolder=False)
-
+	addDir(Colored('Status Report', 'red') ,'live',7,'',isItFolder=False)
 	return
 
 def PlayFlashTv(url):
@@ -418,6 +423,7 @@ def AddSports(url):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,m,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     
 #    addDir('IPTV Sports' ,'sss',46,'')
+    
     addDir('IpBox sports Using TSDownloader and HLS' ,'mpegts',55,'')
     #addDir('IpBox sports Using HLS ' ,'hls',55,'')
     addDir('PTC sports' ,'sss',51,'')
@@ -435,7 +441,7 @@ def AddSports(url):
     addDir('Willow.Tv (Subscription required, US Only or use VPN)' ,base64.b64decode('aHR0cDovL3d3dy53aWxsb3cudHYv') ,19,'')
     #addDir(base64.b64decode('U3VwZXIgU3BvcnRz') ,'sss',34,'')
     addDir('PV2 Sports' ,'zemsports',36,'')
-    addDir('Safe' ,'sss',72,'')
+    #addDir('Safe' ,'sss',72,'')
     addDir('TVPlayer [UK Geo Restricted]','sss',74,'https://assets.tvplayer.com/web/images/tvplayer-logo-white.png')
     addDir('StreamHD','sss',75,'http://www.streamhd.eu/images/logo.png')
     addDir('Mama HD','http://mamahd.com/',79,'http://mamahd.com/images/logo.png')
@@ -4842,6 +4848,11 @@ def playSports365(url,progress):
         import live365
         forced=not live365.isvalid()
         urlToPlay=live365.selectMatch(url)
+
+        if urlToPlay and urlToPlay=="-1":
+            dialog = xbmcgui.Dialog()
+            ok = dialog.ok('XBMC', 'Couldn\'t play, Please visit their website and try again!')        
+            urlToPlay=None
         if urlToPlay and len(urlToPlay)>0:
             
             listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
@@ -4868,8 +4879,9 @@ def PlaySafeLink(url, recursive=False, usecode=None, progress=None):
 
     import safelinks
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-    urlnew=safelinks.getSafeLink(url, progress=progress, name=name)
+    urlnew, ws=safelinks.getSafeLink(url, progress=progress, name=name)
     PlayGen(base64.b64encode(urlnew))
+    #tryplay( urlnew , listitem,keepactive=True, aliveobject =ws , pdialogue= progress)
     
 
 def safeFinishedTest(dur):
@@ -6102,6 +6114,9 @@ try:
     elif mode==6 :
         print "Play url is "+url
         ShowSettings(url)
+    elif mode==7 :
+        print "Play url is "+url
+        ShowStatus(url)        
     elif mode==13 :
         print "Play url is "+url
         AddSports(url)
