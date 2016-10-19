@@ -1085,6 +1085,7 @@ def AddIndianPakShowsEP(url):
     except: 
         traceback.print_exc(file=sys.stdout)
 
+
     
 def AddYuppSports(url=None):
     try:
@@ -5689,12 +5690,30 @@ def PlayShowLink ( url, redirect=True ):
         listitem.setProperty('mimetype', 'video/x-msvideo')
         listitem.setProperty('IsPlayable', 'true')
         print 'playURL',playURL
-        try: 
-            import urlresolver  
-        except: 
-            print 'urlresolver err'
-            traceback.print_exc(file=sys.stdout)
-        stream_url = urlresolver.HostedMediaFile(playURL).resolve()
+        #try: 
+        #    import urlresolver  
+        #except: 
+        #    print 'urlresolver err'
+        #    traceback.print_exc(file=sys.stdout)
+        #stream_url = urlresolver.HostedMediaFile(playURL).resolve()
+        headers=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36')]
+        html=getUrl(playURL,headers=headers)
+        html = html.replace('\\', '')##
+
+        auto = re.findall('"auto"\s*:\s*.+?"url"\s*:\s*"(.+?)"', html)
+        qualities = re.findall('"(\d+?)"\s*:\s*.+?"url"\s*:\s*"(.+?)"', html)
+
+        if auto and not qualities:
+            newurl= auto[0]
+        else:
+            qualities = [(int(i[0]), i[1]) for i in qualities]
+            qualities = sorted(qualities, key=lambda x: x[0])[::-1]##
+
+            videoUrl = [i[1] for i in qualities]
+            newurl=videoUrl[0]
+
+        html=getUrl(newurl,headers=headers)
+        stream_url= re.findall( '(http.*)',html)[-1].split('#')[0]
         print stream_url
         playlist.add(stream_url,listitem)
         xbmcPlayer = xbmc.Player()
