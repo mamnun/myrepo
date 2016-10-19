@@ -1,6 +1,7 @@
 import xbmc, xbmcgui, xbmcplugin
 import urllib2,urllib,cgi, re
 
+
 import urlparse
 import HTMLParser
 import xbmcaddon
@@ -231,6 +232,7 @@ def AddtypesForShows():
 
 def Addtypes():
 	addDir('Pakistani Political Shows' ,'PakLive' ,29,'')
+	addDir('Indian/Pakistani Shows/Dramas' ,'IndPakLive' ,83,'')    
 	addDir('Pakistani Live Channels' ,'PakLive' ,2,'')
 	addDir('Indian Live Channels' ,'IndianLive' ,2,'')
 	addDir('Punjabi Live Channels' ,'PunjabiLive' ,2,'')
@@ -979,6 +981,111 @@ def getYuppSportsChannel(Live=True):
         traceback.print_exc(file=sys.stdout)
     return ret
 
+def getIndianPakShowsCat():
+    ret=[]
+    try:
+        url=base64.b64decode("aHR0cDovL3l0eC5tZS9tanNvbi9nZXRtZW51P2lvc2FwcG5hbWU9YXJ6dQ==")
+
+        headers=[('User-Agent',base64.b64decode('QXJ6dS8yLjAuMiBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))]
+        jdata=getUrl(url, headers=headers)
+        jsondata=json.loads(jdata)
+        for channel in jsondata["menuItems"]:
+            cname=channel["title"]
+            curl=channel["jsonURL"]
+            curl=curl.replace('%@%@',base64.b64decode('eXR4Lm1l'))+'app=%s&c=%s&returnid=%s'%(channel["appName"],channel["category"],channel["id"])
+            cimage=''            
+            ret.append((cname ,'manual', curl ,cimage))  
+    except:
+        traceback.print_exc(file=sys.stdout)
+    if len(ret)>0:
+        ret=sorted(ret,key=lambda s: s[0].lower()   )
+    return ret
+    
+def AddIndianPakShowsCat(url=None):
+    try:
+        channels=getIndianPakShowsCat()
+        if len(channels)>0:
+            for cname,ctype,curl,imgurl in channels:
+                cname=cname.encode('ascii', 'ignore').decode('ascii')
+        #        print repr(curl)      
+                addDir(cname ,curl,84 ,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
+    except: 
+        traceback.print_exc(file=sys.stdout)
+
+def getIndianPakShows(url):
+    ret=[]
+    try:
+
+        headers=[('User-Agent',base64.b64decode('dmlkZW91dC8yLjAgKGlQaG9uZTsgaU9TIDkuMC4yOyBTY2FsZS8yLjAwKQ=='))]
+        jdata=getUrl(url, headers=headers)
+        appname=url.split('app=')[1].split('&')[0]
+        jsondata=json.loads(jdata)
+        for channel in jsondata["shows"]:
+            cname=channel["title"]
+            type=85
+            if not 'videoId' in channel:
+                showname=channel["title"].lower().replace(' ','_')
+                curl=base64.b64decode('aHR0cDovL3l0eC5tZS9tanNvbi9nZXRqc29uP25hbWU9JXMmc3RhcnQ9MCZhcHA9JXMmbWF4PTI1MA==')%(showname,appname)
+            else:
+                curl=channel["videoId"]  
+                type=11
+                curl=base64.b64encode('direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %curl)                
+            cimage=channel["imageurl"] 
+            if not cimage.startswith('http'): cimage=base64.b64decode('aHR0cDovL3l0eC5tZS9tanNvbi9jb25mLw==')+cimage            
+            ret.append((cname ,type, curl ,cimage))  
+    except:
+        traceback.print_exc(file=sys.stdout)
+    if len(ret)>0:
+        ret=sorted(ret,key=lambda s: s[0].lower()   )
+    return ret
+    
+def AddIndianPakShows(url):
+    try:
+        channels=getIndianPakShows(url)
+        if len(channels)>0:
+            for cname,ctype,curl,imgurl in channels:
+                cname=cname.encode('ascii', 'ignore').decode('ascii')
+        #        print repr(curl)      
+                if ctype==11:
+                    addDir(cname ,curl,ctype ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+                else:
+                    addDir(cname ,curl,ctype ,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
+    except: 
+        traceback.print_exc(file=sys.stdout)
+
+def getIndianPakShowsEP(url):
+    ret=[]
+    try:
+
+        headers=[('User-Agent',base64.b64decode('dmlkZW91dC8yLjAgKGlQaG9uZTsgaU9TIDkuMC4yOyBTY2FsZS8yLjAwKQ=='))]
+        jdata=getUrl(url, headers=headers)
+        appname=url.split('app=')[1].split('&')
+        jsondata=json.loads(jdata)
+        for channel in jsondata["playlistitems"]:
+            cname=channel["title"]
+            curl=channel["videoid"]  
+            curl=base64.b64encode('direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %curl)
+            cimage=channel["imageurl"]  
+            if not cimage.startswith('http'): cimage=base64.b64decode('aHR0cDovL3l0eC5tZS9tanNvbi9jb25mLw==')+cimage
+            ret.append((cname ,'manual', curl ,cimage))  
+    except:
+        traceback.print_exc(file=sys.stdout)
+    #if len(ret)>0:
+    #   ret=sorted(ret,key=lambda s: s[0].lower()   )
+    return ret
+    
+def AddIndianPakShowsEP(url):
+    try:
+        channels=getIndianPakShowsEP(url)
+        if len(channels)>0:
+            for cname,ctype,curl,imgurl in channels:
+                cname=cname.encode('ascii', 'ignore').decode('ascii')
+        #        print repr(curl)      
+                addDir(cname ,curl,11 ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+    except: 
+        traceback.print_exc(file=sys.stdout)
+
+    
 def AddYuppSports(url=None):
     try:
 
@@ -6355,6 +6462,16 @@ try:
     elif mode==82:
         print "Play url is "+url
         AddMyTVSports(url)            
+    elif mode==83:
+        print "Play url is "+url
+        AddIndianPakShowsCat(url)
+    elif mode==84:
+        print "Play url is "+url
+        AddIndianPakShows(url)  
+    elif mode==85:
+        print "Play url is "+url
+        AddIndianPakShowsEP(url)  
+        
 except:
 
     print 'somethingwrong'
