@@ -1004,7 +1004,7 @@ def getIndianPakShowsCat():
 
 
 def getFootballPostData():
-    return eval(base64.b64decode("eydhcHBfdGFnJzonZm9vdGJhbGxfaGlnaGxpZ2h0X2lvc18yJywnc3RvcmUnOidpdHVuZXMnLCdhcHBfdmVyc2lvbic6JzMnLCAnYXBwX2FwaV9zZWNyZXRfa2V5JzonZm9vdGJhbGxfcHJvZHVjdGlvbl8xMl8zNF9AQCd9"))
+    return eval(base64.b64decode("eydhcHBfdGFnJzonZm9vdGJhbGxfaGlnaGxpZ2h0X2hkJywnc3RvcmUnOidpdHVuZXMnLCdhcHBfdmVyc2lvbic6JzInLCAnYXBwX2FwaV9zZWNyZXRfa2V5JzonZm9vdGJhbGxfcHJvZHVjdGlvbl8xMl8zNF9AQCd9"))
 
 def getFootballData():
     fname='footballdata.json'
@@ -1052,14 +1052,14 @@ def getFootballComp():
 
 def AddFootballCats(url=None):
     try:
-        addDir('Recent Football Highlights' ,'HL,0,0',87,'', False, True,isItFolder=True)
+        addDir('Recent Football Highlights/Live Streams' ,'HL,0,0',87,'', False, True,isItFolder=True)
         addDir('Recent Football Videos [Not All Working]' ,'VD,0,0',88,'', False, True,isItFolder=True)
         channels=getFootballComp()
         if len(channels)>0:
             for cname,ctype,curl,imgurl,seq in channels:
                 cname=cname.encode('ascii', 'ignore').decode('ascii') 
                 addDir(Colored (cname,'blue') ,'',0,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
-                addDir('   -Highlights' ,curl,87,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
+                addDir('   -Highlights/Live Streams' ,curl,87,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
                 addDir('   -Videos' ,curl,88,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
     except: 
         traceback.print_exc(file=sys.stdout)
@@ -1142,11 +1142,17 @@ def getFootballMatches(url):
             datenum=channel["date"]/1000
             datenum=datetime.datetime.fromtimestamp(int(datenum) ).strftime('%Y-%m-%d')
             namecol="green"
-            if channel["is_live_streaming"]: namecol="blue"
-            cname=Colored( datenum+' '+channel["home_team"]["name"]  + ' ' +str(channel["home_score"]) +'-' +str(channel["guest_score"] ) +' '+channel["guest_team"]["name"],namecol) +'\n' + Colored(channel["competition"]["name"],'red')
+            playtype=""
             curl=base64.b64encode(json.dumps(channel))
-            cimage=channel["screenshot"]           
-            ret.append((cname ,'manual', curl ,cimage))  
+            if channel["is_live_streaming"]: 
+                namecol="blue"
+                playtype="live"
+                curl=channel["highlight"][0]["media_url"]
+            cname=Colored( datenum+' '+channel["home_team"]["name"]  + ' ' +str(channel["home_score"]) +'-' +str(channel["guest_score"] ) +' '+channel["guest_team"]["name"],namecol) +'\n' + Colored(channel["competition"]["name"],'red')
+            
+            cimage=channel["screenshot"]  
+            
+            ret.append((cname ,playtype, curl ,cimage))  
     except:
         traceback.print_exc(file=sys.stdout)
     return ret,moreurl
@@ -1157,7 +1163,10 @@ def AddFootballMatches(url):
         if len(channels)>0:
             for cname,ctype,curl,imgurl in channels:
                 cname=cname.encode('ascii', 'ignore').decode('ascii') 
-                addDir(cname ,curl,89,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
+                if ctype=="live":
+                    addDir(cname ,"LIVE,"+base64.b64encode(curl),91,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+                else:
+                    addDir(cname ,curl,89,imgurl, False, True,isItFolder=True)		#name,url,mode,icon
         if moreurl:
             addDir('Next Page' ,moreurl,mode,'', False, True,isItFolder=True)		#name,url,mode,icon
     except: 
@@ -1172,8 +1181,8 @@ def AddFootballMatcheHome(url):
         for c in channel["fullmatch"]:
             videos.append( (c["media_url"],c["media_type"]))
 
-        if 'is_live_streaming' in c and c['is_live_streaming']:
-            addDir(Colored('Play Live Stream NOW[notoworking]','red') ,"LIVE,"+base64.b64encode("someliveurl"),91,'', False, True,isItFolder=False)
+        #if 'is_live_streaming' in c and c['is_live_streaming']:
+        #    addDir(Colored('Play Live Stream NOW[notoworking]','red') ,"LIVE,"+base64.b64encode(videos[0]),91,'', False, True,isItFolder=False)
 
         seen = set()
         videos=[item for item in videos if item[0] not in seen and not seen.add(item[0])]
