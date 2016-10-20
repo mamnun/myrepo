@@ -4781,16 +4781,15 @@ def getPV2Url():
                 iphtml=getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHluZG5zLnR2L2tleXMvaXBfY2hlY2sucGhw'),headers=headers)
                 ipaddrs=re.findall('Address: (.*)',iphtml)[0]
                 
-                headers=[('User-Agent',nm),('SOAPAction',base64.b64decode('aHR0cDovL2FwcC5keW5ucy5jb20vc2F2ZURldmljZUlkU2VydmljZS90bnM6ZGIuc2F2ZUlk')),('Content-Type','text/xml; charset=ISO-8859-1')]
+                #headers=[('User-Agent',nm),('SOAPAction',base64.b64decode('aHR0cDovL2FwcC5keW5ucy5jb20vc2F2ZURldmljZUlkU2VydmljZS90bnM6ZGIuc2F2ZUlk')),('Content-Type','text/xml; charset=ISO-8859-1')]
                 
-                xmldata=base64.b64decode("PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iSVNPLTg4NTktMSI/Pgo8U09BUC1FTlY6RW52ZWxvcGUgU09BUC1FTlY6ZW5jb2RpbmdTdHlsZT0iaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9lbmNvZGluZy8iIHhtbG5zOlNPQVAtRU5WPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VudmVsb3BlLyIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6U09BUC1FTkM9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW5jb2RpbmcvIiB4bWxuczp0bnM9Imh0dHA6Ly9zY3JpcHRiYWtlci5jb20vc2F2ZURldmljZUlkU2VydmljZSI+CjxTT0FQLUVOVjpCb2R5Pgo8dG5zOmRiLnNhdmVJZCB4bWxuczp0bnM9Imh0dHA6Ly9hcHAuZHlubnMuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgo8aWQgeHNpOnR5cGU9InhzZDpzdHJpbmciPiVzIEBkbkBuMDMzMTwvaWQ+CjxuYW1lIHhzaTp0eXBlPSJ4c2Q6c3RyaW5nIj4lczwvbmFtZT4KPC90bnM6ZGIuc2F2ZUlkPgo8L1NPQVAtRU5WOkJvZHk+CjwvU09BUC1FTlY6RW52ZWxvcGU+")%(ipaddrs,nm)
+                #xmldata=base64.b64decode("PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iSVNPLTg4NTktMSI/Pgo8U09BUC1FTlY6RW52ZWxvcGUgU09BUC1FTlY6ZW5jb2RpbmdTdHlsZT0iaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvc29hcC9lbmNvZGluZy8iIHhtbG5zOlNPQVAtRU5WPSJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy9zb2FwL2VudmVsb3BlLyIgeG1sbnM6eHNkPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYSIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeG1sbnM6U09BUC1FTkM9Imh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3NvYXAvZW5jb2RpbmcvIiB4bWxuczp0bnM9Imh0dHA6Ly9zY3JpcHRiYWtlci5jb20vc2F2ZURldmljZUlkU2VydmljZSI+CjxTT0FQLUVOVjpCb2R5Pgo8dG5zOmRiLnNhdmVJZCB4bWxuczp0bnM9Imh0dHA6Ly9hcHAuZHlubnMuY29tL3NhdmVEZXZpY2VJZFNlcnZpY2UiPgo8aWQgeHNpOnR5cGU9InhzZDpzdHJpbmciPiVzIEBkbkBuMDMzMTwvaWQ+CjxuYW1lIHhzaTp0eXBlPSJ4c2Q6c3RyaW5nIj4lczwvbmFtZT4KPC90bnM6ZGIuc2F2ZUlkPgo8L1NPQVAtRU5WOkJvZHk+CjwvU09BUC1FTlY6RW52ZWxvcGU+")%(ipaddrs,nm)
                 
-                try:
-                    getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwaXNvYXAvaW5kZXgucGhw'),post=xmldata,headers=headers)
-                except: pass
+                #try:
+                #    getUrl(base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwaXNvYXAvaW5kZXgucGhw'),post=xmldata,headers=headers)
+                #except: pass
                 
                 deviceid=getPV2Device(pvitr)
-                #if pvitr==1: print 1/0
                 if pvitr==1: deviceid="331"
                 if pvitr==3:                    
                     link=getUrl(base64.b64decode('aHR0cDovL3NoYW5pLm9mZnNob3JlcGFzdGViaW4uY29tL3B2Mkxhc3RXb3JraW5nLnhtbA==')).decode("base64")
