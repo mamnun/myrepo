@@ -408,10 +408,15 @@ def getDailyMotionUrl(html, short):
 def getYouTubeURL(html, short):
     try:
     	print 'Trying to find Youtube Link >>'
-        match =re.findall('((?<=(v|V)/)|(?<=be/)|(?<=(\?|\&)v=)|(?<=embed/))([\w-]+)',html)
+        match =re.findall('youtu.*?(?<=(?<=(v|V)/)|(?<=be/)|(?<=(\?|\&)v=)|(?<=embed/))([\w-]+)',html, re.IGNORECASE)
         if len(match)>0:
-            print 'YoutubeURL>>>',match[2]
-            playURL=','.join(match[2])
+            youtubeids=[]
+            for m in match:
+                if m[2] not in youtubeids:
+                    youtubeids.append(m[2])
+            print youtubeids
+            #print 'YoutubeURL>>>',match[2]
+            playURL=','.join(youtubeids)
             print playURL
             return 'youtube:'+playURL
 
