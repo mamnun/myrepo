@@ -152,7 +152,7 @@ def createSafeLink(url, recursive=False, usecode=None, progress=None):
     import datetime
     try:
         useragent=''
-        sess=getUrl('somethingsomethingblah'+datetime.datetime.today().strftime('%Y-%m-%d'))
+        sess=getUrl('http://shani.offshorepastebin.com/safesession.php?t='+datetime.datetime.today().strftime('%Y-%m-%d'))
         ss=re.findall(base64.b64decode('PT5ccyooLio/KTsuKj9jdXN0b21lclwuc2FmZXJzdXJmXC5jb20='),sess)[0]
         print ss
         headers = [('User-Agent','Mozilla/5.0 (X11; Linux x86_64; rv:45.0) Gecko/20100101 Firefox/45.0'),

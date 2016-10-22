@@ -5765,7 +5765,8 @@ def AddShows(Fromurl):
 
     
 
-    match =re.findall('<div class="card">.*?<img src="(.*?)".*?<a href="(.*?)".*?>(.*?)<', linkfull, re.UNICODE|re.DOTALL)
+    match =re.findall('<div class=\"(?:teal)?.?card\">.*?<img src=\"(.*?)\".*?<a href=\"(.*?)\".*?>(.*?)<', linkfull, re.UNICODE|re.DOTALL)
+    print match
     #if len(match)==0:
     #    match =re.findall('<div class="thumbnail">\s*<a href="(.*?)".*\s*<img.*?.*?src="(.*?)".* alt="(.*?)"', link, re.UNICODE)
     h = HTMLParser.HTMLParser()
