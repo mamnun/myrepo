@@ -1,3 +1,5 @@
+[B]Version 5.8.5[/B]
+povee, more fixes, thanks to androjohn@tva
 [B]Version 5.8.4[/B]
 yellow channels from povee now, fix fast tv
 [B]Version 5.8.3[/B]
