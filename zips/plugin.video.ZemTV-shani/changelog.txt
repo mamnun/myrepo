@@ -1,3 +1,5 @@
+[B]Version 5.8.6[/B]
+etv fix
 [B]Version 5.8.5[/B]
 povee, more fixes, thanks to androjohn@tva
 [B]Version 5.8.4[/B]

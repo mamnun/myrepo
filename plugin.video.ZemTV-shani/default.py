@@ -5726,13 +5726,22 @@ def PlayOtherUrl ( url ):
         if dag_url.startswith('rtmp'): dag_url+=' timeout=20'
         direct=True
     elif url=='etv':
-        req = urllib2.Request(base64.b64decode('aHR0cDovL20ubmV3czE4LmNvbS9saXZlLXR2L2V0di11cmR1'))
+        req = urllib2.Request(base64.b64decode('aHR0cDovL2VuZ2xpc2gucHJhZGVzaDE4LmNvbS9hamF4LXN0cmVhbWluZy5waHA/ZGV2aWNlPXdlYiZjaGFubmVsPWV0di11cmR1Jnc9MTAwJTI1Jmg9NTAw'))
         req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
         response = urllib2.urlopen(req)
         link=response.read()
-        curlpatth='<source src="(.*?)"'
+        curlpatth='<backup.*?(http.*?)\]?\]?>'
+        encdataurl=re.findall(curlpatth,link)[0]
+        encdata=getUrl(encdataurl)
+        
+        #from mixed swf
+        paragraph= base64.b64decode("UGFjayBteSBib3ggd2l0aCAjMTI1IGxpcXVvciBqdWdzLiBCTE9XWlkgTklHSFQtRlJVTVBTIFZFWCdEIEpBQ0sgUS4gSmFja2Rhd3MgbG92ZSBteSAzOCBiaWcgc3BoaW54IG9mICJxdWFydHoiLiAyKzI9NCwgQSBRVUlDSy1tb3ZlbWVudCBvZiB0aGUgZW5lbXkgd2lsbCBqZW9wYXJkaXplICM2OSBndW5ib2F0czsgZm9yc2FraW5nIG1vbmFzdGljIHRyYWRpdGlvbjogNDclIGpvdmlhbCBmcmlhcnMgZ2F2ZSB1cCB0aGVpciAqdm9jYXRpb24qIGZvciBhIHF1ZXN0aW9uYWJsZSBleGlzdGVuY2Ugb24gdGhlIChmbHlpbmcpIHRyYXBlemUgZWFybmluZyAkMC1yZXR1cm5zISBXRSBxdWlja2x5IFNFSVpFRCBUSEUgW0JMQUNLXSBBWExFICYgSlVTVCBTQVZFRCBJVCBGUk9NIEdPSU5HIFBBU1QgSElNLiBJcyAzPjU/IG9yIGlzIDU8Mz8gIGNvbnRhY3RAbmV0d29yazE4dGVjaC5jb21+L18=")
+        finalurl=''
+        for i in encdata.split(','):
+            finalurl+=paragraph[int(i)]
+        
         progress.update( 50, "", "Preparing url..", "" )
-        dag_url =re.findall(curlpatth,link)[0]
+        dag_url =finalurl
     elif 'dag1.asx' not in url and 'hdcast.org' not in url and '?securitytype=2' not in url and 'bernardotv.club' not in url and 'imob.dunyanews.tv' not in url:
         if '/play/' in url:
             code=base64.b64decode('MDAwNkRDODUz')+binascii.b2a_hex(os.urandom(2))[:3]
