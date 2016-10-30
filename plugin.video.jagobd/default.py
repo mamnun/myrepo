@@ -117,7 +117,7 @@ def getLiveUrl(url):
     #print 'link',link
     progress.update( 30, "", "Finding links..", "" )
     h=HTMLParser.HTMLParser()
-    match= re.findall('<iframe name="ifram2" src="(.*?)"', link)
+    match= re.findall('<iframe.*?src="(.*?jagobd.com.*?)"', link)
     if len(match)==0:
         match= re.findall('<iframe src="(.*?)" name="ifram2"', link)
     print match    

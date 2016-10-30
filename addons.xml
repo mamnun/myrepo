@@ -51,7 +51,7 @@
 
 <addon id="plugin.video.jagobd"
        name="JagoBD.com"
-       version="1.1.4"
+       version="1.1.5"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
