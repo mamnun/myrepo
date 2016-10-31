@@ -3352,8 +3352,9 @@ def getFastTVChannels(cat,sports=False):
                 else:
                     curl='fast:'+ss["channel_url"]
                 cimage=ss["channel_thumbnail"]
-                if not cimage.startswith(''):
-                    cimage+=base64.b64decode('aHR0cDovL3N3aWZ0c3RyZWFtei5jb20vU3dpZnRTdHJlYW0vaW1hZ2VzL3RodW1icy8=')+cimage
+                
+                if not cimage.startswith('http'):
+                    cimage=base64.b64decode('aHR0cDovL3N3aWZ0c3RyZWFtei5jb20vU3dpZnRTdHJlYW0vaW1hZ2VzL3RodW1icy8=')+cimage
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     ret.append((cname + (' fast' if not sports else ''),'manual', curl ,cimage))   
@@ -3656,7 +3657,8 @@ def getWTVChannels(categories, forSports=False):
                     curl='direct2:'+ss["channelLink"]
                     if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
 
-                cimage=ss["categoryImageLink"]
+                #cimage=ss["categoryImageLink"]
+                cimage='http://live.square7.ch/%s.png'%cname.lower().replace(' ','')
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
@@ -3752,14 +3754,15 @@ def getUniTVChannels(categories, forSports=False):
 
                 ss=source
                 cname=ss["channelName"]
-                #print cname
+                #print ss
                 if 'ebound.tv' in ss["channelLink"]:
                     curl='ebound2:'+ss["channelLink"].replace(':1935','')
                     #print curl
                 else:
                     curl='direct2:'+ss["channelLink"]
                     if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
-                cimage=ss["categoryImageLink"]
+                #cimage=ss["categoryImageLink"]
+                cimage='http://live.square7.ch/%s.png'%cname.lower().replace(' ','')
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
@@ -3990,7 +3993,8 @@ def getptcchannels(categories, forSports=False):
                         curl='ebound2:'+ss["url"].replace(':1935','')
                     else:
                         curl='ptc:'+ss["url"]
-                    cimage=ss["imgurl"]
+                    #cimage=ss["imgurl"]
+                    cimage='http://live.square7.ch/%s.png'%cname.lower().replace(' ','')
                     
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
                         ret.append((cname +' v6' ,'manual', curl ,cimage))  
