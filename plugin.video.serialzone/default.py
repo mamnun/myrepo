@@ -7,6 +7,7 @@ import time
 from operator import itemgetter
 import requests
 import traceback, sys,cookielib,json
+
 __addon__       = xbmcaddon.Addon()
 __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
@@ -81,7 +82,7 @@ def Addtypes():
 	addDir('Hindi' ,'http://hindi.serialzone.in/', 2,'')
 	addDir('Kannada' ,'http://kannada.serialzone.in/' , 2,'')
 	addDir('Malayalam' ,'http://malayalam.serialzone.in/', 2,'')
-	addDir('Marathi' ,'http://marati.serialzone.in/', 2, '')
+	addDir('Marathi' ,'http://marathi.serialzone.in/', 2, '')
 	addDir('Tamil' ,'http://tamil.serialzone.in/', 2, '')
 	addDir('Telugu' ,'http://telugu.serialzone.in/', 2, '')
 	return
@@ -378,7 +379,54 @@ def playmediawithproxy(media_url, name, iconImage,proxyip,port,progress):
         setKodiProxy(existing_proxy)
         print 'reset here'
     return ''
-    
+def getCookiesString(cookieJar):
+    try:
+        cookieString=""
+        for index, cookie in enumerate(cookieJar):
+            cookieString+=cookie.name + "=" + cookie.value +";"
+    except: pass
+    #print 'cookieString',cookieString
+    return cookieString
+def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None,jsonpost=False):
+
+    cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
+    opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
+    #opener = urllib2.install_opener(opener)
+    header_in_page=None
+    if '|' in url:
+        url,header_in_page=url.split('|')
+    req = urllib2.Request(url)
+    req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+    if headers:
+        for h,hv in headers:
+            req.add_header(h,hv)
+    if header_in_page:
+        header_in_page=header_in_page.split('&')
+        
+        for h in header_in_page:
+            if len(h.split('='))==2:
+                n,v=h.split('=')
+            else:
+                vals=h.split('=')
+                n=vals[0]
+                v='='.join(vals[1:])
+                #n,v=h.split('=')
+            #print n,v
+            req.add_header(n,v)
+            
+    if jsonpost:
+        req.add_header('Content-Type', 'application/json')
+    response = opener.open(req,post,timeout=timeout)
+    if response.info().get('Content-Encoding') == 'gzip':
+            from StringIO import StringIO
+            import gzip
+            buf = StringIO( response.read())
+            f = gzip.GzipFile(fileobj=buf)
+            link = f.read()
+    else:
+        link=response.read()
+    response.close()
+    return link;
 def PlayShowLink ( url ): 
     #	url = tabURL.replace('%s',channelName);
     print "URL: %s" %url
@@ -406,13 +454,35 @@ def PlayShowLink ( url ):
     #		print 'not found trying again'
         match =re.findall('\(\'(.*?)\'', link)
         if match[0].startswith('http'):
-            req = urllib2.Request(match[0])
+            urltofetch=match[0]
+            req = urllib2.Request(urltofetch)
             req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
             response = urllib2.urlopen(req)
             link=response.read()
             response.close()
             match =re.findall("\'(http.*?master.m3u8?.*?)\'", link)
-            xbmc.executebuiltin("xbmc.PlayMedia("+match[0]+")")
+            if  len(match)==0 and 'ozee.com' in urltofetch.lower():
+                import jscrypto
+                print 'dd',link
+                linkdatareg='(var hlsplayurl.*?\}\')'
+                lindata=re.findall(linkdatareg,link)[0]
+                print lindata
+                ct=re.findall('"ct":"(.*?)"',lindata)[0]
+                salt=re.findall('"s":"(.*?)"',lindata)[0]
+                passphrase=re.findall('dailytoday.?=.?\"(.*?)\"',link.split('var hlsplayurl')[0])[-1]
+                salt=salt.decode("hex")    
+                url= jscrypto.decode(ct,passphrase,salt)
+                uurl= url.replace("\\/","/").replace('"','')
+                cookieJar = cookielib.LWPCookieJar()
+                getUrl(uurl,cookieJar=cookieJar,headers=[('User-Agent','Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')])
+                
+                uurl=uurl+'|User-Agent=%s&Cookie=%s'%('Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10',getCookiesString(cookieJar))
+                print uurl
+                listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+                print "playing stream name: " + str(name) 
+                xbmc.Player(  ).play( uurl, listitem)
+            else:
+                xbmc.executebuiltin("xbmc.PlayMedia("+match[0]+")")
             return
             
     time1=2000
@@ -653,6 +723,7 @@ try:
 		PlayShowLink(url)
 except:
 	print 'somethingwrong'
+	traceback.print_exc(file=sys.stdout)
 xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 

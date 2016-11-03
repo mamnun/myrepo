@@ -169,7 +169,7 @@
 
 <addon id="plugin.video.serialzone"
        name="India - SerialZone"
-       version="1.6"
+       version="1.7"
        provider-name="sorkan">
   <requires>
     	<import addon="xbmc.python" version="2.1.0"/>

@@ -16,3 +16,5 @@ External non youtube links
 updated regex for blank enteries in hindi section
 [B]Version 1.6[/B]
 play command
+[B]Version 1.7[/B]
+support for ozee
