@@ -758,7 +758,7 @@ def AddPakTVSports(url=None):
         cats=[url]
         isSports=False
         
-    for cname,ctype,curl,imgurl in getPakTVChannels(cats,isSports):
+    for cname,ctype,curl,imgurl in getPakTVChannels(cats,isSports, desi=False):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -777,7 +777,7 @@ def AddPTCSports(url=None):
     else:
         cats=[url]
         isSports=False
-    for cname,ctype,curl,imgurl in getptcchannels(cats,isSports):
+    for cname,ctype,curl,imgurl in getptcchannels(cats,isSports, desi=False):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -1448,7 +1448,7 @@ def AddWTVSports(url=None):
         cats=[url]
         isSports=False
 
-    for cname,ctype,curl,imgurl in getWTVChannels(cats,isSports):
+    for cname,ctype,curl,imgurl in getWTVChannels(cats,isSports, desi=False):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -2071,7 +2071,7 @@ def AddUniTVSports(url=None):
     else:
         cats=[url]
         isSports=False
-    for cname,ctype,curl,imgurl in getUniTVChannels(cats,isSports):
+    for cname,ctype,curl,imgurl in getUniTVChannels(cats,isSports, desi=False):
         cname=cname.encode('ascii', 'ignore').decode('ascii')
         if ctype=='manual2':
             mm=37
@@ -3366,7 +3366,7 @@ def getFastTVChannels(cat,sports=False):
         traceback.print_exc(file=sys.stdout)
     return ret
     
-def getPakTVChannels(categories, forSports=False):
+def getPakTVChannels(categories, forSports=False, desi=True):
     ret=[]
     try:
         xmldata=getPakTVPage()
@@ -3382,7 +3382,7 @@ def getPakTVChannels(categories, forSports=False):
                 cimage=ss["categoryLogo"]
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
-                    ret.append((cname +' v7' ,'manual', curl ,cimage))   
+                    ret.append((cname +(' v7' if desi else '') ,'manual', curl ,cimage))   
         
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
@@ -3641,7 +3641,7 @@ def getPITVCats():
     return ret  
 
     
-def getWTVChannels(categories, forSports=False):
+def getWTVChannels(categories, forSports=False, desi=True):
     ret=[]
     try:
         xmldata=getWTVPage()
@@ -3664,7 +3664,7 @@ def getWTVChannels(categories, forSports=False):
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
-                    ret.append((cname +' v9' ,'manual', curl ,cimage))   
+                    ret.append((cname +(' v9' if desi else '')  ,'manual', curl ,cimage))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
@@ -3745,7 +3745,7 @@ def getUniTVCats():
         traceback.print_exc(file=sys.stdout)
     return ret  
         
-def getUniTVChannels(categories, forSports=False):
+def getUniTVChannels(categories, forSports=False, desi=True):
     ret=[]
   
     try:
@@ -3768,7 +3768,7 @@ def getUniTVChannels(categories, forSports=False):
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
-                    ret.append((cname +' v8' ,'manual', curl ,cimage))   
+                    ret.append((cname +(' v8' if desi else '') ,'manual', curl ,cimage))   
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
@@ -3974,14 +3974,14 @@ def getUKTVChannels(categories=[], channels=[]):
                     print cimage
                     if cname==None: cname=curl
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
-                        ret.append((cname +' uktv' ,'manual', curl ,cimage))  
+                        ret.append((cname ,'manual', curl ,cimage))  
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower() )                        
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
 
-def getptcchannels(categories, forSports=False):
+def getptcchannels(categories, forSports=False,desi=True):
     ret=[]
     try:
         import iptv
@@ -3999,7 +3999,7 @@ def getptcchannels(categories, forSports=False):
                     cimage='http://shani.offshorepastebin.com/ZemLogos/%s.png'%cname.lower().replace(' ','')
                     
                     if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
-                        ret.append((cname +' v6' ,'manual', curl ,cimage))  
+                        ret.append((cname +(' v6' if desi else '') ,'manual', curl ,cimage))  
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower() )                        
     except:
@@ -4007,7 +4007,7 @@ def getptcchannels(categories, forSports=False):
     return ret
 
     
-def getiptvchannels(gen):
+def getiptvchannels(gen, desi=True):
     
     ret=[]
     try:
@@ -4021,7 +4021,7 @@ def getiptvchannels(gen):
                 cname=ss["name"]
                 curl=json.dumps(ss)
                 cimage=base64.b64decode('aHR0cDovL3BvcnRhbC5pcHR2cHJpdmF0ZXNlcnZlci50di9zdGFsa2VyX3BvcnRhbC9taXNjL2xvZ29zLzMyMC8=')+ss["logo"]
-                ret.append((cname +' v5' ,'manual3', curl ,cimage))        
+                ret.append((cname +(' v5' if desi else '') ,'manual3', curl ,cimage))        
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
@@ -4491,7 +4491,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     
 def addiptvSports(url):
 
-    match=getiptvchannels('sports')
+    match=getiptvchannels('sports', desi=False)
     match=sorted(match,key=lambda s: s[0].lower()   )
     
     for cname,ctype,curl,imgurl in match:
