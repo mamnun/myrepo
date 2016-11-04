@@ -3691,8 +3691,8 @@ def getPITVChannels(categories, forSports=False):
                     curl='direct2:'+ss["channelLink"]
                     if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
 
-                cimage=ss["categoryLogo"]
-                
+                #cimage=ss["categoryLogo"]
+                cimage='http://shani.offshorepastebin.com/ZemLogos/%s.png'%cname.lower().replace(' ','')
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
                     ret.append((cname ,'manual', curl ,cimage))   
@@ -3719,7 +3719,9 @@ def getGTVChannels(categories, forSports=False):
                     curl='direct2:'+ss["channelLink"]
                     if ss["channelLink"].startswith('http'): curl+='|User-Agent=AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)' 
 
-                cimage=ss["categoryImageLink"]
+                #cimage=ss["categoryImageLink"]
+                cimage='http://shani.offshorepastebin.com/ZemLogos/%s.png'%cname.lower().replace(' ','')
+                
                 
                 if len([i for i, x in enumerate(ret) if x[2] ==curl ])==0:                    
                     #print cname
@@ -3946,7 +3948,9 @@ def getMonaChannels(cat):
                 ua='Lavf/57.25.100'
             if  curl.startswith("direct3:http"):
                 curl+='|User-Agent='+ua
+                
             cimage=channel["category_image"]
+            
             if not cimage.startswith("http"):
                 cimage=base64.b64decode('aHR0cDovL3pvbmEtYXBwLmNvbS96b25hLWFwcC9pbWFnZXMv')+cimage
             if cname==None: cname=curl
@@ -6802,6 +6806,8 @@ except:
 
 
 print 	mode,url,linkType
+
+
 
 try:
     if mode==None or url==None or len(url)<1:
