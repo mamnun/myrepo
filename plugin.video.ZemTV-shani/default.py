@@ -246,7 +246,7 @@ def DisplayChannelNames(url):
 
 def AddtypesForShows():
 	addDir('Latest Shows (ZemTv)' ,'Shows' ,2,os.path.join(home,'icons', 'ShowsfromZemTv.png'))
-	addDir('Latest Shows (Siasat.pk)' ,'http://www.siasat.pk/forum/forumdisplay.php?29-Daily-Talk-Shows' ,2,os.path.join(home,'icons','All Programs and Talk shows.png'))
+	addDir('Latest Shows (Siasat.pk)' ,'http://www.siasat.pk/forum/forumdisplay.php?29-Daily-Talk-Shows' ,2,os.path.join(home,'icons','Shows from Siasat.png'))
 	addDir('All Programs and Talk Shows' ,'ProgTalkShows' ,2,os.path.join(home,'icons','All Programs and Talk shows.png'))
 
 def Addtypes():
