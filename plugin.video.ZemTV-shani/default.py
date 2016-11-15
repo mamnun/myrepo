@@ -6320,7 +6320,7 @@ def PlayShowLink ( url, redirect=True ):
         line1 = "Playing Tune.pk Link"
         xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
     #		print "PlayLINK"
-        playURL= match =re.findall('src="(.*?(tune\.pk).*?)"', link)
+        playURL= match =re.findall('src=[\'"](.*?(tune\.pk).*?)[\'"]', link)
         if len(playURL)==0:
             line1 = "Link.pk link not found"
             xbmc.executebuiltin('Notification(%s, %s, %d, %s)'%(__addonname__,line1, time, __icon__))
@@ -6594,7 +6594,7 @@ def ShowAllSources(url, loadedLink=None):
     if not len(playURL)==0:
         available_source.append('Vidrail Source')
         
-    playURL= match =re.findall('src="(.*?(tune\.pk).*?)"', link)
+    playURL= match =re.findall('src=[\'"](.*?(tune\.pk).*?)[\'"]', link)
     if not len(playURL)==0:
         available_source.append('Link Source')
 
