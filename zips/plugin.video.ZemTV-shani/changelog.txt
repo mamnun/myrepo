@@ -1,3 +1,5 @@
+[B]Version 5.9.6[/B]
+default icons
 [B]Version 5.9.5[/B]
 tune.pk url issues
 [B]Version 5.9.4[/B]
