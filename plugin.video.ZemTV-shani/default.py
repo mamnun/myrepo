@@ -7075,8 +7075,10 @@ def get_view_mode_id( view_mode):
         return int(default_view_mode)
     return None
 
+playmode=[3,4,9,11,15,21,22,27,33,35,37,40,42,45,91,93]
+nonthumbview=[55,61,67,56,14,57,19,20,21,22,23,24,79,75,76,78,81,2,51,52,53,62,70,71,81,66]
 try:
-    if (not mode==None) and mode>1 and mode not in[55,61,67,56,14,57,19,20,21,22,23,24,79,75,76,78,81,2,51,52,53,62,70,71,81]:
+    if (not mode==None) and mode>1 and mode not in nonthumbview and mode not in playmode:
         view_mode_id = get_view_mode_id('thumbnail')
         if overridemode: view_mode_id=overridemode
         if view_mode_id is not None:
@@ -7084,8 +7086,11 @@ try:
             xbmc.executebuiltin('Container.SetViewMode(%d)' % view_mode_id)
 except: traceback.print_exc(file=sys.stdout)
 
-if not ( (mode==3 or mode==4 or mode==9 or mode==11 or mode==15 or mode==21 or mode==22 or mode==27 or mode==33 or mode==35 or mode==37 or mode==40 or mode==42 or mode==45 or mode==91 or mode==93)  )  :
+if not  (mode in  playmode )  :
     if mode in [144,156]:
         xbmcplugin.endOfDirectory(int(sys.argv[1]),updateListing=True)
     else:
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+        
+        
