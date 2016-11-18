@@ -5665,7 +5665,8 @@ def PlayPV2Link(url):
 
     if not tryplay(urlToPlay, listitem):
         if '130.185.144.112' not in urlToPlay:
-            urlToPlay2='http://130.185.144.112:8081'+'/'.join(urlToPlay.split('/')[3:])          
+            urlToPlay2='http://130.185.144.112:8081/'+'/'.join(urlToPlay.split('/')[3:])          
+            print urlToPlay2
             if not tryplay(urlToPlay2, listitem):
                 return False
     
