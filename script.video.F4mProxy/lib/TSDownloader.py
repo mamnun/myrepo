@@ -391,7 +391,7 @@ class TSDownloader():
                         ua_header=True
 
             if not ua_header:
-                req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
+                req.add_header('User-Agent','VLC/2.2.1 LibVLC/2.2.1')
             #response = urllib2.urlopen(req)
             if self.proxy and (  (not ischunkDownloading) or self.use_proxy_for_chunks ):
                 req.set_proxy(self.proxy, 'http')
@@ -490,7 +490,7 @@ class TSDownloader():
             fixpid=256
             ignoredblock=None
             sleeptime=0
-            
+            firsttime=True
             while True:
                 if sleeptime>0: 
                     xbmc.sleep(sleeptime)
@@ -527,10 +527,11 @@ class TSDownloader():
                             traceback.print_exc(file=sys.stdout)
                             lost+=1
                             #print 'err',lost
-                            if lost>10:
+                            if lost>10 or firsttime:
                                 fileout.close
                                 return
                             break
+                        firsttime=False
                         writebuf=buf
 
                         if not First:
