@@ -393,7 +393,7 @@ class TSDownloader():
             if not ua_header:
                 req.add_header('User-Agent','VLC/2.2.1 LibVLC/2.2.1')
             #response = urllib2.urlopen(req)
-            if self.proxy and (  (not ischunkDownloading) or self.use_proxy_for_chunks ):
+            if self.proxy:
                 req.set_proxy(self.proxy, 'http')
             response = openner.open(req)
 
