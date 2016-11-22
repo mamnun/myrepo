@@ -90,7 +90,7 @@
 
 <addon id="plugin.video.live.streamspro"
        name="LiveStreamsPro"
-       version="2.7.0"
+       version="2.7.1"
        provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
