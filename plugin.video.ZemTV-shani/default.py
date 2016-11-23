@@ -1053,6 +1053,11 @@ def getFastCats():
         print 'getFastData file saving error'
         traceback.print_exc(file=sys.stdout)
     return jsondata    
+
+def getFastUA():
+    import random
+    usagents=base64.b64decode('RGFsdmlrLzEuJXMuJXMgKExpbnV4OyBVOyBBbmRyb2lkIDQuJXMuJXM7KQ==')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))))
+    return usagents
     
 def getFastData():
     fname='Fastdata.json'
@@ -1065,8 +1070,11 @@ def getFastData():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-        
-    headers=[('User-Agent',base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCA0LjQuMjsgU00tRzkwMEYgQnVpbGQvS09UNDlIKQ==')),('Authorization',base64.b64decode('QmFzaWMgVTNkcFpuUlVaV002UUZOM2FXWjBWR1ZqUUE9PQ=='))]
+    usagents=getFastUA()
+    
+    #ua = random.choice(usagents)
+
+    headers=[('User-Agent',usagents),('Authorization',base64.b64decode('QmFzaWMgVTNkcFpuUlVaV002UUZOM2FXWjBWR1ZqUUE9PQ=='))]
     link=getUrl(base64.b64decode('aHR0cDovL3N3aWZ0c3RyZWFtei5jb20vU3dpZnRTdHJlYW0vc3dpZnRkYXRhLnBocA=='),headers=headers)
     
     jsondata=None
@@ -1446,7 +1454,7 @@ def AddIpBoxChannels(url=None):
 def AddWTVSports(url=None):
 
     if url=="sss":
-        cats=['Extra Time Football','TSN','Cth Stadium','UFC','T20 World Cup','Horse Racing','Cricket','Footbal','Golf','Wrestling & Boxing','T20 Big Bash League','NFL Live','Footbal Clubs','Sports Time']
+        cats=['extra time football','tsn','cth stadium','ufc','t20 world cup','horse racing','cricket','footbal','golf','boxing & wrestling','t20 big bash league','nfl live','footbal clubs','sports time']
         isSports=True
         addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"wtv",66 ,'', False, True,isItFolder=True)
     else:
@@ -1889,7 +1897,11 @@ def playHDFree(url):
         headers=[('Referer',mainref),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]                       
         result = getUrl(url, headers=headers)
         #print result
-        firstframe=re.findall( '<iframe frameborder="0.*?src="(.*?)"', result)[0]
+        firstframe=re.findall( '<iframe frameborder="0.*?src="(.*?)"', result)
+        if len(firstframe)==0:
+            firstframe=re.findall( '<iframe.*?src="(.*?)"', result)
+            
+        firstframe=firstframe[0]
         
         headers=[('Referer',pageURl),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36')]                       
         result = getUrl(firstframe, headers=headers)
@@ -1912,28 +1924,39 @@ def playHDFree(url):
         inners = re.findall('id=(.+?)>([^<]+)<',result)
         inners = dict(inners)
 
-        js = re.findall('srcs*=s*(?:\'|\")(.+?player\.js(?:.+?|))(?:\'|\")',result)[0]
-        js = getUrl(js, headers=headers)
-        token = re.findall('securetoken: ([^\n]+)',result)[0]
-        token = re.findall('var\s+%s\s*=\s*(?:\'|\")(.+?)(?:\'|\")' % token, js)[-1]
+        js = re.findall('srcs*=s*(?:\'|\")(.+?player\.js(?:.+?|))(?:\'|\")',result)
+        if len(js)==0 and 'cast4u.tv' in result:
+            reg='file: ["\'](http.*?)["\']'
+            r=re.findall(reg,result)
+            if len(r)==0:
+                reg='file: ["\'](http.*?)["\']'
+                r=re.findall(reg,result)
+            r=r[0]
+            PlayGen(base64.b64encode(r))
+        else:
+            
+            js=js[0]
+            js = getUrl(js, headers=headers)
+            token = re.findall('securetoken: ([^\n]+)',result)[0]
+            token = re.findall('var\s+%s\s*=\s*(?:\'|\")(.+?)(?:\'|\")' % token, js)[-1]
 
-        for i in range (100):
-            for v in vars:
-                result = result.replace('  + %s'%v[0],v[1])
-        for x in inners.keys():
-            result = result.replace('  + document.getElementById("%s").innerHTML'%x,inners[x])
+            for i in range (100):
+                for v in vars:
+                    result = result.replace('  + %s'%v[0],v[1])
+            for x in inners.keys():
+                result = result.replace('  + document.getElementById("%s").innerHTML'%x,inners[x])
 
-        
-        fs = re.findall('function (.+?)\(\)\s*\{\s*return\(([^\n]+)',result)
-        url = re.findall('file:(.+?)\s*\}',result)[0]
-        for f in fs:
-                url = url.replace('%s()'%f[0],f[1])
-        url = url.replace(');','').split(" + '/' + ")
-        streamer, file = url[0].replace('rtmpe','rtmp').strip(), url[1]
-        url=streamer + '/ playpath=' + file + ' swfUrl=http://www.hdcast.info/myplayer/jwplayer.flash.swf flashver=' + "WIN\2021,0,0,242" + ' live=1 timeout=20 token=' + token + ' pageUrl=' + embedUrl
-        
-        print url
-        PlayGen(base64.b64encode(url))
+            
+            fs = re.findall('function (.+?)\(\)\s*\{\s*return\(([^\n]+)',result)
+            url = re.findall('file:(.+?)\s*\}',result)[0]
+            for f in fs:
+                    url = url.replace('%s()'%f[0],f[1])
+            url = url.replace(');','').split(" + '/' + ")
+            streamer, file = url[0].replace('rtmpe','rtmp').strip(), url[1]
+            url=streamer + '/ playpath=' + file + ' swfUrl=http://www.hdcast.info/myplayer/jwplayer.flash.swf flashver=' + "WIN\2021,0,0,242" + ' live=1 timeout=20 token=' + token + ' pageUrl=' + embedUrl
+            
+            print url
+            PlayGen(base64.b64encode(url))
 
     except:
         traceback.print_exc(file=sys.stdout)
@@ -3593,7 +3616,7 @@ def getIpBoxChannels(url,forSports=False, sort=True):
                             if playheaders:
                                 curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|'+playheaders
                             else:
-                                curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
+                                curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.ts')+'|User-Agent=VLC/2.3.1 LibVLC/2.2.17&Icy-MetaData=1'
                             ##curl='ipbox:'+ss[2].replace('\r','').replace('.ts','.m3u8')+'|User-Agent=VLC/2.2.1 LibVLC/2.2.17&Icy-MetaData=1'
                             #print 'iptv',curl
                             ret.append((cname +' Ipbox' ,'manual', curl ,''))   
@@ -3655,7 +3678,7 @@ def getWTVChannels(categories, forSports=False, desi=True):
         xmldata=getWTVPage()
         #print xmldata
         for source in xmldata:#Cricket#
-            if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+            if source["categoryName"].strip().lower() in categories or source["categoryName"].lower() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'barclayspremierleague' in source["categoryName"].lower() )    ) :
 
                 ss=source
                 cname=ss["channelName"]
@@ -4266,7 +4289,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         ptcgen=['News','Entertainment','Islamic','Cooking']
         paktvgen=['News','Islamic','Cooking']
         unitvgen=['News','Religious','Cooking','PAK&IND']
-        wtvgen=['News','Religious','Cooking','Asian News','Entertainment']
+        wtvgen=['News','Religious','Cooking','Asian News','Entertainment','Pak&ind']
         CFgen="4"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
         UKTVGenCat,UKTVGenCH=['religious','news','food'], ['masala tv', 'ary digital', 'ary zindagi','hum tv','drama','express ent.']
@@ -4969,7 +4992,7 @@ def getFastTVPage(cat):
         traceback.print_exc(file=sys.stdout)
     
     fastData=getFastData()   
-    headers=[('User-Agent','Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G900F Build/KOT49H)'),('Authorization','Basic %s'%base64.b64encode(fastData["DATA"][0]["Password"]))]
+    headers=[('User-Agent',getFastUA()),('Authorization','Basic %s'%base64.b64encode(fastData["DATA"][0]["Password"]))]
     jsondata=getUrl(base64.b64decode('aHR0cDovL3N3aWZ0c3RyZWFtei5jb20vU3dpZnRTdHJlYW0vYXBpLnBocD9jYXRfaWQ9JXM=')%cat,headers=headers)
     jsondataobj=json.loads(jsondata)
     try:
@@ -5105,26 +5128,27 @@ def getWTVPage():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
         
-    req = urllib2.Request( base64.b64decode('aHR0cDovL2lwbGlvc2FwcC5kZG5zLm5ldC9QVFYtU3BvcnRzL2Ntcy9YVmVyL0lQTC0yMDE1L2dldENvbnR0VjEtMC5waHA=') )      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("SW5kb1Bhay8xLjIgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
-    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYzNBd2NuUWtRa0J1WnpwVGREUnlVM0F3VW5Ra056ZzI=")) 
+    req = urllib2.Request( base64.b64decode('aHR0cDovL2NtczEzLmlwdHZzYWxlLmNvbS9DTVMxMy9jbXMvQ3ZBWlpYL2dldENvbnR0VjEtMC5waHA=') )      
+                                             
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("V29ybGQlMjBUViUyMFBsdXMlMjBIRC8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgWkdsc1FHUnBiRHBoUVhOeVVDUXNaR1pUYlgwPQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
     import rc
     cryptor=rc.RNCryptor()
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("UEBuZ0FCQXoxUEBzc3dvcmQzMjE="))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("VW1hcmJoYWlDTXNQMHMjcy53MHJk"))
     decrypted_data=json.loads(decrypted_data)
     dataUrl=decrypted_data[0]["LiveLink"]
 
     req = urllib2.Request( dataUrl)      
-    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("SW5kb1Bhay8xLjIgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
-    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgYzNBd2NuUWtRa0J1WnpwVGREUnlVM0F3VW5Ra056ZzI=")) 
+    req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("V29ybGQlMjBUViUyMFBsdXMlMjBIRC8xLjEgQ0ZOZXR3b3JrLzc1OC4wLjIgRGFyd2luLzE1LjAuMA==")) 
+    req.add_header(base64.b64decode("QXV0aG9yaXphdGlvbg=="),base64.b64decode("QmFzaWMgWkdsc1FHUnBiRHBoUVhOeVVDUXNaR1pUYlgwPQ==")) 
     response = urllib2.urlopen(req)
     link=response.read()
 
     d=base64.b64decode(link)    
-    decrypted_data = cryptor.decrypt(d, base64.b64decode("UEBuZ0FCQXoxUEBzc3dvcmQzMjE="))
+    decrypted_data = cryptor.decrypt(d, base64.b64decode("VW1hcmJoYWlDTXNQMHMjcy53MHJk"))
     #print decrypted_data
     jsondata=json.loads(decrypted_data)
     try:
@@ -5571,7 +5595,7 @@ def getFastAuth(url):
         auth='Basic %s'%base64.b64encode(fastData["DATA"][0]["Password"])   
     
     if postUrl:
-        headers=[('User-Agent','Dalvik/1.6.0 (Linux; U; Android 4.4.2; SM-G900F Build/KOT49H)'),('Authorization',auth)]
+        headers=[('User-Agent',getFastUA()),('Authorization',auth)]
         res=getUrl(postUrl,headers=headers)
         s=list(res)
         for i in range( (len(s)-59)/12):
@@ -5656,10 +5680,10 @@ def PlayPV2Link(url):
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
-    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G34' ,'13G36']),random.choice(['iPhone','iPad','iPod']),random.choice(['9_3_3','9_3_4','9_3_5']))
+    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13A452','14B150']),random.choice(['iPhone','iPad','iPod']),random.choice(['9_3_3','10.1.1']))
     urlToPlay+=useragent
 
-        
+
 
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
 
