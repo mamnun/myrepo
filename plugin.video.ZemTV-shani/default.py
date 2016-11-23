@@ -3187,8 +3187,8 @@ def getYPUrl(url):
 def playMYTV(url):
     url = base64.b64decode(url)
     #print 'gen is '+url
-    headers=[('User-Agent','sport%20TV%20Live/2.5 CFNetwork/758.0.2 Darwin/15.0.0')]
-    jsondata=getUrl(base64.b64decode('aHR0cDovL3d3dy5yZWFkZXJ3aWxsLmNvbS9zcG9ydC9hcGkucGhwP2NoYW5uZWxfaWQ9JXM=')%url,headers=headers)
+    headers=[('User-Agent','sport%20TV%20Live/2.7 CFNetwork/758.0.2 Darwin/15.0.0')]
+    jsondata=getUrl(base64.b64decode('aHR0cDovL21lZGlhb25zcG9ydC5kZS90di9zcG9ydGlvcy9hcGkucGhwP2NoYW5uZWxfaWQ9JXM=')%url,headers=headers)
     jsondata=json.loads(jsondata)
     
     PlayGen(base64.b64encode( jsondata["LIVETV"][0]["channel_url"]+'|AppleCoreMedia/1.0.0.13A452 (iPhone; U; CPU OS 9_0_2 like Mac OS X; en_gb)'))
@@ -4966,8 +4966,8 @@ def getMYTVPage():
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
     
-    headers=[('User-Agent','sport%20TV%20Live/2.5 CFNetwork/758.0.2 Darwin/15.0.0')]
-    jsondata=getUrl('http://www.readerwill.com/sport/api.php?latest=350', headers=headers)
+    headers=[('User-Agent',base64.b64decode('c3BvcnQlMjBUViUyMExpdmUvMi43IENGTmV0d29yay83NTguMC4yIERhcndpbi8xNS4wLjA='))]
+    jsondata=getUrl(base64.b64decode('aHR0cDovL21lZGlhb25zcG9ydC5kZS90di9zcG9ydGlvcy9hcGkucGhwP2xhdGVzdD0zNTA='), headers=headers)
     print 'decrypted paktvpage'
     #print decrypted_data
     jsondata=json.loads(jsondata)
