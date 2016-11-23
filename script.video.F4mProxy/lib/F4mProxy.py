@@ -168,7 +168,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 from interalSimpleDownloader import interalSimpleDownloader
                 downloader=interalSimpleDownloader();
                 if not downloader.init(self.wfile,url,proxy,g_stopEvent,maxbitrate):
-                    print 'cannot init'
+                    print 'cannot init throw error because init'#throw error because init
                     return
                 srange,framgementToSend=(None,None)
                 self.send_response(200)
@@ -180,6 +180,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 downloader=TSDownloader();
                 if not downloader.init(self.wfile,url,proxy,g_stopEvent,maxbitrate):
                     print 'cannot init'
+                    print 1/0
                     return
                 srange,framgementToSend=(None,None)
                 self.send_response(200)
@@ -224,18 +225,22 @@ class MyHandler(BaseHTTPRequestHandler):
                 print 'srange,framgementToSend',srange,framgementToSend
                 #runningthread=thread.start_new_thread(downloader.keep_sending_video,(self.wfile,srange,framgementToSend,))
                 
-                xbmc.sleep(500)
-                while not downloader.status=="finished":
-                    xbmc.sleep(200);
+                #xbmc.sleep(500)
+                #while not downloader.status=="finished":
+                #    xbmc.sleep(200);
 
 
         except:
             #Print out a stack trace
             traceback.print_exc()
             g_stopEvent.set()
+            print 'sending 404'
+            
             self.send_response(404)
+            
             #Close output stream file
             self.wfile.close()
+            print 'closed'
             return
 
         #Close output stream file

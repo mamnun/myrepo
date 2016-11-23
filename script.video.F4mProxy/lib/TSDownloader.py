@@ -391,7 +391,8 @@ class TSDownloader():
                         ua_header=True
 
             if not ua_header:
-                req.add_header('User-Agent','VLC/2.2.1 LibVLC/2.2.1')
+                req.add_header('User-Agent','VLC/2.2.2 LibVLC/2.2.17')
+                req.add_header('Icy-MetaData','1')
             #response = urllib2.urlopen(req)
             if self.proxy:
                 req.set_proxy(self.proxy, 'http')
@@ -456,8 +457,7 @@ class TSDownloader():
             #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
-            #self.downloadInternal(  url)
-            return True
+            return self.downloadInternal(testurl=True)
             
             #os.remove(self.outputfile)
         except: 
@@ -469,14 +469,14 @@ class TSDownloader():
     def keep_sending_video(self,dest_stream, segmentToStart=None, totalSegmentToSend=0):
         try:
             self.status='download Starting'
-            self.downloadInternal(self.url,dest_stream)
+            self.downloadInternal(dest_stream=dest_stream)
         except: 
             traceback.print_exc()
         self.status='finished'
 
             
         
-    def downloadInternal(self,url,dest_stream):
+    def downloadInternal(self,dest_stream=None,testurl=False):
         try:
             url=self.url
             fileout=dest_stream
@@ -490,7 +490,7 @@ class TSDownloader():
             fixpid=256
             ignoredblock=None
             sleeptime=0
-            firsttime=True
+            firsttimeurl=True
             while True:
                 if sleeptime>0: 
                     xbmc.sleep(sleeptime)
@@ -522,16 +522,18 @@ class TSDownloader():
                             byteread+=lastdataread
                             #print 'got data',len(buf)
                             if lastdataread==0: print 1/0
+                            if testurl: return True
                         except:
+                            if testurl: return False
                             buf=None
                             traceback.print_exc(file=sys.stdout)
                             lost+=1
-                            #print 'err',lost
-                            if lost>10 or firsttime:
+                            
+                            if lost>10 or firsttimeurl:
                                 fileout.close
                                 return
                             break
-                        firsttime=False
+                        firsttimeurl=False
                         writebuf=buf
 
                         if not First:

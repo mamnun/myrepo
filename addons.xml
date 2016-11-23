@@ -30,7 +30,7 @@
 <addon id="plugin.video.f4mTester" version="2.6.6" name="f4mTester" provider-name="Shani">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
-        <import addon="script.video.F4mProxy" version="2.6.6"/>
+        <import addon="script.video.F4mProxy" version="2.6.8"/>
     </requires>
     <extension point="xbmc.python.pluginsource" library="default.py">
         <provides>video</provides>
@@ -252,7 +252,7 @@
 
 <addon id="script.video.F4mProxy"
 	     name="F4mProxy"
-	     version="2.6.7"
+	     version="2.6.8"
 	     provider-name="Shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0" />
