@@ -1057,6 +1057,7 @@ def getFastCats():
 def getFastUA():
     import random
     usagents=base64.b64decode('RGFsdmlrLzEuJXMuJXMgKExpbnV4OyBVOyBBbmRyb2lkIDQuJXMuJXM7KQ==')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))))
+    usagents=base64.b64decode('TW96aWxsYS81LjAgKExpbnV4OyBVOyBBbmRyb2lkIDQuMi4yOyBlbi11czsgR2FsYXh5IE5leHVzIEJ1aWxkL0pEUTM5KSBBcHBsZVdlYktpdC81MzQuMzAgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzQuMCBNb2JpbGUgU2FmYXJpLzUzNC4zMA==')
     return usagents
     
 def getFastData():
