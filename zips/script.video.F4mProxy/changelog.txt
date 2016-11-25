@@ -1,3 +1,5 @@
+[B]Version 2.6.9[/B]
+removed extension
 [B]Version 2.6.8[/B]
 bug fix
 [B]Version 2.6.7[/B]

@@ -62,3 +62,5 @@ iconImage support
 bump version
 [B]Version 2.6.8[/B]
 bump version
+[B]Version 2.6.9[/B]
+removed extension

@@ -1,3 +1,5 @@
+[B]Version 2.7.2[/B]
+removed extension
 Version 2.7.1
 DES support for decryption
 Version 2.7.0

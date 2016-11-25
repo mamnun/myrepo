@@ -1,3 +1,5 @@
+[B]Version 2.6.5[/B]
+removed extension
 [B]Version 2.6.4[/B]
    youtube url fix
 [B]Version 2.6.3[/B]
