@@ -5685,7 +5685,7 @@ def PlayPV2Link(url):
     if '|' not in urlToPlay:
         urlToPlay+='|'
     import random
-    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G35','13G36','14B150']),random.choice(['iPhone','iPad','iPod']),random.choice(['9.3.4','9.3.5','10.1.1']))
+    useragent='User-Agent=AppleCoreMedia/1.0.0.%s (%s; U; CPU OS %s like Mac OS X; en_gb)'%(random.choice(['13G35','13G36','14A403','14A456','14B72','14B150']),random.choice(['iPhone','iPad','iPod']),random.choice(['9.3.4','9.3.5','10.0.2','10.1','10.1.1']))
     urlToPlay+=useragent
 
 
