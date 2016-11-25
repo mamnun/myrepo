@@ -1055,9 +1055,10 @@ def getFastCats():
     return jsondata    
 
 def getFastUA():
-    import random
-    usagents=base64.b64decode('RGFsdmlrLzEuJXMuJXMgKExpbnV4OyBVOyBBbmRyb2lkIDQuJXMuJXM7KQ==')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))))
-    usagents=base64.b64decode('TW96aWxsYS81LjAgKExpbnV4OyBVOyBBbmRyb2lkIDQuMi4yOyBlbi11czsgR2FsYXh5IE5leHVzIEJ1aWxkL0pEUTM5KSBBcHBsZVdlYktpdC81MzQuMzAgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzQuMCBNb2JpbGUgU2FmYXJpLzUzNC4zMA==')
+    import random,string
+#    randomtext=''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(7))
+    usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlcy4lcy4lczsgJXMgQnVpbGQvJXMp')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(8)),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(6)) )
+    #usagents=base64.b64decode('Mozilla/5.0 (Linux; U; Android 4.%s.%s; Galaxy Nexus Build/JDQ39) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30')
     return usagents
     
 def getFastData():
