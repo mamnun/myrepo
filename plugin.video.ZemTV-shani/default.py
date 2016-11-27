@@ -1,4 +1,4 @@
-sports3import xbmc, xbmcgui, xbmcplugin
+import xbmc, xbmcgui, xbmcplugin
 import urllib2,urllib,cgi, re
 
 
