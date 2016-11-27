@@ -1,4 +1,4 @@
-import xbmc, xbmcgui, xbmcplugin
+sports3import xbmc, xbmcgui, xbmcplugin
 import urllib2,urllib,cgi, re
 
 
@@ -876,7 +876,7 @@ def AddSports365Channels(url=None, recursive=False):
     try:
 
         addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
-        addDir(Colored("Update parser file.",'blue')+Colored("\nRemember to Visit their site sports365.live if stops play!.",'red') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored("Update parser file.",'blue')+Colored("\nRemember to Visit their site sport365.live if stops play!.",'red') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
         addDir(Colored("Refresh listing",'blue') ,"sss" ,156,"", False, True,isItFolder=True)		#name,url,mode,icon
         import live365
         forced=not live365.isvalid()        
