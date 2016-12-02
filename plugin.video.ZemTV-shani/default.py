@@ -5582,10 +5582,12 @@ def playSports365(url,progress):
 def getFastAuth(url):
     print 'url',url
     postUrl=None
+    stripping=True
     fastData=getFastData()   
     if fastData["DATA"][0]["HelloUrl"] in url or  fastData["DATA"][0]["HelloUrl1"]  in url:
         postUrl=fastData["DATA"][0]["HelloLogin"]
         auth='Basic %s'%base64.b64encode(fastData["DATA"][0]["PasswordHello"]) 
+        stripping=False
     elif fastData["DATA"][0]["LiveTvUrl"] in url:
         postUrl=fastData["DATA"][0]["LiveTvLogin"]
         auth='Basic %s'%base64.b64encode(fastData["DATA"][0]["PasswordLiveTv"])
@@ -5593,6 +5595,7 @@ def getFastAuth(url):
         print 'processnextgtv'
         postUrl=fastData["DATA"][0]["nexgtvToken"]
         auth='Basic %s'%base64.b64encode(fastData["DATA"][0]["nexgtvPass"]) 
+        stripping=False
     elif '.m3u8' not in url:
         print 'skip auth'
     else:
@@ -5603,19 +5606,24 @@ def getFastAuth(url):
         headers=[('User-Agent',getFastUA()),('Authorization',auth)]
         res=getUrl(postUrl,headers=headers)
         s=list(res)
-        for i in range( (len(s)-59)/12):
-                ind=len(s)-59 + (12*(i))
-                if ind<len(s):
-                    print ind
-                    s[ind]=''
-        return ''.join(s)
+        if stripping:
+            for i in range( (len(s)-59)/12):
+                    ind=len(s)-59 + (12*(i))
+                    if ind<len(s):
+                        print ind
+                        s[ind]=''
+        ret= ''.join(s)
+        return '?'+ret.split('?')[1]
     return url
     
     
-    
+def getFastPlayUA():
+
+    fastData=getFastData()   
+    return fastData["DATA"][0]["Agent"]
 
 def PlayFastLink(url,progress=None):
-    urlnew=url+getFastAuth(url)+'|User-Agent=eMedia/1.0.0.'
+    urlnew=url+getFastAuth(url)+'|User-Agent='+getFastPlayUA()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     PlayGen(base64.b64encode(urlnew))
     #tryplay( urlnew , listitem,keepactive=True, aliveobject =ws , pdialogue= progress)
