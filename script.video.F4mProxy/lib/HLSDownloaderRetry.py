@@ -443,6 +443,8 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             elif variant:
                 variants.append((line, variant))
                 variant = None
+        print 'variants',variants
+        if len(variants)==0: url=redirurl
         if len(variants) == 1:
             url = urlparse.urljoin(redirurl, variants[0][0])
         elif len(variants) >= 2:
@@ -481,7 +483,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
         raise
 
     
-
+    print 'final url',url
     last_seq = -1
     targetduration = 5
     changed = 0
