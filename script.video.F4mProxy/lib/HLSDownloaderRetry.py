@@ -49,6 +49,7 @@ from crypto.cipher.aes_cbc import AES_CBC
 '''
 gproxy=None
 gauth=None
+nsplayer=False
 try:
     from Crypto.Cipher import AES
     USEDec=1 ## 1==crypto 2==local, local pycrypto
@@ -136,22 +137,30 @@ class HLSDownloaderRetry():
             downloadInternal(self.url,dest_stream,self.maxbitrate,self.g_stopEvent , self.callbackpath,  self.callbackparam)
         except: 
             traceback.print_exc()
+        print 'setting finished'
         self.status='finished'
 
         
 def getUrl(url,timeout=15,returnres=False,stream =False):
     global cookieJar
     global clientHeader
+    global nsplayer
+
     try:
         post=None
-        #print 'url',url
+        print 'url',url
         session = requests.Session()
         session.cookies = cookieJar
 
         headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:42.0) Gecko/20100101 Firefox/42.0 Iceweasel/42.0'}
+
         if clientHeader:
             for n,v in clientHeader:
                 headers[n]=v
+        if nsplayer: 
+            print 'nsplayer is true'
+            headers['User-Agent']='NSPlayer/7.10.0.30592'
+        print 'nsplayer', nsplayer,headers
         proxies={}
         
         if gproxy:
@@ -258,8 +267,13 @@ def gen_m3u(url, skip_comments=True):
     global cookieJar
 
     conn = getUrl(url,returnres=True )#urllib2.urlopen(url)
+    redirurl=None
+    if conn.history: 
+        print 'history'
+        redirurl=conn.url
     enc = validate_m3u(conn)
     #print conn
+    if redirurl: yield 'f4mredirect:'+redirurl
     for line in conn.iter_lines():#.split('\n'):
         line = line.rstrip('\r\n').decode(enc)
         if not line:
@@ -311,13 +325,19 @@ def handle_basic_m3u(url):
     global key
     global USEDec
     global gauth
+    import urlparse
+    
     seq = 1
     enc = None
     nextlen = 5
     duration = 5
     targetduration=5
     aesdone=False
+    redirurl=url
     for line in gen_m3u(url):
+        if line.startswith('f4mredirect:'):
+            redirurl=line.split('f4mredirect:')[1]
+            continue
         if line.startswith('#EXT'):
             tag, attribs = parse_m3u_tag(line)
             if tag == '#EXTINF':
@@ -394,6 +414,8 @@ def handle_basic_m3u(url):
             #else:
             #    raise ValueError("tag %s not known"%tag)
         else:
+            if not line.startswith('http'):
+                line=urlparse.urljoin(redirurl, line)
             yield (seq, enc, duration, targetduration, line)
             seq += 1
 
@@ -414,6 +436,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     global USEDec
     global cookieJar
     global clientHeader
+    global nsplayer
     if stopEvent and stopEvent.isSet():
         return
     dumpfile = None
@@ -428,7 +451,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
         res=getUrl(url,returnres=True )
         print 'here ', res
         if res.history: 
-            print 'history'
+            print 'history',res
             redirurl=res.url
         res.close()
         
@@ -444,7 +467,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                 variants.append((line, variant))
                 variant = None
         print 'variants',variants
-        if len(variants)==0: url=redirurl
+        #if len(variants)==0: url=redirurl
         if len(variants) == 1:
             url = urlparse.urljoin(redirurl, variants[0][0])
         elif len(variants) >= 2:
@@ -489,12 +512,15 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     changed = 0
 
     fails=0
-
+    nsplayer=False
     print 'inside HLS RETRY'
     try:
         while 1==1:#thread.isAlive():
+            
             reconnect=False
-            if fails>10: break
+            if fails>10: 
+                #stopEvent.set()
+                break
             if stopEvent and stopEvent.isSet():
                 return
             try:
@@ -523,10 +549,16 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                         continue
                     else: 
                         return
-                        
-                raise 
+                if '403' in repr(inst).lower() or '401' in repr(inst).lower():
+                    if fails in [3,4,5]: 
+                        nsplayer=True 
+                    else:
+                        nsplayer=False
+                    print 'nsplayer',nsplayer
+                    xbmc.sleep(1000)
+                continue 
 
-                    
+            nsplayer=False
             playedSomething=False
             if medialist==None: return
 
@@ -534,6 +566,8 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                 #medialist = medialist[-6:]
             #print 'medialist',medialist
             addsomewait=False
+            playedduration=0
+            st=time.time()
             for media in medialist:
                  
                 if stopEvent and stopEvent.isSet():
@@ -551,12 +585,14 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                         data=None
                         try:
                             print 'downloading', urlparse.urljoin(url, media_url)
-                            for chunk in download_chunks(urlparse.urljoin(url, media_url)):
+                            #for chunk in download_chunks(urlparse.urljoin(url, media_url)):
+                            for chunk in download_chunks(media_url):
                                 if stopEvent and stopEvent.isSet():
                                     return
                                 #print 'sending chunk', len(chunk)
                                 send_back(chunk,file)
                             data="send"
+                            playedduration+=duration
                             addsomewait=True
                         except: traceback.print_exc()
                         if stopEvent and stopEvent.isSet():
@@ -580,10 +616,16 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                             break
                     except: pass
             
-            '''if changed == 1:
+            if playedSomething == 1:
                 # initial minimum reload delay
-                time.sleep(duration)
-            elif changed == 0:
+                if (playedduration-(time.time()-st))>5:
+                    print 'sleeping becuse',playedduration-(time.time()-st-5)
+                    for t in range(0,int((playedduration-(time.time()-st))-5)):
+                        xbmc.sleep(1000)
+                        print 'sleeep for 1sec',t
+                        if stopEvent and stopEvent.isSet():
+                            return
+            '''elif changed == 0:
                 # first attempt
                 time.sleep(targetduration*0.5)
             elif changed == -1:
