@@ -236,7 +236,7 @@ def download_chunks(URL, chunk_size=4096, enc=None):
     
     conn=getUrl(URL,returnres=True,stream=True)
     #while 1:
-    chunk_size=chunk_size*10
+    chunk_size=chunk_size*100
     
     for chunk in conn.iter_content(chunk_size=chunk_size):
         yield chunk
@@ -594,7 +594,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                                     return
                                 print 'sending chunk', len(chunk)
                                 send_back(chunk,file)
-                            data="send"
+                                data="send"
                             playedduration+=duration
                             addsomewait=True
                         except: traceback.print_exc()

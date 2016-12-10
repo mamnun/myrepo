@@ -1,4 +1,4 @@
-[B]Version 2.7.2[/B]
+[B]Version 2.7.3[/B]
 HLS fwd error
 [B]Version 2.7.0[/B]
 HLS fwd error
