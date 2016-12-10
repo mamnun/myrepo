@@ -236,11 +236,11 @@ def download_chunks(URL, chunk_size=4096, enc=None):
     
     conn=getUrl(URL,returnres=True,stream=True)
     #while 1:
-    chunk_size=chunk_size*100
+    chunk_size=chunk_size*10
     
     for chunk in conn.iter_content(chunk_size=chunk_size):
         yield chunk
-
+    conn.close()
 
 def download_file(URL):
     return ''.join(download_chunks(URL))
@@ -446,6 +446,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     veryfirst=True
     #url check if requires redirect
     redirurl=url
+    utltext=''
     try:
         print 'going gor  ',url
         res=getUrl(url,returnres=True )
@@ -453,57 +454,59 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
         if res.history: 
             print 'history',res
             redirurl=res.url
+        utltext=conn.text
         res.close()
         
     except: traceback.print_exc()
     print 'redirurl',redirurl
-    try:
-        for line in gen_m3u(url):
-            if line.startswith('#EXT'):
-                tag, attribs = parse_m3u_tag(line)
-                if tag == '#EXT-X-STREAM-INF':
-                    variant = attribs
-            elif variant:
-                variants.append((line, variant))
-                variant = None
-        print 'variants',variants
-        #if len(variants)==0: url=redirurl
-        if len(variants) == 1:
-            url = urlparse.urljoin(redirurl, variants[0][0])
-        elif len(variants) >= 2:
-            print "More than one variant of the stream was provided."
+    if 'EXT-X-STREAM-INF' in utltext:
+        try:
+            for line in gen_m3u(redirurl):
+                if line.startswith('#EXT'):
+                    tag, attribs = parse_m3u_tag(line)
+                    if tag == '#EXT-X-STREAM-INF':
+                        variant = attribs
+                elif variant:
+                    variants.append((line, variant))
+                    variant = None
+            print 'variants',variants
+            if len(variants)==0: url=redirurl
+            if len(variants) == 1:
+                url = urlparse.urljoin(redirurl, variants[0][0])
+            elif len(variants) >= 2:
+                print "More than one variant of the stream was provided."
 
-            choice=-1
-            lastbitrate=0
-            print 'maxbitrate',maxbitrate
-            for i, (vurl, vattrs) in enumerate(variants):
-                print i, vurl,
-                for attr in vattrs:
-                    key, value = attr.split('=')
-                    key = key.strip()
-                    value = value.strip().strip('"')
-                    if key == 'BANDWIDTH':
-                        print 'bitrate %.2f kbps'%(int(value)/1024.0)
-                        if int(value)<=int(maxbitrate) and int(value)>lastbitrate:
-                            choice=i
-                            lastbitrate=int(value)
-                    elif key == 'PROGRAM-ID':
-                        print 'program %s'%value,
-                    elif key == 'CODECS':
-                        print 'codec %s'%value,
-                    elif key == 'RESOLUTION':
-                        print 'resolution %s'%value,
-                    else:
-                        print "unknown STREAM-INF attribute %s"%key
-                        #raise ValueError("unknown STREAM-INF attribute %s"%key)
-                print
-            if choice==-1: choice=0
-            #choice = int(raw_input("Selection? "))
-            print 'choose %d'%choice
-            url = urlparse.urljoin(redirurl, variants[choice][0])
-    except: 
-        
-        raise
+                choice=-1
+                lastbitrate=0
+                print 'maxbitrate',maxbitrate
+                for i, (vurl, vattrs) in enumerate(variants):
+                    print i, vurl,
+                    for attr in vattrs:
+                        key, value = attr.split('=')
+                        key = key.strip()
+                        value = value.strip().strip('"')
+                        if key == 'BANDWIDTH':
+                            print 'bitrate %.2f kbps'%(int(value)/1024.0)
+                            if int(value)<=int(maxbitrate) and int(value)>lastbitrate:
+                                choice=i
+                                lastbitrate=int(value)
+                        elif key == 'PROGRAM-ID':
+                            print 'program %s'%value,
+                        elif key == 'CODECS':
+                            print 'codec %s'%value,
+                        elif key == 'RESOLUTION':
+                            print 'resolution %s'%value,
+                        else:
+                            print "unknown STREAM-INF attribute %s"%key
+                            #raise ValueError("unknown STREAM-INF attribute %s"%key)
+                    print
+                if choice==-1: choice=0
+                #choice = int(raw_input("Selection? "))
+                print 'choose %d'%choice
+                url = urlparse.urljoin(redirurl, variants[choice][0])
+        except: 
+            
+            raise
 
     
     print 'final url',url
@@ -550,7 +553,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                     else: 
                         return
                 if '403' in repr(inst).lower() or '401' in repr(inst).lower():
-                    if fails in [3,4,5]: 
+                    if fails in [1,4,5]: 
                         nsplayer=True 
                     else:
                         nsplayer=False
@@ -589,7 +592,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                             for chunk in download_chunks(media_url):
                                 if stopEvent and stopEvent.isSet():
                                     return
-                                #print 'sending chunk', len(chunk)
+                                print 'sending chunk', len(chunk)
                                 send_back(chunk,file)
                             data="send"
                             playedduration+=duration
