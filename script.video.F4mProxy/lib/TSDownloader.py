@@ -600,7 +600,7 @@ class TSDownloader():
                                     else:
                                         #if lastforcurrent==None:
                                         #    print 'NONE ISSUE', buf.encode("hex")
-                                        print 'problembytes','diff',lastpts-lastforcurrent, lastpts, lastforcurrent
+                                        print 'problembytes','diff',lastpts,lastforcurrent, lastpts, lastforcurrent
                                         #buf.encode("hex")
                                         ignoredblock=writebuf
                                         ignorefind+=1#same or old data?
