@@ -621,9 +621,10 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             
             if playedSomething == 1:
                 # initial minimum reload delay
-                if (playedduration-(time.time()-st))>5:
-                    print 'sleeping becuse',playedduration-(time.time()-st-5)
-                    for t in range(0,int((playedduration-(time.time()-st))-5)):
+                timetowait=int(targetduration - (time.time()-st))#
+                if (timetowait)>0:
+                    print 'sleeping because targetduration',timetowait
+                    for t in range(0,timetowait):
                         xbmc.sleep(1000)
                         print 'sleeep for 1sec',t
                         if stopEvent and stopEvent.isSet():
