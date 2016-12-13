@@ -158,8 +158,8 @@ def getUrl(url,timeout=15,returnres=False,stream =False):
             for n,v in clientHeader:
                 headers[n]=v
         if nsplayer: 
-            print 'nsplayer is true'
-            headers['User-Agent']='NSPlayer/7.10.0.30592'
+            print 'nsplayer is true'            
+            headers['User-Agent']=binascii.b2a_hex(os.urandom(20))[:32]
         print 'nsplayer', nsplayer,headers
         proxies={}
         
