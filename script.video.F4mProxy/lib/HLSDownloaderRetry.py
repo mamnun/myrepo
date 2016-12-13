@@ -515,13 +515,14 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     changed = 0
 
     fails=0
+    maxfails=5
     nsplayer=False
     print 'inside HLS RETRY'
     try:
         while 1==1:#thread.isAlive():
             
             reconnect=False
-            if fails>10: 
+            if fails>maxfails: 
                 #stopEvent.set()
                 break
             if stopEvent and stopEvent.isSet():
@@ -553,7 +554,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                     else: 
                         return
                 if '403' in repr(inst).lower() or '401' in repr(inst).lower():
-                    if fails in [1,4,5]: 
+                    if fails in [1,4,5,10,15,19]: 
                         nsplayer=True 
                     else:
                         nsplayer=False
@@ -613,6 +614,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                             changed = 1
                             playedSomething=True
                             fails=0
+                            maxfails=20
                         else:
                             reconnect=True
                             fails+=1
