@@ -454,7 +454,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
         if res.history: 
             print 'history',res
             redirurl=res.url
-        utltext=conn.text
+        utltext=res.text
         res.close()
         
     except: traceback.print_exc()
