@@ -179,9 +179,9 @@ class MyHandler(BaseHTTPRequestHandler):
                 from TSDownloader import TSDownloader
                 downloader=TSDownloader();
                 if not downloader.init(self.wfile,url,proxy,g_stopEvent,maxbitrate):
-                    print 'cannot init'
-                    print 1/0
-                    return
+                    print 'cannot init but will continue to play'
+                    #print 1/0
+                    #return
                 srange,framgementToSend=(None,None)
                 self.send_response(200)
                 rtype="video/mp2t"  #default type could have gone to the server to get it.
@@ -428,7 +428,7 @@ class f4mProxyHelper():
                 #if firstTime:
                 #    xbmc.executebuiltin('Dialog.Close(all,True)')
                 #    firstTime=False
-            stopPlaying.isSet()
+            #stopPlaying.isSet()
 
             print 'Job done'
             return played
