@@ -1462,7 +1462,7 @@ def AddIpBoxChannels(url=None):
 def AddWTVSports(url=None):
 
     if url=="sss":
-        cats=['extra time football','tsn','cth stadium','ufc','t20 world cup','horse racing','cricket','footbal','golf','boxing & wrestling','t20 big bash league','nfl live','footbal clubs','sports time']
+        cats=['extra time football','tsn','cth stadium','ufc','t20 world cup','horse racing','cricket','footbal','golf','boxing & wrestling','t20 big bash league','nfl live','footbal clubs','sports time','darts','eng vs ind']
         isSports=True
         addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"wtv",66 ,'', False, True,isItFolder=True)
     else:
@@ -3697,10 +3697,12 @@ def getWTVChannels(categories, forSports=False, desi=True):
     ret=[]
     try:
         xmldata=getWTVPage()
-        #print xmldata
+        print xmldata
+        print categories
         for source in xmldata:#Cricket#
-            if source["categoryName"].strip().lower() in categories or source["categoryName"].lower() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'barclayspremierleague' in source["categoryName"].lower() )    ) :
-
+            print source["categoryName"] in categories
+            if source["categoryName"].strip().lower() in categories or source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'barclayspremierleague' in source["categoryName"].lower() )    ) :
+                print source
                 ss=source
                 cname=ss["channelName"]
                 if cname.lower().startswith('ant man'): continue
