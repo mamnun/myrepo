@@ -2083,7 +2083,7 @@ def AddPITVSports(url=None):
 
 def AddFastSport(url=None):   
     if url=="sss":
-        cats='10'
+        cats=fastCatIDByName('SPORTS TV')
         isSports=True
         addDir(Colored('>>Click here for All Categories<<'.capitalize(),'red') ,"fasttv",66 ,'', False, True,isItFolder=True)
     else:
@@ -3376,10 +3376,19 @@ def getMyTVChannels():
     except:
         traceback.print_exc(file=sys.stdout)
     return ret
-    
-def getFastTVChannels(cat,sports=False):
+
+def fastCatIDByName(catname, findin=False):
+    retId=''
+    for p in getFastCats()["LIVETV"]:
+        if p["category_name"].lower()== catname.lower() or (findin and catname.lower() in p["category_name"].lower()):
+            return p["cid"]
+    return retId
+        
+def getFastTVChannels(cat,sports=False, catname=None):
     ret=[]
     try:
+        if catname:
+            cat=fastCatIDByName(catname)
         xmldata=getFastTVPage(cat)
         print 'got getFastTVChannels'
         for source in xmldata["LIVETV"]:
@@ -4305,7 +4314,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         CFgen="4"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
         UKTVGenCat,UKTVGenCH=['religious','news','food'], ['masala tv', 'ary digital', 'ary zindagi','hum tv','drama','express ent.']
-        fastgen=['1','11']
+        fastgen=['PAKISTANI TV','ISLAMIC TV']
     elif cctype==2:
         pg='indian'
         iptvgen="indian"
@@ -4317,11 +4326,11 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         UKTVGenCat,UKTVGenCH=['movies'],['zee tv','colors','sony tv hd', 'star plus hd', 'zee tv']
         tvplayerChannels=['sony sab','zing']
         Zengagen='ch'
-        fastgen=['2','8']
+        fastgen=['INDIAN TV','SOUTH INDIAN']
     else:
         pg='punjabi'
         CFgen="1314"
-        fastgen=['7']
+        fastgen=['PUNJABI TV']
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3B1bmphYmktdHYuaHRtbA==")
         
     
@@ -4470,7 +4479,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             
             progress.update( 80, "", "Loading Fast Channels", "" )
             for cat in fastgen:
-                rematch=getFastTVChannels(cat)
+                rematch=getFastTVChannels(cat='',catname=cat)
                 if len(rematch)>0:
                     match+=rematch
         except:
