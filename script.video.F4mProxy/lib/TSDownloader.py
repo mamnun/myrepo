@@ -457,7 +457,8 @@ class TSDownloader():
             #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
-            return self.downloadInternal(testurl=True)
+            return True
+            #return self.downloadInternal(testurl=True)
             
             #os.remove(self.outputfile)
         except: 
@@ -490,7 +491,7 @@ class TSDownloader():
             fixpid=256
             ignoredblock=None
             sleeptime=0
-            firsttimeurl=True
+            firsttimeurl=False
             while True:
                 if sleeptime>0: 
                     xbmc.sleep(sleeptime)
@@ -522,11 +523,19 @@ class TSDownloader():
                             byteread+=lastdataread
                             #print 'got data',len(buf)
                             if lastdataread==0: print 1/0
-                            if testurl: return True
+                            if testurl: 
+                                print 'test complete true'
+                                response.close()
+                                return True
                         except:
-                            if testurl: return False
-                            buf=None
                             traceback.print_exc(file=sys.stdout)
+                            print 'testurl',testurl,lost
+                            if testurl: 
+                                print 'test complete false'
+                                response.close()
+                                return False
+                            buf=None
+                            
                             lost+=1
                             
                             if lost>10 or firsttimeurl:

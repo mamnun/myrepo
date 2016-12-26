@@ -448,12 +448,13 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     redirurl=url
     utltext=''
     try:
-        print 'going gor  ',url
+        print 'going for url  ',url
         res=getUrl(url,returnres=True )
         print 'here ', res
         if res.history: 
-            print 'history',res
+            print 'history is',res.history
             redirurl=res.url
+            url=redirurl
         utltext=res.text
         res.close()
         
@@ -598,7 +599,12 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                                 data="send"
                             playedduration+=duration
                             addsomewait=True
-                        except: traceback.print_exc()
+                      
+                        except Exception as inst:
+                            print 'xxxx',repr(inst)
+                            if 'forcibly closed' in repr(inst): 
+                                print 'returning'
+                                return
                         if stopEvent and stopEvent.isSet():
                             return
 
