@@ -4063,7 +4063,9 @@ def getptcchannels(categories, forSports=False,desi=True):
     try:
         import iptv
         xmldata=getPTCUrl()
+        
         for source in xmldata["channelsCategories"]:
+            
             if source["categoryName"].strip() in categories or source["categoryName"] in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 for ss in source["channels"]:
                     cname=ss["name"]
@@ -4075,12 +4077,13 @@ def getptcchannels(categories, forSports=False,desi=True):
                     #cimage=ss["imgurl"]
                     cimage='http://shani.offshorepastebin.com/ZemLogos/%s.png'%cname.lower().replace(' ','')
                     
-                    if len([i for i, x in enumerate(ret) if x[2] ==curl  ])==0:                    
+                    if len([i for i, x in enumerate(ret) if x[2] ==curl and x[0].lower()==cname.lower() +(' v6' if desi else '')  ])==0:                    
                         ret.append((cname +(' v6' if desi else '') ,'manual', curl ,cimage))  
         if len(ret)>0:
             ret=sorted(ret,key=lambda s: s[0].lower() )                        
     except:
         traceback.print_exc(file=sys.stdout)
+
     return ret
 
     
