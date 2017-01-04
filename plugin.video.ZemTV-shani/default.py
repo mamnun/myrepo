@@ -4738,11 +4738,13 @@ def getPTCUrl():
     maindata=json.loads(link)
     print maindata
     decodeddata=maindata["Secret"]
-    decodeddata='JCQkJIklu'.join(decodeddata.split('JCQkJIklu')[:-1])+'JCQkJIklu'
-    print decodeddata
-    data=base64.b64decode(decodeddata)
+    #decodeddata='JCQkJIklu'.join(decodeddata.split('JCQkJIklu')[:-1])+'JCQkJIklu'
+    #print decodeddata
+    #data=base64.b64decode(decodeddata)
     #decodeddata=decodeddata.replace('nbUioPLk6nbviOP0kjgfreWEur','')
-    #decodeddata=decodeddata+'='*(len(decodeddata) % 4)
+    decodeddata=decodeddata+'='*(len(decodeddata) % 4)
+    data=base64.b64decode(decodeddata)
+    #print data
     #data=''
     try:
         #data=base64.b64decode(decodeddata)
