@@ -722,7 +722,8 @@ def AddPv2Sports(url):
         if source.findtext('programCategory').lower() in url or source.findtext('programCategory') in url:
             cname=source.findtext('programTitle')
             if cname.lower().startswith('high alert'): continue
-            cid=source.findtext('programURL')
+            #cid=source.findtext('programURL')# change from programURL
+            cid=source.findtext('programID')
             cimage=source.findtext('programImage')
             seq=cname
             if isMovies:
@@ -3400,7 +3401,7 @@ def getFastTVChannels(cat,sports=False, catname=None):
         if catname:
             cat=fastCatIDByName(catname)
         xmldata=getFastTVPage(cat)
-        print 'got getFastTVChannels'
+        #print 'got getFastTVChannels',xmldata
         for source in xmldata["LIVETV"]:
             if 1==1:#source["categoryName"] in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
                 ss=source
@@ -3409,7 +3410,8 @@ def getFastTVChannels(cat,sports=False, catname=None):
                     #print ss["channelLink"]
                     curl='ebound2:'+ss["channel_url"].replace(':1935','')
                 else:
-                    curl='fast:'+ss["channel_url"]
+                    #curl='fast:'+ss["channel_url"]
+                    curl='fast:'+str(cat)+'='+str(ss["id"])
                 cimage=ss["channel_thumbnail"]
                 
                 if not cimage.startswith('http'):
@@ -3716,8 +3718,8 @@ def getWTVChannels(categories, forSports=False, desi=True):
     ret=[]
     try:
         xmldata=getWTVPage()
-        print xmldata
-        print categories
+        #print xmldata
+        #print categories
         for source in xmldata:#Cricket#
             print source["categoryName"] in categories
             if source["categoryName"].strip().lower() in categories or source["categoryName"].strip() in categories or (forSports and ('sport' in source["categoryName"].lower() or 'barclayspremierleague' in source["categoryName"].lower() )    ) :
@@ -4391,7 +4393,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     cname=source.findtext('programTitle')
                     
                     if cname.lower().startswith('high alert'): continue
-                    cid=source.findtext('programURL')
+                    #cid=source.findtext('programURL')# change from programURL
+                    cid=source.findtext('programID')
                     cimage=source.findtext('programImage')
 #                    addDir(cname ,base64.b64encode(cid),37,cimage, False, True,isItFolder=False)
                     match.append((cname +' v3' ,'manual2', cid ,cimage))
@@ -5669,6 +5672,17 @@ def getFastPlayUA():
     return fastData["DATA"][0]["Agent"]
 
 def PlayFastLink(url,progress=None):
+    if 1==1:#not mode==37:
+        print url
+        cat,url=url.split('=')
+        xmldata=getFastTVPage(cat)
+        #print 'got getFastTVChannels',xmldata
+        for ss in xmldata["LIVETV"]:
+            if ss["id"]==url:
+                url=ss["channel_url"]
+                break
+        
+      
     urlnew=url+getFastAuth(url)+'|User-Agent='+getFastPlayUA()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     PlayGen(base64.b64encode(urlnew))
@@ -5728,9 +5742,11 @@ def safeFinishedTest(dur):
      
 def PlayPV2Link(url):
 
-    if not mode==37:
+    if 1==1:#not mode==37:
         xmldata=getPV2Url()
-        urlToPlay=re.findall(url+'..programTitle.*?programURL\\>(.*?)\\<',xmldata)[0]
+        url=base64.b64decode(url)
+
+        urlToPlay=re.findall('>'+url+'</programID>.*?programURL\\>(.*?)\\<',xmldata)[0]
     else:
         urlToPlay=base64.b64decode(url)
 
