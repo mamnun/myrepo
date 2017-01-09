@@ -2093,6 +2093,7 @@ def AddPITVSports(url=None):
     
 
 def AddFastSport(url=None):   
+    clist=[]
     if url=="sss":
         cats=fastCatIDByName('SPORTS TV')
         isSports=True
@@ -5663,7 +5664,7 @@ def getFastAuth(url):
                         print ind
                         s[ind]=''
         ret= ''.join(s)
-        return '?'+ret.split('?')[1]
+        return url+'?'+ret.split('?')[1]
     return url
     
     
@@ -5684,7 +5685,7 @@ def PlayFastLink(url,progress=None):
                 break
         
       
-    urlnew=url+getFastAuth(url)+'|User-Agent='+getFastPlayUA()
+    urlnew=getFastAuth(url)+'|User-Agent='+getFastPlayUA()
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     PlayGen(base64.b64encode(urlnew))
     #tryplay( urlnew , listitem,keepactive=True, aliveobject =ws , pdialogue= progress)
