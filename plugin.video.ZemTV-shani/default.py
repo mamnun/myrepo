@@ -3467,9 +3467,11 @@ def getNetworkTVChannels(cat=None,sports=False, country=None):
         xmldata=getNetworkTVPage()
    
             
-        print 'got getNetworkTVPage',xmldata
+        print 'got getNetworkTVPage',cat,xmldata
         for source in xmldata["channels"]:
+            print source["cat_id"] 
             if (cat==None or source["cat_id"] in cat) and (country ==None or  source["country_name"] in country):#source["categoryName"] in categories or (forSports):# and ('sport' in source["categoryName"].lower() or 'BarclaysPremierLeague' in source["categoryName"] )    ) :
+                
                 ss=source
                 cname=ss["chname"]
                 if 'ebound.tv' in ss["streamurl"]:
@@ -3487,6 +3489,7 @@ def getNetworkTVChannels(cat=None,sports=False, country=None):
             ret=sorted(ret,key=lambda s: s[0].lower()   )
     except:
         traceback.print_exc(file=sys.stdout)
+    print ret
     return ret
     
 def getFastTVChannels(cat,sports=False, catname=None):
@@ -4676,6 +4679,8 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     cc='ffcc1111'
                 elif cname.lower().endswith(' fast'):
                     cc='ffbb1111'
+                elif cname.lower().endswith(' nettv'):
+                    cc='ff991111'
                 addDir(Colored(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return    
     
@@ -5194,7 +5199,9 @@ def getNetworkTVPage():
             else:
                 tokentype[tt]=1
                 
-            if tt not in ['33','18','0','29']: continue
+            #["24","25","28","29","30","31","32"]==29
+            if tt not in ['5','33','18','0',"24","25","28","29","30","31","32"]: continue
+            #if tt not in ["5"]: continue
             channels["channels"].append( {
             'cid': chmain[cid][:-1].decode("base64") ,
             'chname': chmain[cname ][:-1].decode("base64"), #+ ("" if single else " "+str(v)),
@@ -5214,9 +5221,9 @@ def getNetworkTVPage():
             'country_name':chmain['country_name']  
             }   )
             
-    #print tokentype
-    #import operator
-    #print sorted(tokentype.items(), key=operator.itemgetter(1))
+    print tokentype
+    import operator
+    print sorted(tokentype.items(), key=operator.itemgetter(1))
     #[('36', 2), ('11', 3), ('20', 3), ('14', 9), ('4', 19), ('6', 19), ('30', 24), ('9', 38), ('34', 42), ('19', 44), ('5', 58), ('29', 99), ('0', 108), ('18', 115), ('33', 390)]
     try:
         storeCacheData(json.dumps(channels),fname)
@@ -5874,10 +5881,6 @@ def getNetworkTVStringExtra(response):
         del builder[ilen - 51+3];
         del builder[ilen - 58+4];
         return "".join(builder)
-#?wmsAuthSign=c2VydmVyX3RpbWU9MS85LzIwMTcgNjozODoyOSBQTSZoYXNoX3ZhbHVlPXBFMzFZzMFVByNlJ5QhzY5SG1YcR1NWQkE9PSZ2YWxpZG1pbnV0ZXM9MQ==
-#
-#?wmsAuthSign=c2VydmVyX3RpbWU9MS85LzIwMTcgNjozODoyOSBQTSZoYXNoX3ZhbHVlPXBFMFZzMFByNlJ5QzY5SG1YR1NWQkE9PSZ2YWxpZG1pbnV0ZXM9MQ==
-#?wmsAuthSign=c2VydmVyX3RpbWU9MS85LzIwMTcgNjozODoyOSBQTSZoYXNoX3ZhbHVlPXBFMFZzMFByNlJ5QzY5SG1YR1NWQkE9PSZ2YWxpZG1pbnV0ZXM9MQ==
 def getNetworkTVHash (value):
     import time
     k=str( value^ int(time.time()))
@@ -5953,20 +5956,26 @@ def PlayNetworkTVLink(url,progress=None):
             defplayua=playua
         finalurl=playurl[0].split('\'')[0]+"|User-Agent="+defplayua
 
-    elif token in ["29"]:
-        tokenLinkKey="YmVsaXJ0ZWNfb250aXMw"
-        tokenCredsKey="c2F5YV9kb25v"
-        decryptorLinkKey="Y2hlaWxlYWRoIF9DZWFuZ2FsX29udGlz"
-        decryptorKeyKey="cGFyb2xfaGFsX2NoYWJpX29uYXRpczAw"
-        
+    elif token in ["24","25","28","29","30","31","32"]:
+        mapping={"24":   ["YW1pX2NoYmlz","TWVuX2Nob2Jpc18w","",0],
+                "25":["aXRob2toZW5pX3BhaHMw","QmVuX3BhaGlz","",0],
+                "28":["Y29udGFkb3JfYWhpczAw","YXRhaXNfaW5p","Ym9ldHNhX3Nla2VuZ19yYXN0YV9hdGFpczAw","dWt1cWFxd2FfY2hhYmlfYXRhaGlz"],
+                "29": ["YmVsaXJ0ZWNfb250aXMw","c2F5YV9kb25v","Y2hlaWxlYWRoIF9DZWFuZ2FsX29udGlz","cGFyb2xfaGFsX2NoYWJpX29uYXRpczAw"],
+                "30": ["cG9udHNvX3Rlc3Mw","bXdlbnRlcnR5","Y2hlaWxlYWRoX29yX3RlZXMw","c2lmcmVfY296bWVfQW5haHRhcmlfdGVz"],
+                "31": ["bmFic2FuYV9pa2l0czAw","dGVydDFfaW5p","bmdhZGVrcmlwX3Jhc3RhX2lrYXRpczAw","ZGVzenlmcm93YW5pZV9rbHVjel9pa2F0aXMw"],
+                "32": ["bWFya2llcmlzX2J0aXMw","dGVydHR3X2Ji","dWt1c3VzYV91a3ViaGFsYV9iYXRlczAw","dHNoaXJvbG9sb19rZV9iYXRpczAw"]
+                }
+        tokenLinkKey,tokenCredsKey,decryptorLinkKey,decryptorKeyKey=mapping[token]
 
         netData=getNetworkTVData()["data"][0]   
         
         tokenLink=netData[tokenLinkKey][1:].decode("base64")
-        tokenCreds=netData[tokenCredsKey]
+        tokenCreds=netData[tokenCredsKey][1:].decode("base64")
         decryptorLink=netData[decryptorLinkKey][1:].decode("base64")
         print netData[decryptorKeyKey]
-        decryptorKey=int(netData[decryptorKeyKey][1:].decode("base64"))
+        decryptorKey=0
+        if not decryptorKeyKey==0:
+            decryptorKey=int(netData[decryptorKeyKey][1:].decode("base64"))
         print 'decryptorKey',decryptorKey
         bp=netData["YnVueWFkaV9wYXRhX25hdnVh"][1:].decode("base64")
         print 'bp',bp
