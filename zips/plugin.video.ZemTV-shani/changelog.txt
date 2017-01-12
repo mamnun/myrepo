@@ -1,3 +1,5 @@
+[B]Version 6.1.6[/B]
+Nettv small fix
 [B]Version 6.1.5[/B]
 new source Nettv
 [B]Version 6.1.4[/B]

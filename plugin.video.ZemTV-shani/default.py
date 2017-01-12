@@ -2119,7 +2119,6 @@ def AddPITVSports(url=None):
         addDir(Colored(cname.capitalize(),'ZM') ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
     return  
 
-    
 
 def AddNetworkTVSports(url=None):  
 
@@ -5201,7 +5200,7 @@ def getNetworkTVPage():
                 
             #["24","25","28","29","30","31","32"]==29
             if tt not in ['5','33','18','0',"24","25","28","29","30","31","32"]: continue
-            #if tt not in ["5"]: continue
+            #if tt not in ["35","34"]: continue
             channels["channels"].append( {
             'cid': chmain[cid][:-1].decode("base64") ,
             'chname': chmain[cname ][:-1].decode("base64"), #+ ("" if single else " "+str(v)),
@@ -5221,9 +5220,9 @@ def getNetworkTVPage():
             'country_name':chmain['country_name']  
             }   )
             
-    print tokentype
-    import operator
-    print sorted(tokentype.items(), key=operator.itemgetter(1))
+    #print tokentype
+    #import operator
+    #print sorted(tokentype.items(), key=operator.itemgetter(1))
     #[('36', 2), ('11', 3), ('20', 3), ('14', 9), ('4', 19), ('6', 19), ('30', 24), ('9', 38), ('34', 42), ('19', 44), ('5', 58), ('29', 99), ('0', 108), ('18', 115), ('33', 390)]
     try:
         storeCacheData(json.dumps(channels),fname)
@@ -5890,7 +5889,6 @@ def getNetworkTVHash (value):
     return rval
 
         
-        
 def PlayNetworkTVLink(url,progress=None):
     if 1==1:#not mode==37:
         print url
@@ -5917,12 +5915,13 @@ def PlayNetworkTVLink(url,progress=None):
         
         headers=[('Authorization',auth)]
         if ref and len(ref)>0:
-            headers.append(('Referer','ref'))
+            headers.append(('Referer',ref))
         if authua and len(authua)>0:
             headers.append(('User-Agent',authua))     
         else:
             headers.append(('User-Agent',base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCA0LjIuMjsgU29ueSBYcGVyaWEgVGFibGV0IFogLSA0LjIuMiAtIEFQSSAxNyAtIDE5MjB4MTIwMCBCdWlsZC9KRFEzOUUp')))
             
+        
         authdata=getNetworkTVStringExtra(getUrl(posturl,headers=headers))
         defplayua=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCA0LjIuMjsgU29ueSBYcGVyaWEgVGFibGV0IFogLSA0LjIuMiAtIEFQSSAxNyAtIDE5MjB4MTIwMCBCdWlsZC9KRFEzOUUp')
         playua=url["player_user_agent"]
