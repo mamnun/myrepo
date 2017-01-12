@@ -4425,7 +4425,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
     tvplayerChannels=None
     Zengagen=None
     fastgen=None
-    
+    nettvgen=None
     if cctype==1:
         pg='pakistan'
         iptvgen="pakistani"
