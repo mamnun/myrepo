@@ -877,9 +877,10 @@ def AddSports365Channels(url=None, recursive=False):
     forced=False
     try:
 
-        addDir(Colored("All times in local timezone.",'red') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
-        addDir(Colored("Update parser file.",'blue')+Colored("\nRemember to Visit their site sport365.live if stops play!.",'red') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored("All times in local timezone.",'blue') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
+        addDir(Colored("Update parser file.",'blue') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
         addDir(Colored("Refresh listing",'blue') ,"sss" ,156,"", False, True,isItFolder=True)		#name,url,mode,icon
+        addDir(Colored("Stopped playing after 2 minutes???????",'red') ,"sss" ,95,"", False, True,isItFolder=True)		#name,url,mode,icon
         import live365
         forced=not live365.isvalid()        
         videos=live365.getLinks()
@@ -7509,7 +7510,11 @@ try:
         PlayPoveeLink(url)           
     elif mode==94:
         print "Play url is "+url
-        AddNetworkTVSports(url)       
+        AddNetworkTVSports(url)  
+    elif mode==95:
+        print "Play url is "+url
+        dialog = xbmcgui.Dialog()
+        ok = dialog.ok('PLEASE SAVE ME!!!!', 'If it stops playing after 2 minutes please oh please remember that you must visit their site and play a video/click on live links.\nYou can use any devices/mobile to visit their site http;//sport365.live, just make sure you are connected to the same network.')          
 except:
 
     print 'somethingwrong'
@@ -7540,7 +7545,7 @@ def get_view_mode_id( view_mode):
         return int(default_view_mode)
     return None
 
-playmode=[3,4,9,11,15,21,22,27,33,35,37,40,42,45,91,93]
+playmode=[3,4,9,11,15,21,22,27,33,35,37,40,42,45,91,93,95]
 nonthumbview=[55,61,67,56,14,57,19,20,21,22,23,24,79,75,76,78,81,2,51,52,53,62,70,71,81,66,94]
 try:
     if (not mode==None) and mode>1 and mode not in nonthumbview and mode not in playmode:
