@@ -381,6 +381,9 @@ def getData(url,fanart, data=None):
                 if lcount>1: linkedUrl=''
 
                 name = channel('name')[0].string
+                try:
+                    name=processPyFunction(name)
+                except: pass                
                 thumbnail = channel('thumbnail')[0].string
                 if thumbnail == None:
                     thumbnail = ''
@@ -497,6 +500,9 @@ def getChannelItems(name,url,fanart):
         for channel in channel_list('subchannel'):
             name = channel('name')[0].string
             try:
+                name=processPyFunction(name)
+            except: pass
+            try:
                 thumbnail = channel('thumbnail')[0].string
                 if thumbnail == None:
                     raise
@@ -578,6 +584,10 @@ def getItems(items,fanart,dontLink=False):
                 name = item('title')[0].string
                 if name is None:
                     name = 'unknown?'
+                try:
+                    name=processPyFunction(name)
+                except: pass
+                
             except:
                 addon_log('Name Error')
                 name = ''

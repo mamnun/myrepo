@@ -1,3 +1,5 @@
+[B]Version 2.7.3[/B]
+regex support in title, useful in list
 [B]Version 2.7.2[/B]
 removed extension
 Version 2.7.1
