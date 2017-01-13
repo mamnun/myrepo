@@ -68,6 +68,9 @@ YPLoginFile=os.path.join(profile_path, YPLoginFile)
 HDCASTCookie='HDCastCookieFile.lwp'
 HDCASTCookie=os.path.join(profile_path, HDCASTCookie)
 
+TVPCOOKIEFILE='TVPCookieFile.lwp'
+TVPCOOKIEFILE=os.path.join(profile_path, TVPCOOKIEFILE)
+
  
 mainurl=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vY2F0ZWdvcnkvcGFraXN0YW5pLw==')
 liveURL=base64.b64decode('aHR0cDovL3d3dy56ZW10di5jb20vbGl2ZS1wYWtpc3RhbmktbmV3cy1jaGFubmVscy8=')
@@ -1102,7 +1105,7 @@ def getNetworkTVData():
     fname='Networkdata.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,2*60*60)
+        jsondata=getCacheData(fname,30*60)
         if not jsondata==None:
             return json.loads(base64.b64decode(jsondata))
     except:
@@ -1562,6 +1565,7 @@ def getTVPlayerChannels(thesechannels=[]):
     return ret
         
 def AddTVPlayerChannels(url, thesechannels=[]):
+    addDir('Some channels requires free login, enter in the settings.' ,'' ,'','', False, True,isItFolder=False)
     for ch in sorted(getTVPlayerChannels(thesechannels),key=lambda s: s[0].lower() ) :
         addDir(ch[0] ,ch[1] ,ch[2],ch[3], False, True,isItFolder=False)
 
@@ -5173,8 +5177,10 @@ def getNetworkTVPage():
     print netData
     baseurl=netData["YnVueWFkaV9wYXRhX25hdnVh"]
     baseurl=baseurl[1:].decode("base64")+"bGl2ZTMubmV0dHYv".decode("base64")
+    import random,math
+    uid=int(math.floor(random.random()*50000) )
     headers=[('User-Agent',getFastUA()),('Authorization','Basic %s'%base64.b64decode("YUdWc2JHOU5SanBHZFdOcmIyWm0=")),('Referer','http://localhost')]
-    post={'check':'1','user_id':'556274','version':'23'}
+    post={'check':'1','user_id':str(uid),'version':'23'}
     post = urllib.urlencode(post)
     jsondata=getUrl(baseurl,post=post,headers=headers)
     jsondata=json.loads(jsondata)
@@ -6995,6 +7001,52 @@ def playzenga(url,progress):
     progress.close()
     xbmc.Player().play( playurl, listitem)
         
+
+
+def getTVPCookieJar(updatedUName=False):
+    cookieJar=None
+    print 'updatedUName',updatedUName
+    try:
+        cookieJar = cookielib.LWPCookieJar()
+        if not updatedUName:
+            cookieJar.load(TVPCOOKIEFILE,ignore_discard=True)
+    except: 
+        cookieJar=None
+
+    if not cookieJar:
+        cookieJar = cookielib.LWPCookieJar()
+    return cookieJar
+    
+def performTVPLogin():
+    cookieJar = cookielib.LWPCookieJar()
+    try:
+        
+        url="https://tvplayer.com/account"
+        username=selfAddon.getSetting( "tvpusername" ) 
+        if username=="": return False,cookieJar
+        pwd=selfAddon.getSetting( "tvppwd" ) 
+        lasstusername=selfAddon.getSetting( "lasttvpusername" )
+        lasstpwd=selfAddon.getSetting( "lasttvppwd" )         
+        cookieJar=getTVPCookieJar(lasstusername!=username or lasstpwd!= pwd)
+        mainpage = getUrl(url,cookieJar=cookieJar)
+        
+
+        if '>Login</a>' in mainpage:
+            token   = urllib.unquote(re.findall('name="token" value="(.*?)"' ,mainpage)[0])
+            print 'LOGIN NOW'
+            url="https://tvplayer.com/account/login"
+            headers=[('Referer',"https://tvplayer.com/account/login"),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36'),('Origin','https://tvplayer.com')]           
+            post = {'email':username,'password':pwd,'token':token}
+            post = urllib.urlencode(post)
+            mainpage = getUrl(url,cookieJar=cookieJar,post=post,headers=headers )
+            cookieJar.save (TVPCOOKIEFILE,ignore_discard=True)
+            selfAddon.setSetting( id="lasttvpusername" ,value=username)
+            selfAddon.setSetting( id="lasttvppwd" ,value=pwd)
+        
+        return not '>Login</a>' in mainpage,cookieJar
+    except: 
+            traceback.print_exc(file=sys.stdout)
+    return False,cookieJar
     
 def playtvplayer(url):
     import re,urllib,json
@@ -7002,17 +7054,21 @@ def playtvplayer(url):
 
     playurl=''
     try:
-        watchHtml=getUrl(url)
+        loginstatus,cj=performTVPLogin()
+        watchHtml=getUrl(url, cookieJar=cj)
         channelid=re.findall('resourceId = "(.*?)"' ,watchHtml)[0]
         validate=re.findall('var validate = "(.*?)"' ,watchHtml)[0]
-       
-        cj = cookielib.LWPCookieJar()
-        data = urllib.urlencode({'service':'1','platform':'website','token':'null','validate':validate ,'id' : channelid})
+        token='null'
+        try:
+            token=re.findall('var token = "(.*?)"' ,watchHtml)[0]
+        except: pass
+        #cj = cookielib.LWPCookieJar()
+        data = urllib.urlencode({'service':'1','platform':'website','token':token,'validate':validate ,'id' : channelid})
         headers=[('Referer','http://tvplayer.com/watch/'),('Origin','http://tvplayer.com'),('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')]
         retjson=getUrl("http://api.tvplayer.com/api/v2/stream/live",post=data, headers=headers,cookieJar=cj);
         jsondata=json.loads(retjson)
     #    print cj
-        cj = cookielib.LWPCookieJar()
+        #cj = cookielib.LWPCookieJar()
         playurl1=jsondata["tvplayer"]["response"]["stream"]
         m3utext=getUrl(playurl1, headers=headers,cookieJar=cj);
         #playurl1=re.findall('(http.*)',m3utext)[-1]
