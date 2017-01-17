@@ -2664,12 +2664,22 @@ def getMatchUrl(matchid):
 #            print pat
             if calltype=='Live' or calltype=='RecordOne':
                 #videoPage='},\n{'.join(videoPage.split("},{"))
+                print videoPage
                 jdata=json.loads(videoPage)
-                for dd in jdata["replay"]:
-                    for d in dd:
+                
+                if calltype=='Live':
+                    for d in jdata["roku"]["URL"]:
                         if int(d["priority"])==int(priority):
                             final_url=d["secureurl"]
                             break;
+                
+                else:
+                
+                    for dd in jdata["replay"]:
+                        for d in dd:
+                            if int(d["priority"])==int(priority):
+                                final_url=d["secureurl"]
+                                break;
                 print pat,videoPage
                 #final_url=re.findall(pat,videoPage)[0]
             else:
