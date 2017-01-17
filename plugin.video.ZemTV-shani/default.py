@@ -1105,7 +1105,7 @@ def getNetworkTVData2():
     fname='Networkdata2.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,2*60*60)
+        jsondata=getCacheData(fname,30*60)
         if not jsondata==None:
             return json.loads(base64.b64decode(jsondata))
     except:
@@ -5307,7 +5307,7 @@ def getNetworkTVPage2():
     fname='network_page2.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,3*60*60)
+        jsondata=getCacheData(fname,30*60)
         if not jsondata==None:
             return json.loads(jsondata)
     except:
