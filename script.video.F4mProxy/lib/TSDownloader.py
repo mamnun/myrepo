@@ -447,6 +447,7 @@ class TSDownloader():
             if self.proxy and len(self.proxy)==0:
                 self.proxy=None
             self.out_stream=out_stream
+            if g_stopEvent: g_stopEvent.clear()
             self.g_stopEvent=g_stopEvent
             if '|' in url:
                 sp = url.split('|')
@@ -457,13 +458,13 @@ class TSDownloader():
             #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
-            return True
-            #return self.downloadInternal(testurl=True)
+            #return True
+            return self.downloadInternal(testurl=True)
             
             #os.remove(self.outputfile)
         except: 
             traceback.print_exc()
-            self.status='finished'
+        self.status='finished'
         return False
      
         
@@ -474,6 +475,7 @@ class TSDownloader():
         except: 
             traceback.print_exc()
         self.status='finished'
+            
 
             
         
@@ -511,11 +513,13 @@ class TSDownloader():
                 #print 'starting.............. new url',wrotesomething
                 try:
                     if self.g_stopEvent and self.g_stopEvent.isSet():
-                        return
+                        print 'event set'
+                        return False
                     while (buf != None and len(buf) > 0 and lastdataread>0):
                         
                         if self.g_stopEvent and self.g_stopEvent.isSet():
-                            return
+                            print 'event set'
+                            return False
                         try:
                             
                             buf = response.read(limit)##500 * 1024)
@@ -530,7 +534,7 @@ class TSDownloader():
                         except:
                             traceback.print_exc(file=sys.stdout)
                             print 'testurl',testurl,lost
-                            if testurl: 
+                            if testurl and lost>6: 
                                 print 'test complete false'
                                 response.close()
                                 return False
@@ -719,7 +723,7 @@ class TSDownloader():
                     traceback.print_exc(file=sys.stdout)
                     response.close()
                     fileout.close()
-                    return
+                    return False
                 
 
         except:

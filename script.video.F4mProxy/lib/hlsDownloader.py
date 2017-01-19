@@ -105,6 +105,7 @@ class HLSDownloader():
             gproxy=self.proxy
             self.use_proxy_for_chunks=use_proxy_for_chunks
             self.out_stream=out_stream
+            g_stopEvent.clear()
             self.g_stopEvent=g_stopEvent
             self.maxbitrate=maxbitrate
             if '|' in url:
@@ -116,17 +117,12 @@ class HLSDownloader():
                 print 'header recieved now url and headers are',url, clientHeader 
             self.status='init done'
             self.url=url
-            return self.preDownoload()
+            return downloadInternal(self.url,dest_stream,self.maxbitrate,self.g_stopEvent, testing=True)
         except: 
             traceback.print_exc()
-            self.status='finished'
+        self.status='finished'
         return False
-        
-    def preDownoload(self):
-        
-        print 'code here'
-        return True
-        
+
     def keep_sending_video(self,dest_stream, segmentToStart=None, totalSegmentToSend=0):
         try:
             self.status='download Starting'
@@ -453,7 +449,7 @@ def send_back(data,file):
     file.write(data)
     file.flush()
         
-def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
+def downloadInternal(url,file,maxbitrate=0,stopEvent=None, testing=False):
     global key
     global iv
     global USEDec
@@ -530,19 +526,24 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None):
     targetduration = 5
     changed = 0
     glsession=None
-    if ':7777' in url:
-        try:
-            glsession=re.compile(':7777\/.*?m3u8.*?session=(.*?)&').findall(url)[0]
-        except: 
-            pass
+    #if ':7777' in url:
+    #    try:
+    #        glsession=re.compile(':7777\/.*?m3u8.*?session=(.*?)&').findall(url)[0]
+    #    except: 
+    #        pass
 
     try:
         while 1==1:#thread.isAlive():
             if stopEvent and stopEvent.isSet():
                 return
             medialist = list(handle_basic_m3u(url))
+            
+            if testing: 
+                if len(medialist)==0: raise Exception('empty m3u8')
+                return True
             playedSomething=False
-            if medialist==None: return
+            if medialist==None: return False
+            
             if None in medialist:
                 # choose to start playback at the start, since this is a VOD stream
                 pass

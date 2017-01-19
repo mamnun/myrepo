@@ -108,6 +108,7 @@ class HLSDownloaderRetry():
             gproxy=self.proxy
             self.use_proxy_for_chunks=use_proxy_for_chunks
             self.out_stream=out_stream
+            if g_stopEvent: g_stopEvent.clear()
             self.g_stopEvent=g_stopEvent
             self.maxbitrate=maxbitrate
             if '|' in url:
@@ -119,16 +120,12 @@ class HLSDownloaderRetry():
                 print 'header recieved now url and headers are',url, clientHeader 
             self.status='init done'
             self.url=url
-            return self.preDownoload()
+            return downloadInternal(self.url,None,self.maxbitrate,self.g_stopEvent , self.callbackpath,  self.callbackparam, testing=True)
         except: 
             traceback.print_exc()
             self.status='finished'
         return False
         
-    def preDownoload(self):
-        
-        print 'code here'
-        return True
         
     def keep_sending_video(self,dest_stream, segmentToStart=None, totalSegmentToSend=0):
         try:
@@ -430,7 +427,7 @@ def send_back(data,file):
     file.write(data)
     file.flush()
         
-def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",callbackparam=""):
+def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",callbackparam="", testing=False):
     global key
     global iv
     global USEDec
@@ -438,7 +435,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
     global clientHeader
     global nsplayer
     if stopEvent and stopEvent.isSet():
-        return
+        return False
     dumpfile = None
     #dumpfile=open('c:\\temp\\myfile.mp4',"wb")
     variants = []
@@ -527,13 +524,17 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                 #stopEvent.set()
                 break
             if stopEvent and stopEvent.isSet():
-                return
+                return False
             try:
                 medialist = list(handle_basic_m3u(url))
+                if len(medialist)==0: raise Exception('empty m3u8')
+                print medialist
+                if testing: return True
             except Exception as inst:
                 print 'here in exp',inst
                 print fails
                 fails+=1
+                if testing and fails>6: return False
                 
                 if '403' in repr(inst).lower() and callbackpath and len(callbackpath)>0:
                     print 'callback'
@@ -576,10 +577,10 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             for media in medialist:
                  
                 if stopEvent and stopEvent.isSet():
-                    return
+                    return False
                 if media is None:
                     #queue.put(None, block=True)
-                    return
+                    return False
                 seq, encobj, duration, targetduration, media_url = media
                 
                 if seq > last_seq:
@@ -593,7 +594,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                             #for chunk in download_chunks(urlparse.urljoin(url, media_url)):
                             for chunk in download_chunks(media_url):
                                 if stopEvent and stopEvent.isSet():
-                                    return
+                                    return False
                                 print 'sending chunk', len(chunk)
                                 send_back(chunk,file)
                                 data="send"
@@ -604,9 +605,9 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                             print 'xxxx',repr(inst)
                             if 'forcibly closed' in repr(inst): 
                                 print 'returning'
-                                return
+                                return False
                         if stopEvent and stopEvent.isSet():
-                            return
+                            return False
 
                         if data and len(data)>0:# chunk in download_chunks(urlparse.urljoin(url, media_url),enc=encobj):
 
@@ -636,7 +637,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                         xbmc.sleep(1000)
                         print 'sleeep for 1sec',t
                         if stopEvent and stopEvent.isSet():
-                            return
+                            return False
             '''elif changed == 0:
                 # first attempt
                 time.sleep(targetduration*0.5)
