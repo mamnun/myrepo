@@ -5348,7 +5348,10 @@ def getNetworkTVPage():
     baseurl=baseurl[1:].decode("base64")+"bGl2ZTMubmV0dHYv".decode("base64")
     import random,math
     uid=int(math.floor(random.random()*50000) )
-    headers=[('User-Agent',getFastUA()),('Authorization','Basic %s'%base64.b64decode("YUdWc2JHOU5SanBHZFdOcmIyWm0=")),('Referer','http://localhost')]
+    auth = netData["amFnX3Ryb3JfYXR0X2Vu"][1:].decode("base64") 
+    ref = netData["SXNpc2VrZWxvX3Nlc2lzdGltdV95ZXppbm9tYm9sbzAw"][1:].decode("base64")
+                
+    headers=[('User-Agent',getFastUA()),('Authorization',auth),('Referer',ref)]
     post={'check':'1','user_id':str(uid),'version':'23'}
     post = urllib.urlencode(post)
     jsondata=getUrl(baseurl,post=post,headers=headers)
