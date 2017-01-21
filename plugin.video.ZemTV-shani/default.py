@@ -1067,10 +1067,11 @@ def getFastCats():
 def getFastUA():
     import random,string
     s=eval(base64.b64decode("Wyc0LjQnLCc0LjQuNCcsJzUuMCcsJzUuMS4xJywnNi4wJywnNi4wLjEnLCc3LjAnLCc3LjEuMSdd"))
+    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdUb3VjaHBhZCBUYWJsZXQnLCdOZXh1cyA0JywnTmV4dXMgNicsJ1NvbnkgWHBlcmlhIFRhYmxldCdd"))
 
     #usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlcy4lcy4lczsgJXMgQnVpbGQvJXMp')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(8)),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(6)) )
     #keep following me :p
-    usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlczsgJXMgJXMp')%(random.choice(s),''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(int(random.random()*10))),''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(int(random.random()*15))) )
+    usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlczsgJXMgQnVpbGQvJXMp')%(random.choice(s),random.choice(s2),''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(int(random.random()*15))) )
     #usagents=base64.b64decode('Mozilla/5.0 (Linux; U; Android 4.%s.%s; Galaxy Nexus Build/JDQ39) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Mobile Safari/534.30')
     return usagents
 
@@ -1080,6 +1081,7 @@ def getFastData():
     try:
         jsondata=getCacheData(fname,2*60*60)
         if not jsondata==None:
+            print jsondata
             return json.loads(base64.b64decode(jsondata))
     except:
         print 'file getting error'
@@ -1095,7 +1097,8 @@ def getFastData():
     jsondata=None
     try:
         print 'link',link
-        jsondata=json.loads(link.replace('\x0a','').replace('\t',''))
+        link=link.replace('\x0a','').replace('\t','')
+        jsondata=json.loads(link)
         storeCacheData(base64.b64encode(link),fname)
     except:
         print 'getFastData file saving error'
