@@ -1,3 +1,5 @@
+[B]Version 2.8.3[/B]
+relaxed init check
 [B]Version 2.8.2[/B]
 return quickly if not playable - better message
 [B]Version 2.8.1[/B]

@@ -534,7 +534,7 @@ class TSDownloader():
                         except:
                             traceback.print_exc(file=sys.stdout)
                             print 'testurl',testurl,lost
-                            if testurl and lost>6: 
+                            if testurl and lost>10: 
                                 print 'test complete false'
                                 response.close()
                                 return False
