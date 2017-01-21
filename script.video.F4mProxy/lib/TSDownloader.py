@@ -507,6 +507,7 @@ class TSDownloader():
                 wrotesomething=False
                 currentduration=0
                 limit=1024*188
+                if testurl: limit=1024
                 lastdataread=limit
                 
                 

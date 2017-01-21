@@ -283,7 +283,8 @@ class MyHandler(BaseHTTPRequestHandler):
         params=urlparse.parse_qs(url)
         print 'params',params # TODO read all params
         #({'url': url, 'downloadmode': downloadmode, 'keep_file':keep_file,'connections':connections})
-        received_url = params['url'][0]#
+        received_url = params['url'][0].replace('\r','')#
+        print 'received_url',received_url
         use_proxy_for_chunks =False
         proxy=None
         try:

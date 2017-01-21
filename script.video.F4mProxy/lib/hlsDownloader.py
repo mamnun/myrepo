@@ -469,7 +469,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None, testing=False):
             print 'history'
             redirurl=res.url
         res.close()
-        
+        if testing: return True
     except: traceback.print_exc()
     print 'redirurl',redirurl
     

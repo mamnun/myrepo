@@ -454,7 +454,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
             url=redirurl
         utltext=res.text
         res.close()
-        
+        if testing: return True
     except: traceback.print_exc()
     print 'redirurl',redirurl
     if 'EXT-X-STREAM-INF' in utltext:
