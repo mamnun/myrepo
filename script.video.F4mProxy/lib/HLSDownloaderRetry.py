@@ -120,7 +120,7 @@ class HLSDownloaderRetry():
                 print 'header recieved now url and headers are',url, clientHeader 
             self.status='init done'
             self.url=url
-            return downloadInternal(self.url,None,self.maxbitrate,self.g_stopEvent , self.callbackpath,  self.callbackparam, testing=True)
+            return True# disabled downloadInternal(self.url,None,self.maxbitrate,self.g_stopEvent , self.callbackpath,  self.callbackparam, testing=True)
         except: 
             traceback.print_exc()
             self.status='finished'

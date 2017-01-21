@@ -117,7 +117,7 @@ class HLSDownloader():
                 print 'header recieved now url and headers are',url, clientHeader 
             self.status='init done'
             self.url=url
-            return downloadInternal(self.url,None,self.maxbitrate,self.g_stopEvent, testing=True)
+            return True# disabled for time being#downloadInternal(self.url,None,self.maxbitrate,self.g_stopEvent, testing=True)
         except: 
             traceback.print_exc()
         self.status='finished'

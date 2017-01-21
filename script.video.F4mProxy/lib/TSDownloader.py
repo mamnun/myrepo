@@ -458,8 +458,8 @@ class TSDownloader():
             #print 'header recieved now url and headers are',url, self.clientHeader 
             self.status='init done'
             self.url=url
-            #return True
-            return self.downloadInternal(testurl=True)
+            return True #disable for time being
+            #return self.downloadInternal(testurl=True)
             
             #os.remove(self.outputfile)
         except: 
