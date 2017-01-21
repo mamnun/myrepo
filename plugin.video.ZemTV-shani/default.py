@@ -7166,35 +7166,35 @@ def playzenga(url,progress):
     playurl=''
     try:
         progress.update( 30, "", "getting links", "" )
-        headers=[('Referer','http://ada.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
+        headers=[('Referer','http://www.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
         
         jsfile=getUrl(base64.b64decode('aHR0cDovL2FkYS56ZW5nYXR2LmNvbS9jb250cm9sbGVycy9MaXZlUGxheWVyQ29udHJvbGxlci5qcw=='),headers=headers)
         reg= "var dvrid.*?\s.*?\"(http.*)\"\s"
         
         churl=re.findall(reg,jsfile)[0]
         churl=churl.replace('" + dvrid + "',url)
-        headers=[('Referer','http://ada.zengatv.com/'),('Origin','http://ada.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
+        headers=[('Referer','http://www.zengatv.com/'),('Origin','www.zengatv.com/'),('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)')]
         xmlfile=getUrl(churl,headers=headers)
         reg= "(http.*?)\]?\]?>"
         m3uurl=re.findall(reg,xmlfile)[0]
         
-        playurl=m3uurl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://ada.zengatv.com/'
+        playurl=m3uurl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://www.zengatv.com/'
         try:
             import urlparse
             m3u8res=getUrl(playurl)
             m38uurl=re.findall('#EXT-X-STREAM-INF.*\n(.*)',m3u8res)[-1]
             suburl=urlparse.urljoin(m3uurl,m38uurl)
             progress.update( 40, "", "skipping Ads", "" )
-            subdata=getUrl(suburl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://ada.zengatv.com/')
-            playurl=suburl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://ada.zengatv.com/'
+            subdata=getUrl(suburl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://www.zengatv.com/')
+            playurl=suburl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://www.zengatv.com/'
             print subdata
             lnum=0
-            if 1==1:
+            if 1==2:
                 for tsurl in re.findall('#EXTINF.*\n(.*)',subdata):
                     subtsurl=urlparse.urljoin(suburl,tsurl)
                     lnum+=1
                     progress.update( 40+(10*lnum), "", "skipping Ads", "" )
-                    getUrl(subtsurl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://ada.zengatv.com/')
+                    getUrl(subtsurl+'|User-Agent=Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Mobile/13A452 (5215161440)&Referer=http://www.zengatv.com/')
             progress.update( 95, "", "alomost finished", "" )    
         except:
             print 'error avoiding ad'
