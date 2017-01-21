@@ -1094,7 +1094,8 @@ def getFastData():
     
     jsondata=None
     try:
-        jsondata=json.loads(link.replace('\x0a',''))
+        print 'link',link
+        jsondata=json.loads(link.replace('\x0a','').replace('\t',''))
         storeCacheData(base64.b64encode(link),fname)
     except:
         print 'getFastData file saving error'
