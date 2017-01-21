@@ -536,7 +536,7 @@ def downloadInternal(url,file,maxbitrate=0,stopEvent=None , callbackpath="",call
                 fails+=1
                 if testing and fails>6: return False
                 
-                if '403' in repr(inst).lower() and callbackpath and len(callbackpath)>0:
+                if testing==False and '403' in repr(inst).lower() and callbackpath and len(callbackpath)>0:
                     print 'callback'
                     import importlib, os
                     foldername=os.path.sep.join(callbackpath.split(os.path.sep)[:-1])

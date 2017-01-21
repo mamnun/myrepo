@@ -1,3 +1,5 @@
+[B]Version 2.8.5[/B]
+HSL bug
 [B]Version 2.8.4[/B]
 fixing wrong incoming URL
 [B]Version 2.8.3[/B]
