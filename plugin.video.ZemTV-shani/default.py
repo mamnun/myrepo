@@ -6100,6 +6100,8 @@ def PlayNetworkTVLink2(url,progress=None):
     ua=netData["UserAgent"]
     
     urlnew=finalurl+"|User-Agent="+ua
+    return playipbox(urlnew)
+    
     print urlnew
     listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
     PlayGen(base64.b64encode(urlnew))
