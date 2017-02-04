@@ -5383,7 +5383,7 @@ def getNetworkTVPage():
     ref = netData["SXNpc2VrZWxvX3Nlc2lzdGltdV95ZXppbm9tYm9sbzAw"][1:].decode("base64")
                 
     headers=[('User-Agent',getFastUA()),('Authorization',auth),('Referer',ref)]
-    post={'check':'1','user_id':str(uid),'version':'23'}
+    post={'check':'1','user_id':str(uid),'version':'26'}
     post = urllib.urlencode(post)
     jsondata=getUrl(baseurl,post=post,headers=headers)
     #print jsondata
