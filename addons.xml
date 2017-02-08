@@ -171,7 +171,7 @@
 
 <addon id="plugin.video.ZemTV-shani"
        name="Zem"
-       version="6.3.3"
+       version="6.3.4"
        provider-name="shani">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
