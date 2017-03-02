@@ -1,3 +1,5 @@
+[B]Version 2.7.5[/B]
+dont show error when regex contains notplayable
 [B]Version 2.7.4[/B]
 proxy play shows progress and notification
 [B]Version 2.7.3[/B]

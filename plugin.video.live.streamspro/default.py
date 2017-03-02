@@ -3126,27 +3126,28 @@ elif mode==17 or mode==117:
     else:
         url,setresolved = getRegexParsed(regexs, url)
         print repr(url),setresolved,'imhere'
-        if url:
-            if '$PLAYERPROXY$=' in url:
-                url,proxy=url.split('$PLAYERPROXY$=')
-                print 'proxy',proxy
-                #Jairox mod for proxy auth
-                proxyuser = None
-                proxypass = None
-                if len(proxy) > 0 and '@' in proxy:
-                    proxy = proxy.split(':')
-                    proxyuser = proxy[0]
-                    proxypass = proxy[1].split('@')[0]
-                    proxyip = proxy[1].split('@')[1]
-                    port = proxy[2]
-                else:
-                    proxyip,port=proxy.split(':')
+        if not (regexs and 'notplayable' in regexs):        
+            if url:
+                if '$PLAYERPROXY$=' in url:
+                    url,proxy=url.split('$PLAYERPROXY$=')
+                    print 'proxy',proxy
+                    #Jairox mod for proxy auth
+                    proxyuser = None
+                    proxypass = None
+                    if len(proxy) > 0 and '@' in proxy:
+                        proxy = proxy.split(':')
+                        proxyuser = proxy[0]
+                        proxypass = proxy[1].split('@')[0]
+                        proxyip = proxy[1].split('@')[1]
+                        port = proxy[2]
+                    else:
+                        proxyip,port=proxy.split(':')
 
-                playmediawithproxy(url,name,iconimage,proxyip,port, proxyuser,proxypass) #jairox
+                    playmediawithproxy(url,name,iconimage,proxyip,port, proxyuser,proxypass) #jairox
+                else:
+                    playsetresolved(url,name,iconimage,setresolved,regexs)
             else:
-                playsetresolved(url,name,iconimage,setresolved,regexs)
-        else:
-            xbmc.executebuiltin("XBMC.Notification(LiveStreamsPro,Failed to extract regex. - "+"this"+",4000,"+icon+")")
+                xbmc.executebuiltin("XBMC.Notification(LiveStreamsPro,Failed to extract regex. - "+"this"+",4000,"+icon+")")
 elif mode==18:
     addon_log("youtubedl")
     try:
