@@ -1155,7 +1155,8 @@ def getFastCats():
 def getFastUA():
     import random,string
     s=eval(base64.b64decode("Wyc0LjQnLCc0LjQuNCcsJzUuMCcsJzUuMS4xJywnNi4wJywnNi4wLjEnLCc3LjAnLCc3LjEuMSdd"))
-    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdUb3VjaHBhZCBUYWJsZXQnLCdOZXh1cyA0JywnTmV4dXMgNicsJ1NvbnkgWHBlcmlhIFRhYmxldCdd"))
+    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdTb255IEV4cGVyaWEgVGFibGV0JywnS2luZGxlIEZpcmUnLCdGaXJlIEhEJ10="))
+    #s2=eval(base64.b64decode("['Fire HD']"))
 
     #usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlcy4lcy4lczsgJXMgQnVpbGQvJXMp')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(8)),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(6)) )
     #keep following me :p
@@ -6199,6 +6200,7 @@ def getNetworkTVStringExtra(response):
         return "".join(builder)
 
 def getNetworkTVStringExtra2(response):
+    try:
         response = response.strip();
         builder  = list(response);
         ilen = len(builder) -1
@@ -6207,6 +6209,7 @@ def getNetworkTVStringExtra2(response):
         del builder[ilen - 57+3];
         del builder[ilen - 66+4];
         return "".join(builder)
+    except : return ""
 
 def getNetworkTVHash (value):
     import time
@@ -6391,7 +6394,7 @@ def PlayNetworkTVLink(url,progress=None):
             headers.append(('User-Agent',anduseragent))
         if tokenCreds and len(tokenCreds)>0:
             headers.append(('Authorization',tokenCreds))
-
+        print 'tokenLink',tokenLink
         authhtml=getUrl(tokenLink,headers=headers)
         headers=[]
         print netData["TW9vbl9oaWsx"]
