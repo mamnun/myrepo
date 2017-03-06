@@ -3126,7 +3126,7 @@ elif mode==17 or mode==117:
     else:
         url,setresolved = getRegexParsed(regexs, url)
         print repr(url),setresolved,'imhere'
-        if not (regexs and 'notplayable' in regexs):        
+        if not (regexs and 'notplayable' in regexs and not url):        
             if url:
                 if '$PLAYERPROXY$=' in url:
                     url,proxy=url.split('$PLAYERPROXY$=')

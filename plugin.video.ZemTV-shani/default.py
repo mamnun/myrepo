@@ -4901,9 +4901,11 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
 #    match=sorted(match,key=itemgetter(0)   )
     if len(eboundMatches)>0:
         match+=eboundMatches
-    match=sorted(match,key=lambda s: s[0].lower()   )
+    try:
+        match=sorted(match,key=lambda s: s[0].lower()   )
+    except: traceback.print_exc(file=sys.stdout)
     for cname,ctype,curl,imgurl in match:
-        if 1==1:#ctype=='liveWMV' or ctype=='manual':
+        try:#ctype=='liveWMV' or ctype=='manual':
 #            print curl
             #if ctype<>'': cname+= '[' + ctype+']'
             if isv3Off and curl.startswith('pv2:'):
@@ -4946,6 +4948,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 elif cname.lower().endswith(' nettv'):
                     cc='ff991111'
                 addDir(ColoredOpt(cname.capitalize(),cc) ,base64.b64encode(curl) ,mm ,imgurl, False, True,isItFolder=False)		#name,url,mode,icon
+        except: traceback.print_exc(file=sys.stdout)
     return    
     
 def addiptvSports(url):
