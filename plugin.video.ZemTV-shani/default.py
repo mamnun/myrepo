@@ -1155,7 +1155,7 @@ def getFastCats():
 def getFastUA():
     import random,string
     s=eval(base64.b64decode("Wyc0LjQnLCc0LjQuNCcsJzUuMCcsJzUuMS4xJywnNi4wJywnNi4wLjEnLCc3LjAnLCc3LjEuMSdd"))
-    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdTb255IEV4cGVyaWEgVGFibGV0JywnS2luZGxlIEZpcmUnLCdGaXJlIEhEJ10="))
+    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdTb255IEV4cGVyaWEgVGFibGV0JywnS2luZGxlIEZpcmUnLCdGaXJlIEhEJywnVG91Y2hQYWQnXQ=="))
     #s2=eval(base64.b64decode("['Fire HD']"))
 
     #usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlcy4lcy4lczsgJXMgQnVpbGQvJXMp')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(8)),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(6)) )
@@ -5509,14 +5509,14 @@ def getNetworkTVPage():
             v+=1
             
             tt=chlist[token][:-1].decode("base64")
-            #print chmain[cname ][:-1].decode("base64"),tt,chlist
+            print chmain[cname ][:-1].decode("base64"),tt,chlist
             if tt in tokentype:
                 tokentype[tt]+=1
             else:
                 tokentype[tt]=1
             
             #["24","25","28","29","30","31","32"]==29
-            if tt not in ['5','33','18','0',"24","25","28","29","30","31","32","38"]: continue
+            if tt not in ['5','33','18','0',"24","25","28","29","30","31","32","38","26"]: continue
             #if tt not in ["35","34"]: continue
             channels["channels"].append( {
             'cid': chmain[cid][:-1].decode("base64") ,
@@ -6189,6 +6189,17 @@ def getFastPlayUA():
     fastData=getFastData()   
     return fastData["DATA"][0]["Agent"]
 
+def getNetworkTVStringExtra3(response):
+        response = response.strip();
+        builder  = list(response);
+        ilen = len(builder) -1
+        del builder[ilen - 10];
+        del builder[ilen - 22];
+        del builder[ilen - 34];
+        del builder[ilen - 46];
+        del builder[ilen - 58];
+        return "".join(builder)
+        
 def getNetworkTVStringExtra(response):
         response = response.strip();
         builder  = list(response);
@@ -6408,6 +6419,11 @@ def PlayNetworkTVLink(url,progress=None):
         jsondata={'stream_url':url["streamurl"],'token':int(token),'response_body':authhtml}
         post={'data':json.dumps(jsondata)}
         post = urllib.urlencode(post)
+        if authua and len(authua)>0:
+            headers.append(('User-Agent',authua))     
+        else:
+            headers.append(('User-Agent',anduseragent))
+            
         htmldata=getUrl(decryptorLink,headers=headers,post=post)
         
         playurl=json.loads(htmldata)["stream_url"]
@@ -6421,6 +6437,53 @@ def PlayNetworkTVLink(url,progress=None):
         if playua and len(playua)>0:
             defplayua=playua
         finalurl=playurl.split('\'')[0]+"|User-Agent="+defplayua
+        
+        
+    elif token in ["26"]:
+        settingslinkkey="cGFrX2l5YWhvb18x"
+        settingsecuritykey="UGFrX3VrdWJ1bmdhemEx"
+        
+
+        netData=getNetworkTVData()["data"][0]   
+        settingslink=netData[settingslinkkey][1:].decode("base64")
+        settingsecurity=netData[settingsecuritykey][1:].decode("base64")
+        print settingslink,settingsecurity
+        
+        
+        streamurl=url["streamurl"]
+        ref=url["referer"]
+        authua=url["user_agent"]
+        
+        
+        headers=[]
+        if ref and len(ref)>0:
+            headers.append(('Referer',ref))
+        if authua and len(authua)>0:
+            headers.append(('User-Agent',authua))     
+        else:
+            headers.append(('User-Agent',anduseragent))
+        if settingsecurity and len(settingsecurity)>0:
+            headers.append(('Authorization',settingsecurity))
+
+        settingjson=json.loads(getUrl(settingslink,headers=headers))
+        print settingjson
+        jsonurl=settingjson["DATA"][0]["URL"]
+        jsonpassword=settingjson["DATA"][0]["Password"]
+        jsonvalue=settingjson["DATA"][0]["Value"]
+        headers=[]
+        hashval=getNetworkTVHash(jsonvalue)
+        headers.append(('Modified',hashval))
+        headers.append(('User-Agent',anduseragent))
+            
+        htmldata=getUrl(jsonurl,headers=headers)
+        print htmldata
+        
+        finalurl=streamurl+getNetworkTVStringExtra3(htmldata)
+        defplayua=anduseragent
+        playua=jsonpassword
+        if playua and len(playua)>0:
+            defplayua=playua
+        finalurl=finalurl+"|User-Agent="+defplayua
     else:
         finalurl=""
     print "finalurl",finalurl
