@@ -4639,9 +4639,10 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
             
             match.append((base64.b64decode('S1ROIEVudC4gKHdlYnNpdGUp'),'manual','direct:'+"rtmp://103.24.96.74/ktn/ playpath=ktn swfUrl=http://ktntv.tv/wp-content/player/jwplayer.flash.swf pageUrl=http://www.ktntv.tv/ live=1",'http://shani.offshorepastebin.com/ZemLogos/ktn.png'))
             match.append((base64.b64decode('S1ROIE5FV1MgKHdlYnNpdGUp'),'manual','direct:'+"rtmp://103.24.96.74/ktn/ playpath=ktnnews swfUrl=http://ktntv.tv/wp-content/player/jwplayer.flash.swf pageUrl=http://www.ktnnews.tv/ live=1",'http://shani.offshorepastebin.com/ZemLogos/ktnnews.png'))
-            match.append(('Makkah (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'D8YHp37-tp0','makkah.png'))
-            match.append(('Madina (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'ArVmnth5jB4','madina.png'))
-            
+            match.append(('Makkah (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'0b1IMR2H_7s','makkah.png'))
+            match.append(('Makkah (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'wfQcy7vp55Q','makkah.png'))
+            match.append(('Makkah (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'Nxzeb_5LjtU','makkah.png'))
+            match.append(('Madina (youtube)','manual','direct:plugin://plugin.video.youtube/?action=play_video&videoid=%s' %'-WYI832cx5Q','madina.png'))
   
 
 
