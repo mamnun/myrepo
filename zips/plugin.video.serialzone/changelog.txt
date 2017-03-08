@@ -18,3 +18,5 @@ updated regex for blank enteries in hindi section
 play command
 [B]Version 1.7[/B]
 support for ozee
+[B]Version 1.8[/B]
+links corrected

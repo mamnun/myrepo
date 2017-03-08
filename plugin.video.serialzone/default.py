@@ -13,7 +13,7 @@ __addonname__   = __addon__.getAddonInfo('name')
 __icon__        = __addon__.getAddonInfo('icon')
 addon_id = 'plugin.video.serialzone'
 selfAddon = xbmcaddon.Addon(id=addon_id)
-  
+mailurl='http://serialzone.in' 
  
 def addLink(name,url,iconimage):
 	ok=True
@@ -78,13 +78,13 @@ def get_params():
 
 def Addtypes():
 	#2 is series=3 are links
-	addDir('Bengali' ,'http://bengali.serialzone.in/', 2, '')
-	addDir('Hindi' ,'http://hindi.serialzone.in/', 2,'')
-	addDir('Kannada' ,'http://kannada.serialzone.in/' , 2,'')
-	addDir('Malayalam' ,'http://malayalam.serialzone.in/', 2,'')
-	addDir('Marathi' ,'http://marathi.serialzone.in/', 2, '')
-	addDir('Tamil' ,'http://tamil.serialzone.in/', 2, '')
-	addDir('Telugu' ,'http://telugu.serialzone.in/', 2, '')
+	addDir('Bengali' ,'http://erialzone.in/bengali', 2, '')
+	addDir('Hindi' ,'http://serialzone.in/hindi', 2,'')
+	addDir('Kannada' ,'http://serialzone.in/kannada' , 2,'')
+	addDir('Malayalam' ,'http://serialzone.in/malayalam', 2,'')
+	addDir('Marathi' ,'http://serialzone.in/marathi', 2, '')
+	addDir('Tamil' ,'http://serialzone.in/tamil', 2, '')
+	addDir('Telugu' ,'http://serialzone.in/telugu', 2, '')
 	return
 
 
@@ -145,7 +145,7 @@ def AddTVChannels(Fromurl):
                if 'http:' in cname[0]:
                   URLI='%s' %(cname[0])
                else:
-		  URLI="%s%s" %(Fromurl,cname[0])
+		  URLI="%s%s" %(mailurl,cname[0])
 
                #print "addDir('%s', '%s', 3, '') " %(cname[1],URLI)
 	       addDir(cname[1] ,URLI, 3, '')#url,name,jpg_name,url,mode,icon
@@ -175,7 +175,7 @@ def AddSeries(Fromurl):
     print "addshows"
 
     regstring='<div class="serial">(.*?)<\/div>'
-    match_temp=re.findall(regstring, link)
+    match_temp=re.findall(regstring, link,re.DOTALL)
 
     print "Num elements: ",len(match_temp)
     print "Match_items: ",match_temp
@@ -188,13 +188,13 @@ def AddSeries(Fromurl):
             #rint "TEMPL: %s" %templ
             #ntries=templ
         subreg_str='<img src="(.*?)".*?<div class="title"><a href="(.*?)">(.*?)<\/a>'
-        match2=re.findall(subreg_str, entries)
+        match2=re.findall(subreg_str, entries,re.DOTALL)
         patversion=1
         print match2
         if len(match2)==0:
             pat='<a href="(.*?)">.*?>(.*)'
             patversion=2
-            match2=re.findall(pat, entries)
+            match2=re.findall(pat, entries,re.DOTALL)
             print 'match2',match2
         
 
@@ -217,6 +217,10 @@ def AddSeries(Fromurl):
                 URLI=''
                 SHOWURL=cname[0]
                 SHOWURL+="?view=all"                
+            if 'http:' not in SHOWURL:
+                SHOWURL=mailurl+SHOWURL
+            print SHOWURL
+            
             if showname not in ('The Kings League: Odyssey','TT Racer'):
                #print "Name:%s\nURLI:%s\nICON:%s\n" %(cname[2], SHOWURL, URLI)
                addDir(showname , SHOWURL, 4, URLI)#url,name,jpg_name,url,mode,icon
@@ -239,19 +243,20 @@ def AddEnteries(Fromurl):
 	   return(0)
 
 	#print link
-	#print "adding shows"
+	print "adding shows"
 
         # new match string
-	match =re.findall('<div class="episode" id=\'h3_(.*?)\' ><a href=(.*?)><h4>(.*?)<\/h4></a><\/div>', link, re.M|re.DOTALL)
+	match =re.findall('<div class="episode".?><a href=[\'"](.*?)[\'"].?><h4>(.*?)<\/h4></a><\/div>', link, re.M|re.DOTALL)
 
 #	#print "MATCHED ARRAY: ", match
 	h = HTMLParser.HTMLParser()
 
 	for cname in match:
 	    # ignore online games - take only the dates
-            if cname[2] not in ('The Kings League: Odyssey', 'TT Racer'):
+            print cname
+            if cname[1] not in ('The Kings League: Odyssey', 'TT Racer'):
                #print "Name:%s\nURLI:%s\nICON:%s\n" %(cname[0],cname[1],cname[2])
-	       addDir(cname[2] ,cname[0] ,5, "",isItFolder=False) #(name, url, mode, icon)
+	       addDir(cname[1] ,cname[0] ,5, "",isItFolder=False) #(name, url, mode, icon)
 	return
 # end function
 
@@ -433,7 +438,8 @@ def PlayShowLink ( url ):
     #regstring='http:\/\/(.*?)\/admin'
         #match=re.findall(regstring, url)
         
-    url2='http://serialzone.in/admin/AjaxProcess.php?cfile=load_video&id=%s&param=value&_=%s' % (url, time.time())
+    #url2='http://serialzone.in/admin/AjaxProcess.php?cfile=load_video&id=%s&param=value&_=%s' % (url, time.time())
+    url2=url
     print url2
     req = urllib2.Request(url2)
     req.add_header('User-Agent', 'Mozilla/5.0(iPad; U; CPU iPhone OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B314 Safari/531.21.10')
@@ -492,7 +498,7 @@ def PlayShowLink ( url ):
     youtubecode=match[0]
 
     progress = xbmcgui.DialogProgress()
-    progress.create('Progress', 'Checking if Proxy Required?')
+    progress.create('Progress', 'Checking if Proxy Required?. Normally works with Indian IP or VPN')
     progress.update( 20, "", "Getting Urls..")
 
     liveUrl='https://m.youtube.com/watch?v=%s'%youtubecode
