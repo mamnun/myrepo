@@ -817,7 +817,7 @@ def AddPv2Sports(url):
             if cname.lower().startswith('high alert'): continue
             #cid=source.findtext('programURL')# change from programURL
             cid=source.findtext('programID')
-            cimage=source.findtext('programImage')
+            cimage=source.findtext('programImage')+'|User-Agent=Pak%20TV/1.4 CFNetwork/808.2.16 Darwin/16.3.0'
             seq=cname
             if isMovies:
                 seq=str(url.index(source.findtext('programCategory').lower()))
@@ -4751,7 +4751,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                     if cname.lower().startswith('high alert'): continue
                     #cid=source.findtext('programURL')# change from programURL
                     cid=source.findtext('programID')
-                    cimage=source.findtext('programImage')
+                    cimage=source.findtext('programImage')+'|User-Agent=Pak%20TV/1.4 CFNetwork/808.2.16 Darwin/16.3.0'
 #                    addDir(cname ,base64.b64encode(cid),37,cimage, False, True,isItFolder=False)
                     match.append((cname +' v3' ,'manual2', cid ,cimage))
             
@@ -5830,8 +5830,8 @@ def getPV2UserAgent(option):
         return getPv2Code();
 
 def getpv2stkey():
-    headers=[('User-Agent',base64.b64decode('cDl4VE1nV2hFclpxZGlFWU1iV045bFVvd0xGMFdWM3I=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMVpHbHNZbUZ5T21waGJuVm5aWEp0WVc0PQ=='))]
-    return getUrl(base64.b64decode('aHR0cHM6Ly93d3cuYm94dHZoZC5jb20vdG9wL2FyYWJpY3R2djFwLnBocA=='),headers=headers)
+    headers=[('User-Agent',base64.b64decode('cDl4VE1nV2hFclpxZGlFWU1iV045bFVvd0xGMFdWM3I=')),('Authorization',base64.b64decode('QmFzaWMgWVcxMVpHbHNZbUZ5YW1GdWFUcHFZVzUxWjJWeWJXRnVhbUZ1YVE9PQ=='))]
+    return getUrl(base64.b64decode('aHR0cHM6Ly93d3cuYm94dHZoZC5jb20vdG9wL3Bha2luZGlhdjIzcC5waHA='),headers=headers)
     
 def getPV2Device(option):
     useragent=getpv2stkey()
@@ -5890,7 +5890,8 @@ def getPV2Url():
                     link=getUrl(base64.b64decode('aHR0cDovL3NoYW5pLm9mZnNob3JlcGFzdGViaW4uY29tL3B2Mkxhc3RXb3JraW5nLnhtbA==')).decode("base64")
                 else:
                     mainurl=base64.b64encode(base64.b64decode('aHR0cHM6Ly9hcHMuZHlubnMuY29tL2FwcHMvb3V0cHV0LnBocC9wbGF5bGlzdD90eXBlPXhtbCZkZXZpY2VTbj0lcw==')%deviceid)
-                
+                                                               
+
                 #else:
                 #    mainurl='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTEyMyZ0b2tlbj0lcw=='    
                 #mainurl='aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPXBha2luZGlhaGRwYWlkMi42JnRva2VuPSVz'
@@ -5903,7 +5904,7 @@ def getPV2Url():
                     #req = urllib2.Request( base64.b64decode('aHR0cHM6Ly9hcHAuZHlubnMuY29tL2FwcF9wYW5lbG5ldy9vdXRwdXQucGhwL3BsYXlsaXN0P3R5cGU9eG1sJmRldmljZVNuPTI0NCZ0b2tlbj0lcw==')  %token)    
                     
                     req = urllib2.Request( base64.b64decode(mainurl))#  %(token))    
-                    req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNUFZWE5rWmpwaGMyUm1jWGRsY25SNQ==')) 
+                    #req.add_header('Authorization', base64.b64decode('QmFzaWMgWVdSdGFXNUFZWE5rWmpwaGMyUm1jWGRsY25SNQ==')) 
                     req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),getPV2UserAgent(pv2option)) 
                     #req.add_header(base64.b64decode("VXNlci1BZ2VudA=="),base64.b64decode("QkVCNDNDOENDNUU5NDVFOTk4QjI3MjM4MDFFQjk0RkY=")) 
                     response = urllib2.urlopen(req)
