@@ -2418,6 +2418,7 @@ def play_playlist(name, mu_playlist,queueVideo=None):
 
 
 def download_file(name, url):
+        
         if addon.getSetting('save_location') == "":
             xbmc.executebuiltin("XBMC.Notification('LiveStreamsPro','Choose a location to save files.',15000,"+icon+")")
             addon.openSettings()
@@ -2513,6 +2514,7 @@ def ytdl_download(url,title,media_type='video'):
     # play in xbmc while playing go back to contextMenu(c) to "!!Download!!"
     # Trial yasceen: seperate |User-Agent=
     import youtubedl
+    
     if not url == '':
         if media_type== 'audio':
             youtubedl.single_YD(url,download=True,audio=True)
@@ -3162,10 +3164,18 @@ elif mode==19:
 
 elif mode==21:
     addon_log("download current file using youtube-dl service")
-    ytdl_download('',name,'video')
+    mtype='video'
+    if '[mp3]' in name:
+        mtype='audio'
+        name=name.replace('[mp3]','')
+    ytdl_download('',name, mtype)
 elif mode==23:
     addon_log("get info then download")
-    ytdl_download(url,name,'video')
+    mtype='video'
+    if '[mp3]' in name:
+        mtype='audio'
+        name=name.replace('[mp3]','')
+    ytdl_download(url,name,mtype)
 elif mode==24:
     addon_log("Audio only youtube download")
     ytdl_download(url,name,'audio')

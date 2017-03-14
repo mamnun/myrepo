@@ -1,3 +1,5 @@
+[B]Version 2.7.7[/B]
+download as mp3 if the name contains [mp3]
 [B]Version 2.7.6[/B]
 dont show error when regex contains notplayable --bug fix
 [B]Version 2.7.5[/B]
