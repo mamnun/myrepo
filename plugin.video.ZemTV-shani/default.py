@@ -7236,6 +7236,8 @@ def PlayShowLink ( url, redirect=True ):
 
         html=getUrl(newurl,headers=headers)
         stream_url= re.findall( '(http.*)',html)[-1].split('#')[0]
+        stream_url=stream_url+'|Origin=http://www.dailymotion.com&Referer=http://www.dailymotion.com/embed/video/&User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36'
+
         print stream_url
         playlist.add(stream_url,listitem)
         xbmcPlayer = xbmc.Player()
@@ -7349,6 +7351,7 @@ def PlayShowLink ( url, redirect=True ):
             print 'urlresolver err'
             traceback.print_exc(file=sys.stdout)
         stream_url = urlresolver.HostedMediaFile(playURL).resolve()
+
     #		print stream_url
         playlist.add(stream_url,listitem)
         xbmcPlayer = xbmc.Player()
