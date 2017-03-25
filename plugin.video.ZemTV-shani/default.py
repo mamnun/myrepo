@@ -3170,6 +3170,9 @@ def AddWatchCric(url):
 
 
 
+def smpk(frompk):
+    return frompk[0:2]+frompk[3:4]+frompk[5:7]+frompk[8:]
+    
 def AddSmartCric(url):
     req = urllib2.Request(base64.b64decode('aHR0cDovL3d3dy5zbWFydGNyaWMuY29tLw=='))
     req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
@@ -3186,17 +3189,21 @@ def AddSmartCric(url):
 #    print link
     response.close()
     patt='performGet\(\'(.+)\''
-    match_url =re.findall(patt,link)[0]
+    #match_url =re.findall(patt,link)[0]
+    match_url='http://webaddress:8087/mobile/channels/live/'
     channeladded=False
     patt_sn='sn = "(.*?)"'
-    patt_pk='(&pk=.*?)"'
+    patt_pk='showChannels\([\'"](.*?)[\'"]'
     try:
         match_sn =re.findall(patt_sn,link)[0]
         match_pk =re.findall(patt_pk,link)[0]
+        match_pk=smpk(match_pk)
         ref=[('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'),
             ('Referer','http://smartcric.com/')]
         lburl=re.findall('(http.*?loadbalancer)',link)[0]
         fms=getUrl(lburl,headers=ref).split('=')[1]
+        sourcelb=lburl.split('/')[2].split(':')[0]
+        match_url=match_url.replace('webaddress',sourcelb)
         final_url=  match_url+   match_sn
         req = urllib2.Request(final_url)
         req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
@@ -3232,7 +3239,7 @@ def AddSmartCric(url):
                         curl=s["streamName"]
                         streamid=str(s["streamId"])
                         
-                        curl1="http://"+fms+":8088/mobile/"+curl+"/playlist.m3u8?id="+streamid+match_pk+'|User-Agent=Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3';
+                        curl1="http://"+fms+":8088/mobile/"+curl+"/playlist.m3u8?id="+streamid+"&pk="+match_pk+'|Referer=http://www.smartcric.com/&User-Agent=Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3';
                         addDir('    -'+cname +" (http)" ,curl1 ,15,'', False, True,isItFolder=False)		#name,url,mode,icon
                         #curl1="rtsp://"+"206.190.140.164"+":1935/mobile/"+curl+"?key="+match_sn+match_pk;
                         #curl1="rtsp://"+fms+":1935/mobile/"+curl+"?id="+streamid+"&key="+match_sn+match_pk;
