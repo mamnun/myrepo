@@ -972,7 +972,7 @@ def AddSports365Channels(url=None, recursive=False):
         addDir(Colored("All times in local timezone.",'blue') ,"" ,0,"", False, True,isItFolder=False)		#name,url,mode,icon
         addDir(Colored("Update parser file.",'blue') ,"sss" ,80,"", False, True,isItFolder=False)		#name,url,mode,icon
         addDir(Colored("Refresh listing",'blue') ,"sss" ,156,"", False, True,isItFolder=True)		#name,url,mode,icon
-        addDir(Colored("Stopped playing after 2 minutes???????",'red') ,"sss" ,95,"", False, True,isItFolder=True)		#name,url,mode,icon
+        addDir(Colored("Stopped playing after 2 minutes??????? CLICK HERE!",'red') ,"sss" ,95,"", False, True,isItFolder=True)		#name,url,mode,icon
         import live365
         forced=not live365.isvalid()        
         videos=live365.getLinks()
@@ -1152,10 +1152,13 @@ def getFastCats():
         traceback.print_exc(file=sys.stdout)
     return jsondata    
 
-def getFastUA():
+def getFastUA(v2=False):
     import random,string
     s=eval(base64.b64decode("Wyc0LjQnLCc0LjQuNCcsJzUuMCcsJzUuMS4xJywnNi4wJywnNi4wLjEnLCc3LjAnLCc3LjEuMSdd"))
-    s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdTb255IEV4cGVyaWEgVGFibGV0JywnS2luZGxlIEZpcmUnLCdGaXJlIEhEJywnVG91Y2hQYWQnXQ=="))
+    if v2:
+        s2=[''.join(random.SystemRandom().choice(string.ascii_letters) for _ in range(4+int(random.random()*15)))]
+    else:
+        s2=eval(base64.b64decode("WydTb255IEV4cGVyaWEnLCdTb255IEV4cGVyaWEgVGFibGV0JywnS2luZGxlIEZpcmUnLCdGaXJlIEhEJywnVG91Y2hQYWQnXQ=="))
     #s2=eval(base64.b64decode("['Fire HD']"))
 
     #usagents=base64.b64decode('RGFsdmlrLzEuNi4wIChMaW51eDsgVTsgQW5kcm9pZCAlcy4lcy4lczsgJXMgQnVpbGQvJXMp')%(str(random.choice(range(3,6))),str(random.choice(range(3,6))),str(random.choice(range(3,6))),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(8)),''.join(random.SystemRandom().choice(string.ascii_uppercase) for _ in range(6)) )
@@ -1216,10 +1219,11 @@ def getNetworkTVData2():
     try:
         print link
         li=link[:2]+link[3:]
-        jsondata=json.loads(base64.b64decode(li))
+        print li
+        jsondata=json.loads(base64.b64decode(li).replace("\n",""))
         storeCacheData(li,fname)
     except:
-        print 'getNetworkTVData2 file saving error'
+        print 'getNetworkTVData2 dec error'
         traceback.print_exc(file=sys.stdout)
     return jsondata     
     
@@ -4689,7 +4693,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         paktvgen=['News','Islamic','Cooking']
         unitvgen=['News','Religious','Cooking','PAK&IND']
         wtvgen=['News','Religious','Cooking','Asian News','Entertainment','Pak&ind']
-        CFgen="4"
+        CFgen="32"
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL3VyZHUtdHYuaHRtbA==")
         UKTVGenCat,UKTVGenCH=['religious','news','food'], ['masala tv', 'ary digital', 'ary zindagi','hum tv','drama','express ent.']
         fastgen=['PAKISTANI TV','ISLAMIC TV']
@@ -4701,7 +4705,7 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
         iptvgen="indian"
         ptcgen=['Indian']
         dittogen="ind"
-        CFgen="6"
+        CFgen="33"
         ipBoxGen=1
         YPgen=base64.b64decode("aHR0cDovL3d3dy55dXBwdHYuY29tL2hpbmRpLXR2Lmh0bWw=")
         UKTVGenCat,UKTVGenCH=['movies'],['zee tv','colors','sony tv hd', 'star plus hd', 'zee tv']
@@ -5412,8 +5416,9 @@ def getYPSession():
     return ""
     
 def getCFPage(catId):
-    headers=[('User-Agent',base64.b64decode('Q0ZVTlRWLzMuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))]
-    html= getUrl(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWNvbnRlbnQmY2F0ZWdvcnlpZD0lcyZkZXZpY2U9aW9zJnZlcnNpb249MCZrZXk9Q1l4UElWRTlhZQ==')%catId,headers=headers)
+    headers=[('User-Agent',base64.b64decode('CFUNTV/3.1 CFNetwork/758.0.2 Darwin/15.0.0'))]
+#    html= getUrl(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWNvbnRlbnQmY2F0ZWdvcnlpZD0lcyZkZXZpY2U9aW9zJnZlcnNpb249MCZrZXk9Q1l4UElWRTlhZQ==')%catId,headers=headers)
+    html= getUrl(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWNvbnRlbnQmY2F0ZWdvcnlpZD0lcyZkZXZpY2U9aW9zJnZlcnNpb249MCZrZXk9Q1l4UElWRTlhZSZ1PWt3cDMwNjcwQHJjYXNkLmNvbSZhcHB0eXBlPWlvcw==')%catId,headers=headers)
     return json.loads(html)
 
 def getMYTVPage():
@@ -5489,7 +5494,7 @@ def getNetworkTVPage():
     auth = netData["amFnX3Ryb3JfYXR0X2Vu"][1:].decode("base64") 
     ref = netData["SXNpc2VrZWxvX3Nlc2lzdGltdV95ZXppbm9tYm9sbzAw"][1:].decode("base64")
                 
-    headers=[('User-Agent',getFastUA()),('Authorization',auth),('Referer',ref)]
+    headers=[('User-Agent',getFastUA(v2=True)),('Authorization',auth),('Referer',ref)]
     post={'check':'1','user_id':str(uid),'version':'26'}
     post = urllib.urlencode(post)
     jsondata=getUrl(baseurl,post=post,headers=headers)
@@ -6283,7 +6288,7 @@ def PlayNetworkTVLink(url,progress=None):
     print url
     token=url["token"]
     finalurl=""
-    anduseragent=getFastUA()
+    anduseragent=getFastUA(v2=True)
     #['33','18','0','29']         
     if token=="0":
         finalurl=url["streamurl"]
@@ -7772,7 +7777,7 @@ def PlayCFLive(url):
         playfile=''
         
     if playfile=='':
-        req = urllib2.Request(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWRldGFpbHMmQCZkZXZpY2U9aW9zJnZlcnNpb249MCZjb250ZW50aWQ9JXMmc2lkPSZ1PWMzMjgxOTMwQHRyYnZuLmNvbQ==')%url)
+        req = urllib2.Request(base64.b64decode('aHR0cHM6Ly9jaW5lZnVudHYuY29tL3NtdGFsbmMvY29udGVudC5waHA/Y21kPWRldGFpbHMmQCZkZXZpY2U9aW9zJnZlcnNpb249MCZjb250ZW50aWQ9JXMmc2lkPSZ1PWt3cDMwNjcwQHJjYXNkLmNvbQ==')%url)
         req.add_header('User-Agent', base64.b64decode('Q0ZVTlRWLzMuMSBDRk5ldHdvcmsvNzU4LjAuMiBEYXJ3aW4vMTUuMC4w'))
         response = urllib2.urlopen(req)
         link=response.read()
