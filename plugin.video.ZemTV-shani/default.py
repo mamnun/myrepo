@@ -1232,15 +1232,21 @@ def getNetworkTVData():
     fname='Networkdata.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,30*60)
+        jsondata=getCacheData(fname,60*60)
         if not jsondata==None:
             return json.loads(base64.b64decode(jsondata))
     except:
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
 
-    headers=[('application-id',base64.b64decode('QUYxMkY0N0YtMEM5Qy0zQkMxLUZGNkYtNzkzNUUwQzBDQzAw')),('secret-key',base64.b64decode('MTAzQ0JFNkYtNEYyMi0yRTlCLUZGQzEtMjVCRUNEM0QyRjAw')),('application-type','REST')]
-    link=getUrl(base64.b64decode('aHR0cHM6Ly9hcGkuYmFja2VuZGxlc3MuY29tL3YxL2RhdGEvQXBwQ29uZmlnQWxwaGE='),headers=headers)
+    post='{"returnSecureToken":true}'
+   # post = urllib.urlencode(post)
+    
+    udata=getUrl(base64.b64decode('aHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vaWRlbnRpdHl0b29sa2l0L3YzL3JlbHlpbmdwYXJ0eS9zaWdudXBOZXdVc2VyP2tleT1BSXphU3lEdEFIaXlxa3ZaT09reURNdjNQb1R0dVI5bzVEN1Vxenc='), post=post,jsonpost=True)
+    print     udata
+    udata=json.loads(udata)
+    #headers=[('application-id',base64.b64decode('QUYxMkY0N0YtMEM5Qy0zQkMxLUZGNkYtNzkzNUUwQzBDQzAw')),('secret-key',base64.b64decode('MTAzQ0JFNkYtNEYyMi0yRTlCLUZGQzEtMjVCRUNEM0QyRjAw')),('application-type','REST')]
+    link=getUrl(base64.b64decode('aHR0cHM6Ly9saXZlbmV0LWlwdHYuZmlyZWJhc2Vpby5jb20vQXBwQ29uZmlnQWxwaGEuanNvbj9wcmludD1wcmV0dHkmYXV0aD0lcw==')%udata["idToken"])
     jsondata=None
     try:
         jsondata=json.loads(link.replace('\x0a',''))
@@ -1251,11 +1257,7 @@ def getNetworkTVData():
         traceback.print_exc(file=sys.stdout)
     return jsondata    
 
-
-
-    
-    
-    
+  
 def getFootballData():
     fname='footballdata.json'
     fname=os.path.join(profile_path, fname)
@@ -5501,14 +5503,15 @@ def getNetworkTVPage():
     fname='network_page.json'
     fname=os.path.join(profile_path, fname)
     try:
-        jsondata=getCacheData(fname,3*60*60)
+        jsondata=getCacheData(fname,2*60*60)
         if not jsondata==None:
             return json.loads(jsondata)
     except:
         print 'file getting error'
         traceback.print_exc(file=sys.stdout)
     
-    netData=getNetworkTVData()["data"][0]
+    #netData=getNetworkTVData()["data"][0]
+    netData=getNetworkTVData()
     print netData
     baseurl=netData["YmFzZXVybG5ld3gw"]
     baseurl=baseurl[1:].decode("base64")+"bGl2ZTMubmV0dHYv".decode("base64")
@@ -6316,7 +6319,7 @@ def PlayNetworkTVLink(url,progress=None):
     if token=="0":
         finalurl=url["streamurl"]
     elif token=="33":
-        netData=getNetworkTVData()["data"][0]        
+        netData=getNetworkTVData()
         posturl=netData["ZmFtYW50YXJhbmFfdGF0aTAw"][1:].decode("base64")
         auth=netData["dGVydHRleWFj"][1:].decode("base64")
         ref=url["referer"]
@@ -6348,7 +6351,7 @@ def PlayNetworkTVLink(url,progress=None):
             tryplay( finalurl2 , listitem,pdialogue= progress, timetowait=12)
         return
     elif token=="18":
-        netData=getNetworkTVData()["data"][0]        
+        netData=getNetworkTVData()    
         posturl=url["streamurl"]
         ref=url["referer"]
         authua=url["user_agent"]
@@ -6374,7 +6377,7 @@ def PlayNetworkTVLink(url,progress=None):
             defplayua=playua
         finalurl=playurl[0].split('\'')[0]+"|User-Agent="+defplayua
     elif token=="38":
-        netData=getNetworkTVData()["data"][0]        
+        netData=getNetworkTVData()    
         posturl=netData["YmVsZ2lfMzgw"][1:].decode("base64")
         auth=netData["Z2Vsb29mc2JyaWVm"][1:].decode("base64")
         ref=url["referer"]
@@ -6417,7 +6420,7 @@ def PlayNetworkTVLink(url,progress=None):
                 }
         tokenLinkKey,tokenCredsKey,decryptorLinkKey,decryptorKeyKey=mapping[token]
 
-        netData=getNetworkTVData()["data"][0]   
+        netData=getNetworkTVData()
         
         tokenLink=netData[tokenLinkKey][1:].decode("base64")
         tokenCreds=netData[tokenCredsKey][1:].decode("base64")
@@ -6481,7 +6484,7 @@ def PlayNetworkTVLink(url,progress=None):
         settingsecuritykey="UGFrX3VrdWJ1bmdhemEx"
         
 
-        netData=getNetworkTVData()["data"][0]   
+        netData=getNetworkTVData()
         settingslink=netData[settingslinkkey][1:].decode("base64")
         settingsecurity=netData[settingsecuritykey][1:].decode("base64")
         print settingslink,settingsecurity
