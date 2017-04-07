@@ -3177,11 +3177,14 @@ def AddWatchCric(url):
 
 
 def smpk(frompk, jsdata):
+    if jsdata[0]=='v2':
+        return smpk2(frompk,jsdata);
     refind='hash.*?(oh.*)'
     jsline=re.findall(refind, jsdata)[0].split(' ')
     oh=''
     oh=frompk
     fv=[]
+    
     for ln in jsline:
         if 'substring' in ln:
             ln=ln.replace('oh.substring(','oh[')
@@ -3195,11 +3198,31 @@ def smpk(frompk, jsdata):
     print s
     return eval(s)
     
+
+def smpk2(frompk, jsdata):
+    #refind='hash.*?(oh.*)'
+    jsline=jsdata[2].split('+');#re.findall(refind, jsdata)[0].split(' ')
+    
+    oh=''
+    oh=frompk
+    fv=[]
+    print jsline
+    for ln in jsline:
+        if len(re.findall('(\([0-9]+?,[0-9]+?\))',ln))>0:
+            ln='oh['+ln.split('(')[1].split(')')[0]+']'
+            ln=ln.replace(',',':')
+        if len(re.findall('(\([0-9]+?,_.*?\])',ln))>0:
+            ln='oh['+ln.split('(')[1].split(',')[0]+':]'
+        fv.append(ln.strip().replace(';',''))
+    print fv
+    s='+'.join(fv)
+    print s
+    return eval(s)
     
 def parseSmartCricJS():
     import scdec
-    jstext=scdec.gettext()
-    return jstext 
+    return scdec.gettext()
+    
 def AddSmartCric(url):
     req = urllib2.Request(base64.b64decode('aHR0cDovL3d3dy5zbWFydGNyaWMuY29tLw=='))
     req.add_header('User-Agent', 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3')
@@ -3215,12 +3238,16 @@ def AddSmartCric(url):
     link=response.read()
 #    print link
     response.close()
-    patt='performGet\(\'(.+)\''
-    match_url =re.findall(patt,jsdata)[0]
+    if jsdata[0]=='v1':
+        patt='performGet\(\'(.+)\''
+        match_url =re.findall(patt,jsdata[1])[0]
+    else:
+        patt='(http.*?live/)'
+        match_url =re.findall(patt,jsdata[1])[0]        
     #match_url='http://webaddress:8087/mobile/channels/live/'
     channeladded=False
     patt_sn='sn = "(.*?)"'
-    patt_pk='showChannels\([\'"](.*?)[\'"]'
+    patt_pk='showChannels.?\([\'"](.*?)[\'"]'
     try:
         match_sn =re.findall(patt_sn,link)[0]
         match_pk =re.findall(patt_pk,link)[0]
@@ -3229,9 +3256,9 @@ def AddSmartCric(url):
         print 'match_pk',match_pk
         ref=[('User-Agent','Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_2 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A452 Safari/601.1'),
             ('Referer','http://smartcric.com/')]
-        lburl=re.findall('(http.*?loadbalancer)',link)[0]
-        fms=getUrl(lburl,headers=ref).split('=')[1]
-        sourcelb=lburl.split('/')[2].split(':')[0]
+        #lburl=re.findall('(http.*?loadbalancer)',link)[0]
+        #fms=getUrl(lburl,headers=ref).split('=')[1]
+        #sourcelb=lburl.split('/')[2].split(':')[0]
         #match_url=match_url.replace('webaddress',sourcelb)
         final_url=  match_url+   match_sn
         req = urllib2.Request(final_url)
@@ -3255,7 +3282,7 @@ def AddSmartCric(url):
 #                print source
                 curl=''
                 cname=source["caption"]
-                #fms=source["fmsUrl"]
+                fms=source["fmsUrl"]
 #                print curl
                 #if ctype<>'': cname+= '[' + ctype+']'
                 addDir(cname ,curl ,-1,'', False, True,isItFolder=False)		#name,url,mode,icon

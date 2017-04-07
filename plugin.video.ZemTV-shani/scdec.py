@@ -45,6 +45,8 @@ def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None,jsonpost=Fals
 
 def gettext():
     jsdata=getUrl('http://www.smartcric.com/js/video.js')
+    if jsdata.startswith('var _'):
+        return gettext2(jsdata)
     import re
     anchorreg='parseInt\((.*?)\)'
     ancdata=re.findall(anchorreg,jsdata)[0]
@@ -63,4 +65,17 @@ def gettext():
         except: 
             print 'error'
     print repr(  ''.join(ss))
-    return ''.join(ss)
+    return 'v1',''.join(ss)
+
+def gettext2(jstext):
+    import re
+    regs="var _.*?(\[.*?\])"
+    vals=re.findall(regs,jstext)[0]
+    d1= '\n'.join(eval(vals))
+    d2=re.findall(";jako=(.*?);",jstext)[0]
+    return 'v2',d1,d2
+    
+    
+    
+    
+    
