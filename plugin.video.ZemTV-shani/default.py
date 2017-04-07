@@ -6429,12 +6429,12 @@ def PlayNetworkTVLink(url,progress=None):
         finalurl=url["streamurl"]+authdata+"|User-Agent="+defplayua
         finalurl2=url["streamurl"]+authdata2+"|User-Agent="+defplayua
         
-        listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
-        listitem.setMimeType("flv-application/octet-stream");
-        listitem.setContentLookup(False)
-        if not tryplay( finalurl , listitem,pdialogue= progress, timetowait=12):
-            tryplay( finalurl2 , listitem,pdialogue= progress, timetowait=12)
-        return
+        #listitem = xbmcgui.ListItem( label = str(name), iconImage = "DefaultVideo.png", thumbnailImage = xbmc.getInfoImage( "ListItem.Thumb" ) )
+        #listitem.setMimeType("flv-application/octet-stream");
+        #listitem.setContentLookup(False)
+        #if not tryplay( finalurl , listitem,pdialogue= progress, timetowait=12):
+         #   tryplay( finalurl2 , listitem,pdialogue= progress, timetowait=12)
+        #return
         
     elif token in ["24","25","28","29","30","31","32"]:
         mapping={"24":   ["YW1pX2NoYmlz","TWVuX2Nob2Jpc18w","",0],
