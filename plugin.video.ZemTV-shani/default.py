@@ -477,7 +477,7 @@ def AddSports(url):
     addDir('Slow TV' ,'sss',96,os.path.join(home,'icons','slowtv.png'))
     #addDir('Safe' ,'sss',72,'')
     addDir('TVPlayer [UK Geo Restricted]','sss',74,os.path.join(home,'icons','tvplayer.png'))
-    addDir('StreamHD','sss',75,os.path.join(home,'icons','streamhd.png'))
+    #addDir('StreamHD','sss',75,os.path.join(home,'icons','streamhd.png')) #website bust
     addDir('Mama HD','http://mamahd.com/',79,os.path.join(home,'icons','mamahd.png'))
     addDir('HDfree','sss',77,os.path.join(home,'icons','HDFree.png'))
     addDir('inFinite Streams','sss',78,os.path.join(home,'icons','Infinite Streams.png'))
@@ -1989,7 +1989,10 @@ def playHDCast(url, mainref, altref=None):
             if len(streamurl)>0:
                 headers=[('Referer',embedUrl),('User-Agent',agent)]                             
                 html=getUrl(streamurl[0].replace('&amp;','&'),headers=headers, cookieJar=cookieJar)
-                streamurl = re.findall('file:["\'](.*?)["\']',html)[0]
+                streamurl = re.findall('file:["\'](.*?)["\']',html)
+                if len(streamurl)==0:
+                    streamurl = re.findall('hls.?:.?["\'](.*?)["\']',html)
+                streamurl=streamurl[0]
                 cookieJar.save (HDCASTCookie,ignore_discard=True)
                 return PlayGen(base64.b64encode(streamurl+'|User-Agent='+agent+'&Referer='+embedUrl))
             if 'rtmp' in result:
