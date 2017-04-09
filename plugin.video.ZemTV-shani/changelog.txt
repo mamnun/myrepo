@@ -1,3 +1,5 @@
+[B]Version 6.5.3[/B]
+ignore ssl errors
 [B]Version 6.5.2[/B]
 mamahd fixed,streamhd removed
 [B]Version 6.5.1[/B]
