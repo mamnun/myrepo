@@ -12,6 +12,7 @@ import CustomPlayer,uuid
 import checkbad
 from time import time
 import base64
+import ssl
 
 overridemode=None    
 try:
@@ -169,13 +170,18 @@ def PlayChannel ( channelName ):
 
 def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None,jsonpost=False):
 
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
     cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
-    opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
+    opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ctx),cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
     #opener = urllib2.install_opener(opener)
     header_in_page=None
     if '|' in url:
         url,header_in_page=url.split('|')
     req = urllib2.Request(url)
+
     req.add_header('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.154 Safari/537.36')
     req.add_header('Accept-Encoding','gzip')
 
