@@ -1,3 +1,5 @@
+[B]Version 6.5.4[/B]
+nettv
 [B]Version 6.5.3[/B]
 ignore ssl errors
 [B]Version 6.5.2[/B]

@@ -176,6 +176,7 @@ def getUrl(url, cookieJar=None,post=None, timeout=20, headers=None,jsonpost=Fals
 
     cookie_handler = urllib2.HTTPCookieProcessor(cookieJar)
     opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ctx),cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
+    #opener = urllib2.build_opener(cookie_handler, urllib2.HTTPBasicAuthHandler(), urllib2.HTTPHandler())
     #opener = urllib2.install_opener(opener)
     header_in_page=None
     if '|' in url:
@@ -1247,8 +1248,13 @@ def getNetworkTVData():
 
     post='{"returnSecureToken":true}'
    # post = urllib.urlencode(post)
+
+
     
-    udata=getUrl(base64.b64decode('aHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vaWRlbnRpdHl0b29sa2l0L3YzL3JlbHlpbmdwYXJ0eS9zaWdudXBOZXdVc2VyP2tleT1BSXphU3lEdEFIaXlxa3ZaT09reURNdjNQb1R0dVI5bzVEN1Vxenc='), post=post,jsonpost=True)
+    headers=[('X-Android-Package',base64.b64decode('Y29tLmxpdmVuZXQuaXB0dg==')),('X-Android-Cert',base64.b64decode('MEM1RDBDREI3QzU1MTFDNzE4MTY0OTQ1OTc2MDY4MTg5QUU0QzJEMA=='))]
+   
+    udata=getUrl(base64.b64decode('aHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vaWRlbnRpdHl0b29sa2l0L3YzL3JlbHlpbmdwYXJ0eS9zaWdudXBOZXdVc2VyP2tleT1BSXphU3lEdEFIaXlxa3ZaT09reURNdjNQb1R0dVI5bzVEN1Vxenc='), post=post,jsonpost=True,headers=headers)
+    
     print     udata
     udata=json.loads(udata)
     #headers=[('application-id',base64.b64decode('QUYxMkY0N0YtMEM5Qy0zQkMxLUZGNkYtNzkzNUUwQzBDQzAw')),('secret-key',base64.b64decode('MTAzQ0JFNkYtNEYyMi0yRTlCLUZGQzEtMjVCRUNEM0QyRjAw')),('application-type','REST')]
@@ -4948,11 +4954,14 @@ def AddChannelsFromOthers(cctype,eboundMatches=[],progress=None):
                 match+=rematch
         except:
             traceback.print_exc(file=sys.stdout)   
-            
+    print 'ssssssssssssssssssssssslow',slowtvgen        
     if slowtvgen:
         try:
             progress.update( 87, "", "Loading SlowTV Channels", "" )
+            print 'ssssssssssssssssssssssslossssssssssssssw',slowtvgen
             rematch=getNetworkTVChannels2(cat=[NetworkTVCatIDByName2(slowtvgen[0], findin=True)],sports=False,removeprefix=slowtvprefix)
+            print 'rematch',rematch
+           
             if len(rematch)>0:
                 match+=rematch
         except:
